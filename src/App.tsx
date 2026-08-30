@@ -329,6 +329,9 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
   const available = availableSkillPoints(build)
   const equipmentModifiers = getEquipmentModifiers(build)
   const treeRow = (skill: SkillDefinition) => skill.requiredLevel === 1 ? 1 : skill.requiredLevel / 6 + 1
+  const treeRowHeight = 112
+  const skillNodeHeight = 100
+  const skillNodeTop = (treeRowHeight - skillNodeHeight) / 2
   const changeSkill = (skill: SkillDefinition, delta: number) => {
     setBuild((current) => {
       const currentPoints = current.skills[skill.id] ?? 0
@@ -358,8 +361,8 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
                   const prerequisite = branchSkills.find((candidate) => candidate.id === prerequisiteId)!
                   const sourceX = (prerequisite.col - .5) * 100
                   const targetX = (item.col - .5) * 100
-                  const sourceY = (treeRow(prerequisite) - 1) * 112 + 88
-                  const targetY = (treeRow(item) - 1) * 112 + 8
+                  const sourceY = (treeRow(prerequisite) - 1) * treeRowHeight + skillNodeTop + skillNodeHeight
+                  const targetY = (treeRow(item) - 1) * treeRowHeight + skillNodeTop
                   const middleY = (sourceY + targetY) / 2
                   const active = (build.skills[prerequisite.id] ?? 0) > 0
                   const invested = (build.skills[item.id] ?? 0) > 0
