@@ -325,14 +325,32 @@ function Overview({ build, summary, setPage, updateBuild }: { build: BuildProfil
 
 function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: React.Dispatch<React.SetStateAction<BuildProfile>> }) {
   const definition = CLASS_DEFINITIONS[build.classId]
+  const [selectedBranch, setSelectedBranch] = useState(definition.branches[0])
+  const [selectedSkillId, setSelectedSkillId] = useState(definition.skills[0].id)
   const spent = spentSkillPoints(build)
   const available = availableSkillPoints(build)
   const equipmentModifiers = getEquipmentModifiers(build)
   const treeRow = (skill: SkillDefinition) => skill.requiredLevel === 1 ? 1 : skill.requiredLevel / 6 + 1
   const treeLevels = [1, 6, 12, 18, 24, 30]
-  const treeRowHeight = 112
-  const skillNodeHeight = 100
+  const treeRowHeight = 132
+  const skillNodeHeight = 116
   const skillNodeTop = (treeRowHeight - skillNodeHeight) / 2
+  const branchSkills = definition.skills.filter((item) => item.branch === selectedBranch)
+  const branchIds = new Set(branchSkills.map((item) => item.id))
+  const selectedSkill = definition.skills.find((item) => item.id === selectedSkillId) ?? branchSkills[0]
+
+  useEffect(() => {
+    const firstBranch = definition.branches[0]
+    setSelectedBranch(firstBranch)
+    setSelectedSkillId(definition.skills.find((item) => item.branch === firstBranch)?.id ?? definition.skills[0].id)
+  }, [definition])
+
+  useEffect(() => {
+    if (selectedSkill?.branch === selectedBranch) return
+    const firstSkill = definition.skills.find((item) => item.branch === selectedBranch)
+    if (firstSkill) setSelectedSkillId(firstSkill.id)
+  }, [definition, selectedBranch, selectedSkill?.branch])
+
   const changeSkill = (skill: SkillDefinition, delta: number) => {
     setBuild((current) => {
       const currentPoints = current.skills[skill.id] ?? 0
@@ -345,49 +363,52 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
       return { ...current, skills: { ...current.skills, [skill.id]: currentPoints + delta }, updatedAt: new Date().toISOString() }
     })
   }
+  const occupied = (col: number, row: number) => branchSkills.some((skill) => skill.col === col && treeRow(skill) === row)
+  const connectorPath = (prerequisite: SkillDefinition, item: SkillDefinition) => {
+    const sourceX = (prerequisite.col - .5) * 100
+    const targetX = (item.col - .5) * 100
+    const sourceRow = treeRow(prerequisite)
+    const targetRow = treeRow(item)
+    const sourceY = (sourceRow - 1) * treeRowHeight + skillNodeTop + skillNodeHeight
+    const targetY = (targetRow - 1) * treeRowHeight + skillNodeTop
+    if (prerequisite.col === item.col) return `M ${sourceX} ${sourceY} V ${targetY}`
+    if (sourceRow === targetRow) {
+      const isLastRow = targetRow === treeLevels.length
+      const routeY = isLastRow ? (targetRow - 1) * treeRowHeight : targetRow * treeRowHeight
+      const anchorY = isLastRow ? targetY : sourceY
+      return `M ${sourceX} ${anchorY} V ${routeY} H ${targetX} V ${anchorY}`
+    }
+    let bestGap = 0
+    let bestCollisions = Infinity
+    for (let gap = 0; gap <= targetRow - sourceRow - 1; gap += 1) {
+      let collisions = 0
+      for (let row = sourceRow + 1; row <= sourceRow + gap; row += 1) if (occupied(prerequisite.col, row)) collisions += 1
+      for (let row = sourceRow + gap + 1; row <= targetRow - 1; row += 1) if (occupied(item.col, row)) collisions += 1
+      if (collisions < bestCollisions) { bestCollisions = collisions; bestGap = gap }
+    }
+    const jogY = (sourceRow + bestGap) * treeRowHeight
+    return `M ${sourceX} ${sourceY} V ${jogY} H ${targetX} V ${targetY}`
+  }
+
+  const selectedHard = build.skills[selectedSkill.id] ?? 0
+  const selectedBonus = skillBonusFor(build, selectedSkill, equipmentModifiers)
+  const selectedPrerequisites = (selectedSkill.prerequisites ?? []).map((id) => definition.skills.find((item) => item.id === id)).filter(Boolean) as SkillDefinition[]
+
   return (
     <div className="page-stack">
-      <section className="page-title"><div><small>SKILL PLANNER</small><h1>{definition.nameKo} 기술</h1><p>선행 기술과 요구 레벨을 검사하며 장비 보너스는 청록색으로 따로 표시합니다.</p></div><div className={`budget-pill ${spent > available ? 'over' : ''}`}><span>사용</span><strong>{spent}</strong><i>/</i><span>보유</span><strong>{available}</strong><button onClick={() => setBuild((current) => ({ ...current, skills: {} }))}>초기화</button></div></section>
-      <p className="mobile-tree-hint">좌우로 밀어 다른 기술 트리 보기</p>
-      <div className="skill-columns">
+      <section className="page-title skill-page-title"><div><small>SKILL PLANNER</small><h1>{definition.nameKo} 기술</h1><p>한 계열에 집중해 기술 이름과 연결 관계를 크게 보고, 선택한 기술의 세부 정보를 바로 확인합니다.</p></div><div className={`budget-pill ${spent > available ? 'over' : ''}`}><span>사용</span><strong>{spent}</strong><i>/</i><span>보유</span><strong>{available}</strong><button onClick={() => setBuild((current) => ({ ...current, skills: {} }))}>초기화</button></div></section>
+      <div className="skill-branch-tabs" role="tablist" aria-label="기술 계열">
         {definition.branches.map((branch) => {
-          const branchSkills = definition.skills.filter((item) => item.branch === branch)
-          const branchIds = new Set(branchSkills.map((item) => item.id))
-          const occupied = (col: number, row: number) => branchSkills.some((skill) => skill.col === col && treeRow(skill) === row)
-          const connectorPath = (prerequisite: SkillDefinition, item: SkillDefinition) => {
-            const sourceX = (prerequisite.col - .5) * 100
-            const targetX = (item.col - .5) * 100
-            const sourceRow = treeRow(prerequisite)
-            const targetRow = treeRow(item)
-            const sourceY = (sourceRow - 1) * treeRowHeight + skillNodeTop + skillNodeHeight
-            const targetY = (targetRow - 1) * treeRowHeight + skillNodeTop
-            if (prerequisite.col === item.col) return `M ${sourceX} ${sourceY} V ${targetY}`
-            if (sourceRow === targetRow) {
-              // 같은 행에서 열이 다른 경우: 최하단 행이 아니면 아래쪽 여백으로,
-              // 최하단 행이면 위쪽 여백으로 우회해 다른 노드와 겹치지 않게 한다.
-              const isLastRow = targetRow === treeLevels.length
-              const routeY = isLastRow ? (targetRow - 1) * treeRowHeight : targetRow * treeRowHeight
-              const anchorY = isLastRow ? targetY : sourceY
-              return `M ${sourceX} ${anchorY} V ${routeY} H ${targetX} V ${anchorY}`
-            }
-            // 행이 여러 개 떨어져 있고 열도 바뀌는 경우: 가로 이동 지점을
-            // 중간 행 노드와 겹치지 않는 여백 쪽으로 선택한다.
-            let bestGap = 0
-            let bestCollisions = Infinity
-            for (let gap = 0; gap <= targetRow - sourceRow - 1; gap += 1) {
-              let collisions = 0
-              for (let row = sourceRow + 1; row <= sourceRow + gap; row += 1) if (occupied(prerequisite.col, row)) collisions += 1
-              for (let row = sourceRow + gap + 1; row <= targetRow - 1; row += 1) if (occupied(item.col, row)) collisions += 1
-              if (collisions < bestCollisions) { bestCollisions = collisions; bestGap = gap }
-            }
-            const jogY = (sourceRow + bestGap) * treeRowHeight
-            return `M ${sourceX} ${sourceY} V ${jogY} H ${targetX} V ${targetY}`
-          }
-          return <section className="skill-tree panel" key={branch}>
-            <div className="tree-title"><small>SKILL TREE</small><h2>{branch}</h2><span>{definition.skills.filter((item) => item.branch === branch).reduce((sum, item) => sum + (build.skills[item.id] ?? 0), 0)} 포인트</span></div>
+          const points = definition.skills.filter((item) => item.branch === branch).reduce((sum, item) => sum + (build.skills[item.id] ?? 0), 0)
+          return <button key={branch} type="button" role="tab" aria-selected={selectedBranch === branch} className={selectedBranch === branch ? 'active' : ''} onClick={() => setSelectedBranch(branch)}><strong>{branch}</strong><span>{points} P</span></button>
+        })}
+      </div>
+      <div className="skill-focus-layout">
+        <section className="skill-tree panel" aria-label={`${selectedBranch} 기술 트리`}>
+          <div className="tree-title"><div><small>SKILL TREE</small><h2>{selectedBranch}</h2></div><span>{branchSkills.reduce((sum, item) => sum + (build.skills[item.id] ?? 0), 0)} 포인트</span></div>
             <div className="skill-tree-canvas">
               <div className="tree-level-guide">{treeLevels.map((level) => <span key={level}>LV {level}</span>)}</div>
-              <svg className="skill-connectors" viewBox="0 0 300 672" preserveAspectRatio="none" aria-hidden="true">
+              <svg className="skill-connectors" viewBox="0 0 300 792" preserveAspectRatio="none" aria-hidden="true">
                 {branchSkills.flatMap((item) => (item.prerequisites ?? []).filter((id) => branchIds.has(id)).map((prerequisiteId) => {
                   const prerequisite = branchSkills.find((candidate) => candidate.id === prerequisiteId)!
                   const active = (build.skills[prerequisite.id] ?? 0) > 0
@@ -400,7 +421,7 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
                 const bonus = skillBonusFor(build, item, equipmentModifiers)
                 const locked = build.level < item.requiredLevel || !(item.prerequisites ?? []).every((id) => (build.skills[id] ?? 0) > 0)
                 const canAdd = skillCanIncrement(build, item)
-                return <article data-testid={`skill-${item.id}`} style={{ gridColumn: item.col, gridRow: treeRow(item) }} key={item.id} className={`skill-node ${hard ? 'invested' : ''} ${canAdd ? 'available' : ''} ${locked ? 'locked' : ''}`}>
+                return <article data-testid={`skill-${item.id}`} style={{ gridColumn: item.col, gridRow: treeRow(item) }} key={item.id} onClick={() => setSelectedSkillId(item.id)} className={`skill-node ${selectedSkill.id === item.id ? 'selected' : ''} ${hard ? 'invested' : ''} ${canAdd ? 'available' : ''} ${locked ? 'locked' : ''}`}>
                   <div className="skill-node-heading"><strong className="skill-name">{item.nameKo}</strong><small className="skill-level">요구 레벨 {item.requiredLevel}</small></div>
                   <div className="skill-rank-summary"><span>투자 {hard}/20</span>{bonus > 0 && <span>장비 +{bonus}</span>}</div>
                   <div className="skill-counter"><button aria-label={`${item.nameKo} 감소`} onClick={() => changeSkill(item, -1)} disabled={hard <= 0}>−</button><strong><small>최종</small>{hard + bonus}</strong><button aria-label={`${item.nameKo} 증가`} onClick={() => changeSkill(item, 1)} disabled={!canAdd}>+</button></div>
@@ -408,8 +429,25 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
                 </article>
               })}
             </div>
-          </section>
-        } )}
+        </section>
+        <aside className="skill-inspector panel" aria-live="polite">
+          <div className="skill-inspector-heading"><small>SELECTED SKILL</small><span>{selectedBranch}</span></div>
+          <h2>{selectedSkill.nameKo}</h2>
+          <p className="skill-name-en">{selectedSkill.nameEn}</p>
+          <p className="skill-description">{selectedSkill.description}</p>
+          <div className="inspector-counter">
+            <button aria-label={`${selectedSkill.nameKo} 상세에서 감소`} onClick={() => changeSkill(selectedSkill, -1)} disabled={selectedHard <= 0}>−</button>
+            <strong>{selectedHard + selectedBonus}<small>최종 레벨</small></strong>
+            <button aria-label={`${selectedSkill.nameKo} 상세에서 증가`} onClick={() => changeSkill(selectedSkill, 1)} disabled={!skillCanIncrement(build, selectedSkill)}>+</button>
+          </div>
+          <dl className="skill-facts">
+            <div><dt>요구 레벨</dt><dd>{selectedSkill.requiredLevel}</dd></div>
+            <div><dt>직접 투자</dt><dd>{selectedHard} / 20</dd></div>
+            <div><dt>장비 보너스</dt><dd className={selectedBonus > 0 ? 'bonus' : ''}>+{selectedBonus}</dd></div>
+            <div><dt>남은 포인트</dt><dd>{Math.max(0, available - spent)}</dd></div>
+          </dl>
+          <section className="prerequisite-list"><small>PREREQUISITES · 선행 기술</small>{selectedPrerequisites.length ? selectedPrerequisites.map((skill) => <button key={skill.id} onClick={() => { setSelectedBranch(skill.branch); setSelectedSkillId(skill.id) }}><span>{skill.nameKo}</span><em>{(build.skills[skill.id] ?? 0) > 0 ? '충족' : '미충족'}</em></button>) : <p>선행 기술이 없습니다.</p>}</section>
+        </aside>
       </div>
     </div>
   )

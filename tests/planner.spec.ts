@@ -48,6 +48,7 @@ test('applies a legal starter template', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '독조넥 골격' })).toBeVisible()
   await page.getByTestId('nav-skills').click()
   await expect(page.locator('.budget-pill')).toContainText('보유101')
+  await page.getByRole('tab', { name: /독과 뼈/ }).click()
   await expect(page.getByRole('button', { name: '맹독 확산 증가' })).toBeDisabled()
 })
 
@@ -106,10 +107,15 @@ test('renders mobile skill planner with bottom navigation', async ({ page }, tes
 test('renders desktop skill trees with prerequisite connectors', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'desktop capture only')
   await page.getByTestId('nav-skills').click()
-  await expect(page.locator('.skill-tree')).toHaveCount(3)
+  await expect(page.locator('.skill-tree')).toHaveCount(1)
+  await expect(page.getByRole('tab', { name: /소환/ })).toHaveAttribute('aria-selected', 'true')
   await expect(page.locator('.skill-connectors path')).not.toHaveCount(0)
   await expect(page.locator('.skill-icon')).toHaveCount(0)
   await expect(page.getByTestId('skill-raise-skeletal-mage').locator('.skill-name')).toBeVisible()
+  await expect(page.locator('.skill-inspector')).toContainText('해골 되살리기')
+  await page.getByRole('tab', { name: /독과 뼈/ }).click()
+  await expect(page.getByTestId('skill-bone-spirit')).toBeVisible()
+  await expect(page.getByTestId('skill-raise-skeleton')).toHaveCount(0)
   await page.screenshot({ path: 'tests/screenshots/skills-desktop-tree.png', fullPage: true })
 })
 
