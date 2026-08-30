@@ -1,6 +1,7 @@
 import { CLASS_DEFINITIONS } from '../data/classes'
 import { ITEMS_BY_ID } from '../data/items'
-import type { AttributeId, BuildProfile, BuildSummary, ClassId, Modifiers, SkillDefinition } from '../types'
+import { ITEM_CATALOG } from '../data/catalog.generated'
+import type { AttributeId, BuildProfile, BuildSummary, ClassId, EquippedItem, Modifiers, SkillDefinition } from '../types'
 
 const numericKeys: (keyof Modifiers)[] = [
   'strength', 'strengthPerLevel', 'dexterity', 'vitality', 'energy', 'life', 'mana', 'lifePerLevel',
@@ -24,6 +25,15 @@ export function mergeModifiers(...modifierSets: (Modifiers | undefined)[]): Modi
   return result
 }
 
+export function getEquippedItemModifiers(equipped: EquippedItem): Modifiers {
+  const definition = ITEMS_BY_ID[equipped.definitionId]
+  const hasSavedModifiers = Object.values(equipped.modifiers ?? {}).some((value) => typeof value === 'number' && value !== 0)
+  const recoveredCatalogModifiers = equipped.definitionId === 'custom' && equipped.name && !hasSavedModifiers
+    ? ITEM_CATALOG.find((item) => item.name === equipped.name)?.modifiers
+    : undefined
+  return mergeModifiers(definition?.modifiers, hasSavedModifiers ? equipped.modifiers : recoveredCatalogModifiers)
+}
+
 export function getEquipmentModifiers(build: BuildProfile, includeSwap = false): Modifiers {
   const entries = Object.entries(build.equipment).filter(([slot]) => {
     if (includeSwap) return true
@@ -34,7 +44,7 @@ export function getEquipmentModifiers(build: BuildProfile, includeSwap = false):
   const inventoryModifiers = build.inventory.map((item) => ITEMS_BY_ID[item.definitionId]?.modifiers)
   return mergeModifiers(...entries.map(([, equipped]) => {
     if (!equipped) return undefined
-    return mergeModifiers(ITEMS_BY_ID[equipped.definitionId]?.modifiers, equipped.modifiers)
+    return getEquippedItemModifiers(equipped)
   }), ...inventoryModifiers)
 }
 

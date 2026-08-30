@@ -60,6 +60,17 @@ test('searches the full item catalog and adds a farming target', async ({ page }
   await expect(result.getByRole('button', { name: '★ 파밍 중' })).toBeVisible()
 })
 
+test('applies stats from a non-preset database item', async ({ page }) => {
+  await page.getByTestId('nav-equipment').click()
+  await page.getByLabel('아이템 검색').fill('Suicide Branch')
+  const result = page.locator('.catalog-item').filter({ hasText: 'Suicide Branch' })
+  await expect(result).toHaveCount(1)
+  await expect(result.locator('.impact-chip')).toContainText('패캐 +50')
+  await result.getByRole('button', { name: '착용' }).click()
+  await expect(page.getByTestId('slot-weapon')).toContainText('패캐 +50')
+  await expect(page.locator('.summary-rail')).toContainText('50%')
+})
+
 test('places a charm in the inventory grid', async ({ page }) => {
   await page.getByTestId('nav-inventory').click()
   await page.getByLabel('추가할 부적').selectOption('annihilus')

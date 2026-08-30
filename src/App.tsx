@@ -9,6 +9,7 @@ import {
   breakpointProgress,
   calculateSummary,
   getEquipmentModifiers,
+  getEquippedItemModifiers,
   skillBonusFor,
   skillCanIncrement,
   spentSkillPoints,
@@ -433,7 +434,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
     if (!slots.includes(slot)) return
     setBuild((current) => ({
       ...current,
-      equipment: { ...current.equipment, [slot]: known ? { definitionId: known.id, modifiers: {} } : { definitionId: 'custom', name: item.name, modifiers: {} } },
+      equipment: { ...current.equipment, [slot]: known ? { definitionId: known.id, modifiers: {} } : { definitionId: 'custom', name: item.name, modifiers: { ...item.modifiers } } },
       updatedAt: new Date().toISOString(),
     }))
   }
@@ -454,7 +455,8 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
           const known = ITEMS.find((candidate) => candidate.nameEn.toLowerCase() === item.name.toLowerCase())
           const previewSlot = (item.slot === 'ring' ? 'ring1' : item.slot) as EquipmentSlot
           const currentSummary = calculateSummary(build)
-          const previewSummary = known && slots.includes(previewSlot) ? calculateSummary({ ...build, equipment: { ...build.equipment, [previewSlot]: { definitionId: known.id } } }) : undefined
+          const previewItem = known ? { definitionId: known.id } : { definitionId: 'custom', name: item.name, modifiers: { ...item.modifiers } }
+          const previewSummary = slots.includes(previewSlot) && Object.keys(item.modifiers).length ? calculateSummary({ ...build, equipment: { ...build.equipment, [previewSlot]: previewItem } }) : undefined
           const fcrDelta = previewSummary ? previewSummary.fasterCastRate - currentSummary.fasterCastRate : 0
           return <article className={`catalog-item ${selected ? 'selected' : ''}`} key={item.id}>
             <div><small>{item.category.toUpperCase()} · LV {item.requiredLevel || '—'}</small><strong>{item.name}</strong><span>{item.baseName} · {item.slot}</span></div>
@@ -470,6 +472,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         {slots.map((slot) => {
           const equipped = build.equipment[slot]
           const definition = equipped ? ITEMS_BY_ID[equipped.definitionId] : undefined
+          const displayedModifiers = equipped ? getEquippedItemModifiers(equipped) : {}
           const choices = ITEMS.filter((item) => item.slots.includes(slot))
           const isSwap = slot.startsWith('swap')
           return <section data-testid={`slot-${slot}`} className={`equipment-slot panel ${isSwap ? 'swap-slot' : ''}`} key={slot}>
@@ -480,7 +483,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
             </select>
             {equipped && definition && <>
               {definition.id === 'custom' && <input className="custom-name" value={equipped.name ?? ''} placeholder="아이템 이름" onChange={(event) => updateItem(slot, { name: event.target.value })} />}
-              <div className="item-mods">{Object.entries(definition.modifiers).filter(([, value]) => value).map(([key, value]) => <span key={key}>{modifierFields.find((field) => field.key === key)?.label ?? key} <strong>+{value}</strong></span>)}</div>
+              <div className="item-mods">{Object.entries(displayedModifiers).filter(([, value]) => value).map(([key, value]) => <span key={key}>{modifierFields.find((field) => field.key === key)?.label ?? key} <strong>{Number(value) > 0 ? '+' : ''}{value}</strong></span>)}</div>
               {definition.note && <p className="item-note">{definition.note}</p>}
               <details><summary>{definition.id === 'custom' ? '옵션 입력' : '추가 보정 입력'}</summary><div className="individual-skill-editor"><span>개별 기술 보너스</span><select value="" onChange={(event) => { const skillId = event.target.value; if (skillId) updateItem(slot, { modifiers: { ...equipped.modifiers, [`skill:${skillId}`]: 1 } }) }}><option value="">기술 추가…</option>{classSkills.map((skill) => <option value={skill.id} key={skill.id}>{skill.nameKo}</option>)}</select>{Object.entries(equipped.modifiers ?? {}).filter(([key]) => key.startsWith('skill:')).map(([key, value]) => { const skillId = key.slice(6); const skill = classSkills.find((item) => item.id === skillId); return <label key={key}><span>{skill?.nameKo ?? skillId}</span><input type="number" value={value ?? 0} onChange={(event) => updateItem(slot, { modifiers: { ...equipped.modifiers, [key]: Number(event.target.value) || 0 } })} /></label> })}</div><div className="modifier-editor">{modifierFields.map((field) => <label key={field.key as string}><span>{field.label}</span><input type="number" value={(equipped.modifiers?.[field.key] as number | undefined) ?? ''} placeholder="0" onChange={(event) => updateItem(slot, { modifiers: { ...equipped.modifiers, [field.key]: Number(event.target.value) || 0 } })} /></label>)}</div></details>
             </>}

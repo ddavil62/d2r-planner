@@ -60,6 +60,14 @@ describe('build calculations', () => {
     expect(calculateSummary(build).fasterCastRate).toBe(10)
   })
 
+  it('recovers stats for database items equipped before catalog normalization', () => {
+    const build = createBuild('necromancer')
+    build.equipment.weapon = { definitionId: 'custom', name: 'Suicide Branch', modifiers: {} }
+    const summary = calculateSummary(build)
+    expect(summary.fasterCastRate).toBe(50)
+    expect(summary.resistances.fire).toBe(-60)
+  })
+
   it('round-trips Korean build data through a share code', () => {
     const build = createBuild('necromancer')
     build.name = '독조넥 실험'

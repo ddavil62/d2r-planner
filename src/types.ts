@@ -125,6 +125,7 @@ export interface CatalogItem {
   width: number
   height: number
   properties: readonly string[]
+  modifiers: Modifiers
 }
 
 export interface BuildProfile {
