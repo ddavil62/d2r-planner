@@ -372,10 +372,9 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
                 const locked = build.level < item.requiredLevel || !(item.prerequisites ?? []).every((id) => (build.skills[id] ?? 0) > 0)
                 const canAdd = skillCanIncrement(build, item)
                 return <article data-testid={`skill-${item.id}`} style={{ gridColumn: item.col, gridRow: treeRow(item) }} key={item.id} className={`skill-node ${hard ? 'invested' : ''} ${canAdd ? 'available' : ''} ${locked ? 'locked' : ''}`}>
-                  <div className="skill-icon"><span>{item.nameKo.slice(0, 1)}</span><em>{hard}{bonus > 0 ? `+${bonus}` : ''}</em></div>
-                  <strong className="skill-name">{item.nameKo}</strong>
-                  <small className="skill-level">레벨 {item.requiredLevel}</small>
-                  <div className="skill-counter"><button aria-label={`${item.nameKo} 감소`} onClick={() => changeSkill(item, -1)} disabled={hard <= 0}>−</button><strong>{hard}{bonus > 0 && <span>+{bonus}</span>}</strong><button aria-label={`${item.nameKo} 증가`} onClick={() => changeSkill(item, 1)} disabled={!canAdd}>+</button></div>
+                  <div className="skill-node-heading"><strong className="skill-name">{item.nameKo}</strong><small className="skill-level">요구 레벨 {item.requiredLevel}</small></div>
+                  <div className="skill-rank-summary"><span>투자 {hard}/20</span>{bonus > 0 && <span>장비 +{bonus}</span>}</div>
+                  <div className="skill-counter"><button aria-label={`${item.nameKo} 감소`} onClick={() => changeSkill(item, -1)} disabled={hard <= 0}>−</button><strong><small>최종</small>{hard + bonus}</strong><button aria-label={`${item.nameKo} 증가`} onClick={() => changeSkill(item, 1)} disabled={!canAdd}>+</button></div>
                   <div className="skill-tooltip"><strong>{item.nameKo}</strong><p>{item.description}</p>{item.prerequisites?.length ? <em>선행: {item.prerequisites.map((id) => definition.skills.find((candidate) => candidate.id === id)?.nameKo).join(', ')}</em> : <em>선행 기술 없음</em>}</div>
                 </article>
               })}

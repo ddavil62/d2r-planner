@@ -108,6 +108,8 @@ test('renders desktop skill trees with prerequisite connectors', async ({ page }
   await page.getByTestId('nav-skills').click()
   await expect(page.locator('.skill-tree')).toHaveCount(3)
   await expect(page.locator('.skill-connectors path')).not.toHaveCount(0)
+  await expect(page.locator('.skill-icon')).toHaveCount(0)
+  await expect(page.getByTestId('skill-raise-skeletal-mage').locator('.skill-name')).toBeVisible()
   await page.screenshot({ path: 'tests/screenshots/skills-desktop-tree.png', fullPage: true })
 })
 
