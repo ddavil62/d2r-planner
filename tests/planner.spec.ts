@@ -61,6 +61,20 @@ test('searches the full item catalog and adds a farming target', async ({ page }
   await expect(result.getByRole('button', { name: '★ 파밍 중' })).toBeVisible()
 })
 
+test('searches Korean names and aliases and persists the item language', async ({ page }) => {
+  await page.getByTestId('nav-equipment').click()
+  await page.getByLabel('아이템 검색').fill('샤코')
+  const result = page.locator('.catalog-item').filter({ hasText: '할리퀸 관모' })
+  await expect(result).toHaveCount(1)
+  await expect(result).toContainText('Harlequin Crest')
+  await page.getByTestId('item-language-en').click()
+  await expect(page.getByTestId('item-language-en')).toHaveAttribute('aria-pressed', 'true')
+  await expect(result.locator('strong')).toHaveText('Harlequin Crest')
+  await page.reload()
+  await page.getByTestId('nav-equipment').click()
+  await expect(page.getByTestId('item-language-en')).toHaveAttribute('aria-pressed', 'true')
+})
+
 test('applies stats from a non-preset database item', async ({ page }) => {
   await page.getByTestId('nav-equipment').click()
   await page.getByLabel('아이템 검색').fill('Suicide Branch')

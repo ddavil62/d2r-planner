@@ -104,6 +104,7 @@ export interface ItemDefinition {
 
 export interface EquippedItem {
   definitionId: string
+  catalogId?: string
   name?: string
   modifiers?: Modifiers
 }
@@ -118,7 +119,10 @@ export interface InventoryItem {
 export interface CatalogItem {
   id: string
   name: string
+  nameKo: string
   baseName: string
+  baseNameKo: string
+  aliases: readonly string[]
   category: 'unique' | 'set' | 'runeword'
   requiredLevel: number
   slot: 'head' | 'amulet' | 'weapon' | 'offhand' | 'armor' | 'gloves' | 'ring' | 'belt' | 'boots' | 'charm'

@@ -43,6 +43,9 @@ import type {
 } from './types'
 
 type Page = 'overview' | 'skills' | 'attributes' | 'equipment' | 'inventory' | 'library'
+type ItemLanguage = 'ko' | 'en'
+
+const ITEM_LANGUAGE_KEY = 'd2r-planner-item-language'
 
 const pages: { id: Page; label: string; icon: string }[] = [
   { id: 'overview', label: '빌드 요약', icon: '◆' },
@@ -496,9 +499,14 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
   const [wishlistOnly, setWishlistOnly] = useState(false)
   const [candidateIds, setCandidateIds] = useState<[string, string]>(['', ''])
   const [selectedSlot, setSelectedSlot] = useState<EquipmentSlot>('weapon')
+  const [itemLanguage, setItemLanguage] = useState<ItemLanguage>(() => localStorage.getItem(ITEM_LANGUAGE_KEY) === 'en' ? 'en' : 'ko')
+  useEffect(() => localStorage.setItem(ITEM_LANGUAGE_KEY, itemLanguage), [itemLanguage])
+  const catalogName = (item: CatalogItem) => itemLanguage === 'ko' ? item.nameKo : item.name
+  const catalogSecondaryName = (item: CatalogItem) => itemLanguage === 'ko' ? item.name : item.nameKo
+  const catalogBaseName = (item: CatalogItem) => itemLanguage === 'ko' ? item.baseNameKo : item.baseName
   const filteredCatalog = useMemo(() => catalog.filter((item) => {
     const needle = query.trim().toLowerCase()
-    return (!needle || `${item.name} ${item.baseName} ${item.properties.join(' ')}`.toLowerCase().includes(needle))
+    return (!needle || `${item.name} ${item.nameKo} ${item.baseName} ${item.baseNameKo} ${item.aliases.join(' ')} ${item.properties.join(' ')}`.toLowerCase().includes(needle))
       && (category === 'all' || item.category === category)
       && (catalogSlot === 'all' || item.slot === catalogSlot)
       && (!item.requiredLevel || item.requiredLevel <= maxRequiredLevel)
@@ -523,7 +531,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
     setSelectedSlot(slot)
     setBuild((current) => ({
       ...current,
-      equipment: { ...current.equipment, [slot]: known ? { definitionId: known.id, modifiers: {} } : { definitionId: 'custom', name: item.name, modifiers: { ...item.modifiers } } },
+      equipment: { ...current.equipment, [slot]: known ? { definitionId: known.id, modifiers: {} } : { definitionId: 'custom', catalogId: item.id, name: item.name, modifiers: { ...item.modifiers } } },
       updatedAt: new Date().toISOString(),
     }))
   }
@@ -534,6 +542,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
   })
   const selectedEquipped = build.equipment[selectedSlot]
   const selectedDefinition = selectedEquipped ? ITEMS_BY_ID[selectedEquipped.definitionId] : undefined
+  const selectedCatalogItem = selectedEquipped?.catalogId ? catalog.find((item) => item.id === selectedEquipped.catalogId) : undefined
   const selectedModifiers = selectedEquipped ? getEquippedItemModifiers(selectedEquipped) : {}
   const selectedChoices = ITEMS.filter((item) => item.slots.includes(selectedSlot))
   const slotGlyphs: Partial<Record<EquipmentSlot, string>> = { head: '♜', amulet: '◉', weapon: '†', swapWeapon: '†', offhand: '⬙', swapOffhand: '⬙', armor: '♟', gloves: '⌁', ring1: '○', ring2: '○', belt: '═', boots: '♞' }
@@ -551,7 +560,8 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
                 const equipped = build.equipment[slot]
                 const definition = equipped ? ITEMS_BY_ID[equipped.definitionId] : undefined
                 const modifiers = equipped ? getEquippedItemModifiers(equipped) : {}
-                const itemName = definition?.nameKo ?? equipped?.name ?? '비어 있음'
+                const catalogItem = equipped?.catalogId ? catalog.find((item) => item.id === equipped.catalogId) : undefined
+                const itemName = definition ? (itemLanguage === 'ko' ? definition.nameKo : definition.nameEn) : catalogItem ? catalogName(catalogItem) : equipped?.name ?? '비어 있음'
                 const primaryModifier = Object.entries(modifiers).find(([, value]) => value)
                 return <button type="button" data-testid={`doll-slot-${slot}`} className={`doll-equipment-slot position-${positionClass(slot)} ${selectedSlot === slot ? 'selected' : ''} ${equipped ? 'equipped' : ''}`} key={slot} onClick={() => setSelectedSlot(slot)}>
                   <small>{slotLabels[slot]}</small><i>{slotGlyphs[slot] ?? '◇'}</i><strong>{itemName}</strong>
@@ -563,8 +573,8 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         </section>
         <aside className="equipment-detail-panel panel" data-testid="equipment-detail">
           <div className="equipment-detail-heading"><small>SELECTED SLOT</small><span>{slotLabels[selectedSlot]}</span></div>
-          <div className="equipment-detail-title"><i>{slotGlyphs[selectedSlot] ?? '◇'}</i><div><h2>{selectedDefinition?.nameKo ?? selectedEquipped?.name ?? '비어 있음'}</h2><p>{selectedDefinition?.nameEn ?? '장착할 아이템을 선택하세요'}</p></div></div>
-          <label className="equipment-item-select"><span>장착 아이템</span><select data-testid={`focus-item-select-${selectedSlot}`} value={selectedEquipped?.definitionId ?? ''} onChange={(event) => selectItem(selectedSlot, event.target.value)}><option value="">비어 있음</option>{selectedChoices.map((item) => <option key={item.id} value={item.id}>{item.nameKo} · {item.nameEn}</option>)}</select></label>
+          <div className="equipment-detail-title"><i>{slotGlyphs[selectedSlot] ?? '◇'}</i><div><h2>{selectedDefinition ? (itemLanguage === 'ko' ? selectedDefinition.nameKo : selectedDefinition.nameEn) : selectedCatalogItem ? catalogName(selectedCatalogItem) : selectedEquipped?.name ?? '비어 있음'}</h2><p>{selectedDefinition ? (itemLanguage === 'ko' ? selectedDefinition.nameEn : selectedDefinition.nameKo) : selectedCatalogItem ? catalogSecondaryName(selectedCatalogItem) : '장착할 아이템을 선택하세요'}</p></div></div>
+          <label className="equipment-item-select"><span>장착 아이템</span><select data-testid={`focus-item-select-${selectedSlot}`} value={selectedEquipped?.definitionId ?? ''} onChange={(event) => selectItem(selectedSlot, event.target.value)}><option value="">비어 있음</option>{selectedChoices.map((item) => <option key={item.id} value={item.id}>{itemLanguage === 'ko' ? `${item.nameKo} · ${item.nameEn}` : `${item.nameEn} · ${item.nameKo}`}</option>)}</select></label>
           {selectedEquipped && selectedDefinition && <>
             {selectedDefinition.id === 'custom' && <input className="custom-name" value={selectedEquipped.name ?? ''} placeholder="아이템 이름" onChange={(event) => updateItem(selectedSlot, { name: event.target.value })} />}
             <div className="equipment-detail-mods">{Object.entries(selectedModifiers).filter(([, value]) => value).map(([key, value]) => <span key={key}>{modifierFields.find((field) => field.key === key)?.label ?? key}<strong>{Number(value) > 0 ? '+' : ''}{value}</strong></span>)}</div>
@@ -574,9 +584,9 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         </aside>
       </div>
       <section className="panel catalog-panel">
-        <div className="section-heading"><div><small>3.3 ITEM CATALOG</small><h2>전체 아이템 검색</h2></div><span>고유 403 · 세트 135 · 룬워드 99</span></div>
+        <div className="section-heading catalog-heading"><div><small>3.3 ITEM CATALOG</small><h2>전체 아이템 검색</h2></div><div className="catalog-heading-actions"><span>고유 403 · 세트 135 · 룬워드 99</span><div className="item-language-toggle" role="group" aria-label="아이템 표시 언어"><button type="button" data-testid="item-language-ko" className={itemLanguage === 'ko' ? 'active' : ''} aria-pressed={itemLanguage === 'ko'} onClick={() => setItemLanguage('ko')}>한국어</button><button type="button" data-testid="item-language-en" className={itemLanguage === 'en' ? 'active' : ''} aria-pressed={itemLanguage === 'en'} onClick={() => setItemLanguage('en')}>English</button></div></div></div>
         <div className="catalog-filters">
-          <input aria-label="아이템 검색" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="이름, 베이스, 원본 옵션 검색" />
+          <input aria-label="아이템 검색" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="한글·영문 이름, 베이스, 별칭 검색" />
           <select value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">모든 등급</option><option value="unique">고유</option><option value="set">세트</option><option value="runeword">룬워드</option></select>
           <select value={catalogSlot} onChange={(event) => setCatalogSlot(event.target.value)}><option value="all">모든 부위</option>{['head','amulet','weapon','offhand','armor','gloves','ring','belt','boots','charm'].map((slot) => <option key={slot} value={slot}>{slot === 'ring' ? '반지' : slot === 'charm' ? '부적' : slotLabels[slot as EquipmentSlot]}</option>)}</select>
           <label>요구 레벨 ≤ <input aria-label="최대 요구 레벨" type="number" min={1} max={99} value={maxRequiredLevel} onChange={(event) => setMaxRequiredLevel(Math.max(1, Math.min(99, Number(event.target.value) || 1)))} /></label>
@@ -591,7 +601,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
           const previewSummary = slots.includes(previewSlot) && Object.keys(item.modifiers).length ? calculateSummary({ ...build, equipment: { ...build.equipment, [previewSlot]: previewItem } }) : undefined
           const fcrDelta = previewSummary ? previewSummary.fasterCastRate - currentSummary.fasterCastRate : 0
           return <article className={`catalog-item ${selected ? 'selected' : ''}`} key={item.id}>
-            <div><small>{item.category.toUpperCase()} · LV {item.requiredLevel || '—'}</small><strong>{item.name}</strong><span>{item.baseName} · {item.slot}</span></div>
+            <div><small>{item.category.toUpperCase()} · LV {item.requiredLevel || '—'}</small><strong>{catalogName(item)}</strong><span className="catalog-item-english">{catalogSecondaryName(item)}</span><span>{catalogBaseName(item)} · {item.slot}</span></div>
             <p>{item.properties.slice(0, 4).join(' / ') || '원본 옵션 없음'}</p>
             {previewSummary && <small className="impact-chip">현재 장비 교체 시 패캐 {fcrDelta >= 0 ? '+' : ''}{fcrDelta} · 생명력 {previewSummary.life - currentSummary.life >= 0 ? '+' : ''}{previewSummary.life - currentSummary.life}</small>}
             <div><button onClick={() => toggleWishlist(item.id)}>{wishlist.includes(item.id) ? '★ 파밍 중' : '☆ 파밍'}</button><button onClick={() => setCandidateIds(([left, right]) => !left ? [item.id, right] : !right ? [left, item.id] : [item.id, ''])}>비교</button>{item.slot !== 'charm' && <button onClick={() => equipCatalogItem(item)}>착용</button>}</div>
@@ -599,7 +609,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         })}</div>
         {filteredCatalog.length === 0 && <EmptyState text="조건에 맞는 아이템이 없습니다." action="검색어나 필터를 바꿔보세요." />}
       </section>
-      {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>후보 장비 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{item.name}</h3><p>{item.baseName} · 요구 레벨 {item.requiredLevel || '없음'}</p><ul>{item.properties.map((property) => <li key={property}>{property}</li>)}</ul></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>)}</div></section>}
+      {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>후보 장비 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{catalogName(item)}</h3><p>{catalogSecondaryName(item)} · {catalogBaseName(item)} · 요구 레벨 {item.requiredLevel || '없음'}</p><ul>{item.properties.map((property) => <li key={property}>{property}</li>)}</ul></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>)}</div></section>}
       <div className="equipment-grid legacy-equipment-grid" aria-hidden="true">
         {slots.map((slot) => {
           const equipped = build.equipment[slot]

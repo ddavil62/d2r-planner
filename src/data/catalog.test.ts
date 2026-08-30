@@ -7,6 +7,13 @@ describe('generated 3.3 item catalog', () => {
     expect(ITEM_CATALOG.filter((item) => item.category === 'set')).toHaveLength(135)
     expect(ITEM_CATALOG.filter((item) => item.category === 'runeword')).toHaveLength(99)
     expect(new Set(ITEM_CATALOG.map((item) => item.id)).size).toBe(637)
+    expect(ITEM_CATALOG.every((item) => item.nameKo !== item.name && /[가-힣]/.test(item.nameKo))).toBe(true)
+  })
+
+  it('includes bilingual names and common Korean search aliases', () => {
+    const shako = ITEM_CATALOG.find((item) => item.name === 'Harlequin Crest')
+    expect(shako).toMatchObject({ nameKo: '할리퀸 관모', aliases: ['샤코'] })
+    expect(ITEM_CATALOG.find((item) => item.name === 'Enigma')).toMatchObject({ nameKo: '수수께끼', aliases: ['수수'] })
   })
 
   it('normalizes calculation modifiers for non-preset database items', () => {

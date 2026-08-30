@@ -29,7 +29,7 @@ export function getEquippedItemModifiers(equipped: EquippedItem): Modifiers {
   const definition = ITEMS_BY_ID[equipped.definitionId]
   const hasSavedModifiers = Object.values(equipped.modifiers ?? {}).some((value) => typeof value === 'number' && value !== 0)
   const recoveredCatalogModifiers = equipped.definitionId === 'custom' && equipped.name && !hasSavedModifiers
-    ? ITEM_CATALOG.find((item) => item.name === equipped.name)?.modifiers
+    ? ITEM_CATALOG.find((item) => item.id === equipped.catalogId || item.name === equipped.name || item.nameKo === equipped.name)?.modifiers
     : undefined
   return mergeModifiers(definition?.modifiers, hasSavedModifiers ? equipped.modifiers : recoveredCatalogModifiers)
 }

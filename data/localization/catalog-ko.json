@@ -1,0 +1,3215 @@
+{
+  "runeword-0-Runeword1": {
+    "nameKo": "고대인의 서약",
+    "baseNameKo": "RalOrtTal",
+    "aliases": []
+  },
+  "runeword-1-Runeword3": {
+    "nameKo": "권위",
+    "baseNameKo": "HelShaelRal",
+    "aliases": []
+  },
+  "runeword-2-Runeword4": {
+    "nameKo": "야수의",
+    "baseNameKo": "BerTirUmMalLum",
+    "aliases": []
+  },
+  "runeword-3-Runeword6": {
+    "nameKo": "검은색",
+    "baseNameKo": "ThulIoNef",
+    "aliases": []
+  },
+  "runeword-4-Runeword8": {
+    "nameKo": "뼈의",
+    "baseNameKo": "SolUmUm",
+    "aliases": []
+  },
+  "runeword-5-Runeword9": {
+    "nameKo": "찔레의",
+    "baseNameKo": "RalOhmSurEth",
+    "aliases": []
+  },
+  "runeword-6-Runeword10": {
+    "nameKo": "낙인",
+    "baseNameKo": "JahLoMalGul",
+    "aliases": []
+  },
+  "runeword-7-Runeword11": {
+    "nameKo": "죽어가는 자의 숨결",
+    "baseNameKo": "VexHelElEldZodEth",
+    "aliases": []
+  },
+  "runeword-95-Runeword179": {
+    "nameKo": "방벽",
+    "baseNameKo": "ShaelIoSol",
+    "aliases": []
+  },
+  "runeword-8-Runeword13": {
+    "nameKo": "소집",
+    "baseNameKo": "AmnRalMalIstOhm",
+    "aliases": [
+      "콜투",
+      "콜투암스"
+    ]
+  },
+  "runeword-9-Runeword14": {
+    "nameKo": "명예의 굴레",
+    "baseNameKo": "DolUmBerIst",
+    "aliases": []
+  },
+  "runeword-10-Runeword16": {
+    "nameKo": "혼돈의",
+    "baseNameKo": "FalOhmUm",
+    "aliases": []
+  },
+  "runeword-96-Runeword180": {
+    "nameKo": "결사",
+    "baseNameKo": "IstRalIo",
+    "aliases": []
+  },
+  "runeword-11-Runeword17": {
+    "nameKo": "초승달",
+    "baseNameKo": "ShaelUmTir",
+    "aliases": []
+  },
+  "runeword-94-Runeword178": {
+    "nameKo": "치료",
+    "baseNameKo": "ShaelIoTal",
+    "aliases": []
+  },
+  "runeword-12-Runeword20": {
+    "nameKo": "죽음의",
+    "baseNameKo": "HelElVexOrtGul",
+    "aliases": []
+  },
+  "runeword-13-Runeword22": {
+    "nameKo": "착란",
+    "baseNameKo": "LemIstIo",
+    "aliases": []
+  },
+  "runeword-14-Runeword25": {
+    "nameKo": "파괴",
+    "baseNameKo": "VexLoBerJahKo",
+    "aliases": []
+  },
+  "runeword-15-Runeword26": {
+    "nameKo": "파멸의",
+    "baseNameKo": "HelOhmUmLoCham",
+    "aliases": []
+  },
+  "runeword-16-Runeword27": {
+    "nameKo": "용의",
+    "baseNameKo": "SurLoSol",
+    "aliases": []
+  },
+  "runeword-17-Runeword29": {
+    "nameKo": "꿈",
+    "baseNameKo": "IoJahPul",
+    "aliases": []
+  },
+  "runeword-18-Runeword30": {
+    "nameKo": "협박",
+    "baseNameKo": "ShaelUmThul",
+    "aliases": []
+  },
+  "runeword-19-Runeword31": {
+    "nameKo": "날붙이",
+    "baseNameKo": "TirTalAmn",
+    "aliases": []
+  },
+  "runeword-20-Runeword33": {
+    "nameKo": "수수께끼",
+    "baseNameKo": "JahIthBer",
+    "aliases": [
+      "수수"
+    ]
+  },
+  "runeword-21-Runeword34": {
+    "nameKo": "깨우침",
+    "baseNameKo": "PulRalSur",
+    "aliases": []
+  },
+  "runeword-22-Runeword36": {
+    "nameKo": "영원",
+    "baseNameKo": "AmnBerIstSolSur",
+    "aliases": []
+  },
+  "runeword-23-Runeword37": {
+    "nameKo": "추방",
+    "baseNameKo": "VexOhmIstDol",
+    "aliases": []
+  },
+  "runeword-24-Runeword38": {
+    "nameKo": "신념",
+    "baseNameKo": "OhmJahLemEld",
+    "aliases": []
+  },
+  "runeword-25-Runeword39": {
+    "nameKo": "기근",
+    "baseNameKo": "FalOhmOrtJah",
+    "aliases": []
+  },
+  "runeword-26-Runeword40": {
+    "nameKo": "꺼져가는 불길",
+    "baseNameKo": "NefPulVex",
+    "aliases": []
+  },
+  "runeword-27-Runeword41": {
+    "nameKo": "인내",
+    "baseNameKo": "ElSolDolLo",
+    "aliases": []
+  },
+  "runeword-28-Runeword44": {
+    "nameKo": "분노",
+    "baseNameKo": "JahGulEth",
+    "aliases": []
+  },
+  "runeword-29-Runeword45": {
+    "nameKo": "음침한",
+    "baseNameKo": "FalUmPul",
+    "aliases": []
+  },
+  "runeword-30-Runeword47": {
+    "nameKo": "슬픔의",
+    "baseNameKo": "EthTirLoMalRal",
+    "aliases": []
+  },
+  "runeword-91-Runeword175": {
+    "nameKo": "접지",
+    "baseNameKo": "ShaelIoOrt",
+    "aliases": []
+  },
+  "runeword-31-Runeword48": {
+    "nameKo": "정의의 손길",
+    "baseNameKo": "SurChamAmnLo",
+    "aliases": []
+  },
+  "runeword-32-Runeword49": {
+    "nameKo": "조화",
+    "baseNameKo": "TirIthSolKo",
+    "aliases": []
+  },
+  "runeword-33-Runeword51": {
+    "nameKo": "참나무의 심장",
+    "baseNameKo": "KoVexPulThul",
+    "aliases": [
+      "오심"
+    ]
+  },
+  "runeword-93-Runeword177": {
+    "nameKo": "화로",
+    "baseNameKo": "ShaelIoThul",
+    "aliases": []
+  },
+  "runeword-34-Runeword54": {
+    "nameKo": "신성한 천둥",
+    "baseNameKo": "EthRalOrtTal",
+    "aliases": []
+  },
+  "runeword-35-Runeword55": {
+    "nameKo": "명예",
+    "baseNameKo": "AmnElIthTirSol",
+    "aliases": []
+  },
+  "runeword-87-Runeword171": {
+    "nameKo": "투지 (방어구)",
+    "baseNameKo": "ShaelKoEld",
+    "aliases": []
+  },
+  "runeword-88-Runeword172": {
+    "nameKo": "투지 (무기)",
+    "baseNameKo": "ShaelKoEld",
+    "aliases": []
+  },
+  "runeword-36-Runeword59": {
+    "nameKo": "얼음의",
+    "baseNameKo": "AmnShaelJahLo",
+    "aliases": []
+  },
+  "runeword-37-Runeword60": {
+    "nameKo": "무한",
+    "baseNameKo": "BerMalBerIst",
+    "aliases": []
+  },
+  "runeword-38-Runeword62": {
+    "nameKo": "통찰",
+    "baseNameKo": "RalTirTalSol",
+    "aliases": []
+  },
+  "runeword-39-Runeword65": {
+    "nameKo": "왕의 은총",
+    "baseNameKo": "AmnRalThul",
+    "aliases": []
+  },
+  "runeword-40-Runeword66": {
+    "nameKo": "왕 시해자",
+    "baseNameKo": "MalUmGulFal",
+    "aliases": []
+  },
+  "runeword-41-Runeword69": {
+    "nameKo": "마지막 소원",
+    "baseNameKo": "JahMalJahSurJahBer",
+    "aliases": []
+  },
+  "runeword-42-Runeword71": {
+    "nameKo": "집행자",
+    "baseNameKo": "AmnLemKo",
+    "aliases": []
+  },
+  "runeword-43-Runeword72": {
+    "nameKo": "잎새",
+    "baseNameKo": "TirRal",
+    "aliases": []
+  },
+  "runeword-44-Runeword74": {
+    "nameKo": "용맹",
+    "baseNameKo": "HelLumFal",
+    "aliases": []
+  },
+  "runeword-45-Runeword75": {
+    "nameKo": "전승",
+    "baseNameKo": "OrtSol",
+    "aliases": []
+  },
+  "runeword-46-Runeword81": {
+    "nameKo": "악의",
+    "baseNameKo": "IthElEth",
+    "aliases": []
+  },
+  "runeword-47-Runeword82": {
+    "nameKo": "선율",
+    "baseNameKo": "ShaelKoNef",
+    "aliases": []
+  },
+  "runeword-48-Runeword83": {
+    "nameKo": "기억",
+    "baseNameKo": "LumIoSolEth",
+    "aliases": []
+  },
+  "runeword-90-Runeword174": {
+    "nameKo": "변신",
+    "baseNameKo": "IoChamFal",
+    "aliases": []
+  },
+  "runeword-49-Runeword84": {
+    "nameKo": "안개",
+    "baseNameKo": "ChamShaelGulThulIth",
+    "aliases": []
+  },
+  "runeword-89-Runeword173": {
+    "nameKo": "모자이크",
+    "baseNameKo": "MalGulAmn",
+    "aliases": []
+  },
+  "runeword-50-Runeword87": {
+    "nameKo": "신화",
+    "baseNameKo": "HelAmnNef",
+    "aliases": []
+  },
+  "runeword-51-Runeword88": {
+    "nameKo": "구렁텅이",
+    "baseNameKo": "NefTir",
+    "aliases": []
+  },
+  "runeword-52-Runeword91": {
+    "nameKo": "서약",
+    "baseNameKo": "ShaelPulMalLum",
+    "aliases": []
+  },
+  "runeword-53-Runeword92": {
+    "nameKo": "순종",
+    "baseNameKo": "HelKoThulEthFal",
+    "aliases": []
+  },
+  "runeword-54-Runeword94": {
+    "nameKo": "집착",
+    "baseNameKo": "ZodIstLemLumIoNef",
+    "aliases": []
+  },
+  "runeword-55-Runeword95": {
+    "nameKo": "열정",
+    "baseNameKo": "DolOrtEldLem",
+    "aliases": []
+  },
+  "runeword-56-Runeword97": {
+    "nameKo": "귀감",
+    "baseNameKo": "TalOrtThul",
+    "aliases": []
+  },
+  "runeword-57-Runeword98": {
+    "nameKo": "평화",
+    "baseNameKo": "ShaelThulAmn",
+    "aliases": []
+  },
+  "runeword-59-Runeword103": {
+    "nameKo": "불사조",
+    "baseNameKo": "VexVexLoJah",
+    "aliases": []
+  },
+  "runeword-60-Runeword106": {
+    "nameKo": "역병의",
+    "baseNameKo": "ChamShaelUm",
+    "aliases": []
+  },
+  "runeword-61-Runeword109": {
+    "nameKo": "긍지",
+    "baseNameKo": "ChamSurIoLo",
+    "aliases": []
+  },
+  "runeword-62-Runeword110": {
+    "nameKo": "원칙",
+    "baseNameKo": "RalGulEld",
+    "aliases": []
+  },
+  "runeword-63-Runeword112": {
+    "nameKo": "신중",
+    "baseNameKo": "MalTir",
+    "aliases": []
+  },
+  "runeword-64-Runeword116": {
+    "nameKo": "광휘",
+    "baseNameKo": "NefSolIth",
+    "aliases": []
+  },
+  "runeword-65-Runeword117": {
+    "nameKo": "비",
+    "baseNameKo": "OrtMalIth",
+    "aliases": []
+  },
+  "runeword-66-Runeword120": {
+    "nameKo": "각운",
+    "baseNameKo": "ShaelEth",
+    "aliases": []
+  },
+  "runeword-67-Runeword121": {
+    "nameKo": "균열의",
+    "baseNameKo": "HelKoLemGul",
+    "aliases": []
+  },
+  "runeword-98-Runeword182": {
+    "nameKo": "의식",
+    "baseNameKo": "AmnShaelOhm",
+    "aliases": []
+  },
+  "runeword-68-Runeword122": {
+    "nameKo": "성역",
+    "baseNameKo": "KoKoMal",
+    "aliases": []
+  },
+  "runeword-69-Runeword126": {
+    "nameKo": "침묵",
+    "baseNameKo": "DolEldHelIstTirVex",
+    "aliases": []
+  },
+  "runeword-70-Runeword128": {
+    "nameKo": "연기",
+    "baseNameKo": "NefLum",
+    "aliases": []
+  },
+  "runeword-71-Runeword130": {
+    "nameKo": "기백의",
+    "baseNameKo": "TalThulOrtAmn",
+    "aliases": [
+      "스피릿"
+    ]
+  },
+  "runeword-72-Runeword131": {
+    "nameKo": "광채",
+    "baseNameKo": "EthLum",
+    "aliases": []
+  },
+  "runeword-73-Runeword133": {
+    "nameKo": "잠행",
+    "baseNameKo": "TalEth",
+    "aliases": []
+  },
+  "runeword-74-Runeword134": {
+    "nameKo": "강철의",
+    "baseNameKo": "TirEl",
+    "aliases": []
+  },
+  "runeword-75-Runeword137": {
+    "nameKo": "돌의",
+    "baseNameKo": "ShaelUmPulLum",
+    "aliases": []
+  },
+  "runeword-76-Runeword139": {
+    "nameKo": "강함",
+    "baseNameKo": "AmnTir",
+    "aliases": []
+  },
+  "runeword-92-Runeword176": {
+    "nameKo": "담금질",
+    "baseNameKo": "ShaelIoRal",
+    "aliases": []
+  },
+  "runeword-77-Runeword148": {
+    "nameKo": "배신",
+    "baseNameKo": "ShaelThulLem",
+    "aliases": []
+  },
+  "runeword-78-Runeword151": {
+    "nameKo": "불굴의 의지",
+    "baseNameKo": "FalIoIthEldElHel",
+    "aliases": []
+  },
+  "runeword-79-Runeword154": {
+    "nameKo": "맹독",
+    "baseNameKo": "TalDolMal",
+    "aliases": []
+  },
+  "runeword-97-Runeword181": {
+    "nameKo": "경계",
+    "baseNameKo": "DolGul",
+    "aliases": []
+  },
+  "runeword-58-Runeword99": {
+    "nameKo": "이성의 목소리",
+    "baseNameKo": "LemKoElEld",
+    "aliases": []
+  },
+  "runeword-80-Runeword157": {
+    "nameKo": "공허의",
+    "baseNameKo": "ThulZodIst",
+    "aliases": []
+  },
+  "runeword-81-Runeword160": {
+    "nameKo": "부",
+    "baseNameKo": "LmKoTir",
+    "aliases": []
+  },
+  "runeword-82-Runeword162": {
+    "nameKo": "순백",
+    "baseNameKo": "DolIo",
+    "aliases": []
+  },
+  "runeword-83-Runeword163": {
+    "nameKo": "바람의",
+    "baseNameKo": "SurEl",
+    "aliases": []
+  },
+  "runeword-84-Runeword165": {
+    "nameKo": "지혜",
+    "baseNameKo": "PulIthEld",
+    "aliases": []
+  },
+  "runeword-85-Runeword168": {
+    "nameKo": "진노의",
+    "baseNameKo": "PulLumBerMal",
+    "aliases": []
+  },
+  "runeword-86-Runeword170": {
+    "nameKo": "서풍",
+    "baseNameKo": "OrtEth",
+    "aliases": []
+  },
+  "set-69": {
+    "nameKo": "알두르의 진보",
+    "baseNameKo": "배틀 부츠",
+    "aliases": []
+  },
+  "set-67": {
+    "nameKo": "알두르의 기만",
+    "baseNameKo": "Shadow Plate",
+    "aliases": []
+  },
+  "set-68": {
+    "nameKo": "알두르의 운율",
+    "baseNameKo": "재기드 스타",
+    "aliases": []
+  },
+  "set-66": {
+    "nameKo": "알두르의 냉랭한 눈길",
+    "baseNameKo": "헌터스 가이즈",
+    "aliases": []
+  },
+  "set-52": {
+    "nameKo": "천사의 후광",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "set-51": {
+    "nameKo": "천사의 어깨걸이",
+    "baseNameKo": "링 메일",
+    "aliases": []
+  },
+  "set-50": {
+    "nameKo": "천사의 낫",
+    "baseNameKo": "세이버",
+    "aliases": []
+  },
+  "set-53": {
+    "nameKo": "천사의 날개",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-59": {
+    "nameKo": "아르카나의 죽음마법봉",
+    "baseNameKo": "워 스태프",
+    "aliases": []
+  },
+  "set-61": {
+    "nameKo": "아르카나의 살점",
+    "baseNameKo": "라이트 플레이트",
+    "aliases": []
+  },
+  "set-60": {
+    "nameKo": "아르카나의 머리",
+    "baseNameKo": "스컬 캡",
+    "aliases": []
+  },
+  "set-58": {
+    "nameKo": "아르카나의 징조",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-56": {
+    "nameKo": "극지 허리띠",
+    "baseNameKo": "라이트 벨트",
+    "aliases": []
+  },
+  "set-55": {
+    "nameKo": "극지 모피",
+    "baseNameKo": "퀼티드 아머",
+    "aliases": []
+  },
+  "set-54": {
+    "nameKo": "극지 뿔",
+    "baseNameKo": "숏 워 보우",
+    "aliases": []
+  },
+  "set-57": {
+    "nameKo": "극지 장갑",
+    "baseNameKo": "라이트 건틀릿",
+    "aliases": []
+  },
+  "set-134": {
+    "nameKo": "베인의 권위",
+    "baseNameKo": "라이트 벨트",
+    "aliases": []
+  },
+  "set-132": {
+    "nameKo": "베인의 맹세 제작자",
+    "baseNameKo": "Kriss",
+    "aliases": []
+  },
+  "set-133": {
+    "nameKo": "베인의 망령 가죽",
+    "baseNameKo": "하드 레더 아머",
+    "aliases": []
+  },
+  "set-46": {
+    "nameKo": "광전사의 해칫",
+    "baseNameKo": "더블 액스",
+    "aliases": []
+  },
+  "set-45": {
+    "nameKo": "광전사의 흉갑",
+    "baseNameKo": "스플린트 메일",
+    "aliases": []
+  },
+  "set-44": {
+    "nameKo": "광전사의 머리 방어구",
+    "baseNameKo": "헬름",
+    "aliases": []
+  },
+  "set-115": {
+    "nameKo": "불카토스의 신성한 임무",
+    "baseNameKo": "Colossus Blade",
+    "aliases": []
+  },
+  "set-116": {
+    "nameKo": "불카토스의 부족 수호자",
+    "baseNameKo": "미시컬 소드",
+    "aliases": []
+  },
+  "set-26": {
+    "nameKo": "카탄의 그물망",
+    "baseNameKo": "체인 메일",
+    "aliases": []
+  },
+  "set-25": {
+    "nameKo": "카탄의 지배",
+    "baseNameKo": "배틀 스태프",
+    "aliases": []
+  },
+  "set-29": {
+    "nameKo": "카탄의 문장",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "set-28": {
+    "nameKo": "카탄의 인장",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-27": {
+    "nameKo": "카탄의 얼굴",
+    "baseNameKo": "마스크",
+    "aliases": []
+  },
+  "set-2": {
+    "nameKo": "시버브의 곤봉",
+    "baseNameKo": "그랜드 셉터",
+    "aliases": []
+  },
+  "set-1": {
+    "nameKo": "시버브의 우상",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-0": {
+    "nameKo": "시버브의 수호물",
+    "baseNameKo": "라지 쉴드",
+    "aliases": []
+  },
+  "set-7": {
+    "nameKo": "클리글로의 발톱",
+    "baseNameKo": "스몰 쉴드",
+    "aliases": []
+  },
+  "set-8": {
+    "nameKo": "클리글로의 집게",
+    "baseNameKo": "체인 글러브",
+    "aliases": []
+  },
+  "set-6": {
+    "nameKo": "클리글로의 이빨",
+    "baseNameKo": "롱소드",
+    "aliases": []
+  },
+  "set-118": {
+    "nameKo": "젖소 왕의 날가죽",
+    "baseNameKo": "스터디드 레더",
+    "aliases": []
+  },
+  "set-119": {
+    "nameKo": "젖소 왕의 발굽",
+    "baseNameKo": "헤비 부츠",
+    "aliases": []
+  },
+  "set-117": {
+    "nameKo": "젖소 왕의 뿔",
+    "baseNameKo": "워 햇",
+    "aliases": []
+  },
+  "set-99": {
+    "nameKo": "신조",
+    "baseNameKo": "미스릴 코일",
+    "aliases": []
+  },
+  "set-100": {
+    "nameKo": "단군의 가르침",
+    "baseNameKo": "리인포스드 메이스",
+    "aliases": []
+  },
+  "set-48": {
+    "nameKo": "죽음의 경비",
+    "baseNameKo": "새시",
+    "aliases": []
+  },
+  "set-47": {
+    "nameKo": "죽음의 손",
+    "baseNameKo": "레더 글러브",
+    "aliases": []
+  },
+  "set-49": {
+    "nameKo": "죽음의 손길",
+    "baseNameKo": "워 소드",
+    "aliases": []
+  },
+  "set-82": {
+    "nameKo": "그리스월드의 심장",
+    "baseNameKo": "오네이트 플레이트",
+    "aliases": []
+  },
+  "set-84": {
+    "nameKo": "그리스월드의 명예",
+    "baseNameKo": "Vortex Shield",
+    "aliases": []
+  },
+  "set-81": {
+    "nameKo": "그리스월드의 용맹",
+    "baseNameKo": "코로나",
+    "aliases": []
+  },
+  "set-83": {
+    "nameKo": "그리스월드의 구원",
+    "baseNameKo": "Caduceus",
+    "aliases": []
+  },
+  "set-104": {
+    "nameKo": "기욤의 얼굴",
+    "baseNameKo": "윙드 헬름",
+    "aliases": []
+  },
+  "set-102": {
+    "nameKo": "해모수의 견고",
+    "baseNameKo": "퀴래스",
+    "aliases": []
+  },
+  "set-101": {
+    "nameKo": "태백의 영예",
+    "baseNameKo": "워드",
+    "aliases": []
+  },
+  "set-135": {
+    "nameKo": "호라존의 용모",
+    "baseNameKo": "데몬헤드",
+    "aliases": []
+  },
+  "set-136": {
+    "nameKo": "호라존의 지배",
+    "baseNameKo": "러셋 아머",
+    "aliases": []
+  },
+  "set-137": {
+    "nameKo": "호라존의 손아귀",
+    "baseNameKo": "데몬하이드 글러브",
+    "aliases": []
+  },
+  "set-138": {
+    "nameKo": "호라존의 유산",
+    "baseNameKo": "미러드 부츠",
+    "aliases": []
+  },
+  "set-139": {
+    "nameKo": "호라존의 비밀",
+    "baseNameKo": "Occult Codex",
+    "aliases": []
+  },
+  "set-4": {
+    "nameKo": "흐사루스의 무쇠 주먹",
+    "baseNameKo": "버클러",
+    "aliases": []
+  },
+  "set-3": {
+    "nameKo": "흐사루스의 무쇠 발꿈치",
+    "baseNameKo": "체인 부츠",
+    "aliases": []
+  },
+  "set-5": {
+    "nameKo": "흐사루스의 무쇠 고정대",
+    "baseNameKo": "벨트",
+    "aliases": []
+  },
+  "set-111": {
+    "nameKo": "환인의 정의",
+    "baseNameKo": "빌",
+    "aliases": []
+  },
+  "set-109": {
+    "nameKo": "환인의 피난처",
+    "baseNameKo": "티귤레이티드 메일",
+    "aliases": []
+  },
+  "set-110": {
+    "nameKo": "환인의 축복",
+    "baseNameKo": "벨트",
+    "aliases": []
+  },
+  "set-108": {
+    "nameKo": "환인의 광채",
+    "baseNameKo": "그랜드 크라운",
+    "aliases": []
+  },
+  "set-72": {
+    "nameKo": "불멸왕의 장식띠",
+    "baseNameKo": "워 벨트",
+    "aliases": []
+  },
+  "set-73": {
+    "nameKo": "불멸왕의 용광로",
+    "baseNameKo": "워 건틀릿",
+    "aliases": []
+  },
+  "set-74": {
+    "nameKo": "불멸왕의 기둥",
+    "baseNameKo": "워 부츠",
+    "aliases": []
+  },
+  "set-71": {
+    "nameKo": "불멸왕의 영혼집",
+    "baseNameKo": "Sacred Armor",
+    "aliases": []
+  },
+  "set-75": {
+    "nameKo": "불멸왕의 파석추",
+    "baseNameKo": "오우거 마울",
+    "aliases": []
+  },
+  "set-70": {
+    "nameKo": "불멸왕의 의지",
+    "baseNameKo": "어벤저 가드",
+    "aliases": []
+  },
+  "set-41": {
+    "nameKo": "지옥불 두개골",
+    "baseNameKo": "캡",
+    "aliases": []
+  },
+  "set-43": {
+    "nameKo": "지옥불 징조",
+    "baseNameKo": "헤비 벨트",
+    "aliases": []
+  },
+  "set-42": {
+    "nameKo": "지옥불 횃불",
+    "baseNameKo": "그림 원드",
+    "aliases": []
+  },
+  "set-11": {
+    "nameKo": "이라타의 고리",
+    "baseNameKo": "크라운",
+    "aliases": []
+  },
+  "set-9": {
+    "nameKo": "이라타의 목깃",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-12": {
+    "nameKo": "이라타의 노끈",
+    "baseNameKo": "헤비 벨트",
+    "aliases": []
+  },
+  "set-10": {
+    "nameKo": "이라타의 소매 장식",
+    "baseNameKo": "라이트 건틀릿",
+    "aliases": []
+  },
+  "set-15": {
+    "nameKo": "아이젠하트의 통",
+    "baseNameKo": "브레스트 플레이트",
+    "aliases": []
+  },
+  "set-16": {
+    "nameKo": "아이젠하트의 뿔",
+    "baseNameKo": "풀 헬름",
+    "aliases": []
+  },
+  "set-13": {
+    "nameKo": "아이젠하트의 빛 낙인",
+    "baseNameKo": "브로드소드",
+    "aliases": []
+  },
+  "set-14": {
+    "nameKo": "아이젠하트의 회피",
+    "baseNameKo": "고딕 쉴드",
+    "aliases": []
+  },
+  "set-96": {
+    "nameKo": "안수",
+    "baseNameKo": "브램블 미트",
+    "aliases": []
+  },
+  "set-94": {
+    "nameKo": "마비나의 활",
+    "baseNameKo": "Grand Matron Bow",
+    "aliases": []
+  },
+  "set-91": {
+    "nameKo": "마비나의 포옹",
+    "baseNameKo": "Kraken Shell",
+    "aliases": []
+  },
+  "set-92": {
+    "nameKo": "마비나의 얼음 같은 손길",
+    "baseNameKo": "배틀 건틀릿",
+    "aliases": []
+  },
+  "set-93": {
+    "nameKo": "마비나의 신조",
+    "baseNameKo": "샤크스킨 벨트",
+    "aliases": []
+  },
+  "set-90": {
+    "nameKo": "마비나의 진실의 눈",
+    "baseNameKo": "다이어뎀",
+    "aliases": []
+  },
+  "set-106": {
+    "nameKo": "마그누스의 가죽",
+    "baseNameKo": "샤크스킨 글러브",
+    "aliases": []
+  },
+  "set-123": {
+    "nameKo": "샌더의 귀감",
+    "baseNameKo": "캡",
+    "aliases": []
+  },
+  "set-124": {
+    "nameKo": "샌더의 사석",
+    "baseNameKo": "헤비 부츠",
+    "aliases": []
+  },
+  "set-126": {
+    "nameKo": "샌더의 미신",
+    "baseNameKo": "본 원드",
+    "aliases": []
+  },
+  "set-125": {
+    "nameKo": "샌더의 금기",
+    "baseNameKo": "헤비 글러브",
+    "aliases": []
+  },
+  "set-23": {
+    "nameKo": "밀라브레가의 머리관",
+    "baseNameKo": "크라운",
+    "aliases": []
+  },
+  "set-21": {
+    "nameKo": "밀라브레가의 보주",
+    "baseNameKo": "카이트 쉴드",
+    "aliases": []
+  },
+  "set-24": {
+    "nameKo": "밀라브레가의 장포",
+    "baseNameKo": "에인션트 아머",
+    "aliases": []
+  },
+  "set-22": {
+    "nameKo": "밀라브레가의 막대",
+    "baseNameKo": "War Scepter",
+    "aliases": []
+  },
+  "set-122": {
+    "nameKo": "나즈의 띠관",
+    "baseNameKo": "써클릿",
+    "aliases": []
+  },
+  "set-121": {
+    "nameKo": "나즈의 경판갑",
+    "baseNameKo": "Hellforge Plate",
+    "aliases": []
+  },
+  "set-120": {
+    "nameKo": "나즈의 수수께끼",
+    "baseNameKo": "엘더 스태프",
+    "aliases": []
+  },
+  "set-63": {
+    "nameKo": "나탈랴의 표식",
+    "baseNameKo": "Scissors Suwayyah",
+    "aliases": []
+  },
+  "set-64": {
+    "nameKo": "나탈랴의 그림자",
+    "baseNameKo": "Loricated Mail",
+    "aliases": []
+  },
+  "set-65": {
+    "nameKo": "나탈랴의 영혼",
+    "baseNameKo": "메쉬 부츠",
+    "aliases": []
+  },
+  "set-62": {
+    "nameKo": "나탈랴의 토템",
+    "baseNameKo": "그림 헬름",
+    "aliases": []
+  },
+  "set-103": {
+    "nameKo": "온달의 사랑",
+    "baseNameKo": "스파이어드 헬름",
+    "aliases": []
+  },
+  "set-97": {
+    "nameKo": "통과의례",
+    "baseNameKo": "데몬하이드 부츠",
+    "aliases": []
+  },
+  "set-112": {
+    "nameKo": "사자비의 코발트 구원자",
+    "baseNameKo": "크립틱 소드",
+    "aliases": []
+  },
+  "set-113": {
+    "nameKo": "사자비의 유령 해방자",
+    "baseNameKo": "Balrog Skin",
+    "aliases": []
+  },
+  "set-114": {
+    "nameKo": "사자비의 정신 보호구",
+    "baseNameKo": "배서넷",
+    "aliases": []
+  },
+  "set-35": {
+    "nameKo": "시곤의 전투 장갑",
+    "baseNameKo": "건틀릿",
+    "aliases": []
+  },
+  "set-40": {
+    "nameKo": "시곤의 보호구",
+    "baseNameKo": "타워 쉴드",
+    "aliases": []
+  },
+  "set-38": {
+    "nameKo": "시곤의 나막신",
+    "baseNameKo": "그리브",
+    "aliases": []
+  },
+  "set-37": {
+    "nameKo": "시곤의 안식처",
+    "baseNameKo": "고딕 플레이트",
+    "aliases": []
+  },
+  "set-36": {
+    "nameKo": "시곤의 챙",
+    "baseNameKo": "그레이트 헬름",
+    "aliases": []
+  },
+  "set-39": {
+    "nameKo": "시곤의 싸개",
+    "baseNameKo": "플레이트 벨트",
+    "aliases": []
+  },
+  "set-98": {
+    "nameKo": "어둠의 추종자",
+    "baseNameKo": "Dusk Shroud",
+    "aliases": []
+  },
+  "set-77": {
+    "nameKo": "탈 라샤의 선고",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-76": {
+    "nameKo": "탈 라샤의 고운 띠",
+    "baseNameKo": "메쉬 벨트",
+    "aliases": []
+  },
+  "set-80": {
+    "nameKo": "탈 라샤의 호라드림 관모",
+    "baseNameKo": "데스 마스크",
+    "aliases": []
+  },
+  "set-79": {
+    "nameKo": "탈 라샤의 보호",
+    "baseNameKo": "Lacquered Plate",
+    "aliases": []
+  },
+  "set-78": {
+    "nameKo": "탈 라샤의 잠들지 않는 눈",
+    "baseNameKo": "스월링 크리스탈",
+    "aliases": []
+  },
+  "set-30": {
+    "nameKo": "탄크레드의 크로우빌",
+    "baseNameKo": "밀리터리 픽",
+    "aliases": []
+  },
+  "set-32": {
+    "nameKo": "탄크레드의 구두징",
+    "baseNameKo": "부츠",
+    "aliases": []
+  },
+  "set-34": {
+    "nameKo": "탄크레드의 두개골",
+    "baseNameKo": "본 헬름",
+    "aliases": []
+  },
+  "set-31": {
+    "nameKo": "탄크레드의 가시",
+    "baseNameKo": "풀 플레이트 메일",
+    "aliases": []
+  },
+  "set-33": {
+    "nameKo": "탄크레드의 기묘",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-95": {
+    "nameKo": "구슬 묵주",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-88": {
+    "nameKo": "트래그울의 발톱",
+    "baseNameKo": "헤비 브레이서",
+    "aliases": []
+  },
+  "set-89": {
+    "nameKo": "트래그울의 끈",
+    "baseNameKo": "트롤 벨트",
+    "aliases": []
+  },
+  "set-85": {
+    "nameKo": "트래그울의 허울",
+    "baseNameKo": "본 비지즈",
+    "aliases": []
+  },
+  "set-86": {
+    "nameKo": "트래그울의 비늘",
+    "baseNameKo": "카오스 아머",
+    "aliases": []
+  },
+  "set-87": {
+    "nameKo": "트래그울의 날개",
+    "baseNameKo": "캔터 트로피",
+    "aliases": []
+  },
+  "set-19": {
+    "nameKo": "비달라의 매복",
+    "baseNameKo": "레더 아머",
+    "aliases": []
+  },
+  "set-17": {
+    "nameKo": "비달라의 미늘",
+    "baseNameKo": "롱 배틀 보우",
+    "aliases": []
+  },
+  "set-18": {
+    "nameKo": "비달라의 구절",
+    "baseNameKo": "라이트 플레이트 부츠",
+    "aliases": []
+  },
+  "set-20": {
+    "nameKo": "비달라의 덫",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "set-107": {
+    "nameKo": "위트스탄의 보호구",
+    "baseNameKo": "라운드 쉴드",
+    "aliases": []
+  },
+  "set-105": {
+    "nameKo": "빌헬름의 자부심",
+    "baseNameKo": "배틀 벨트",
+    "aliases": []
+  },
+  "unique-329": {
+    "nameKo": "알마 네그라",
+    "baseNameKo": "sacred rondache",
+    "aliases": []
+  },
+  "unique-123": {
+    "nameKo": "독사의 목걸이",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-345": {
+    "nameKo": "안다리엘의 두개골",
+    "baseNameKo": "demonhead",
+    "aliases": []
+  },
+  "unique-381": {
+    "nameKo": "어나이얼러스",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-373": {
+    "nameKo": "거미 그물띠",
+    "baseNameKo": "spiderweb sash",
+    "aliases": [
+      "스웹",
+      "스파이더웹"
+    ]
+  },
+  "unique-382": {
+    "nameKo": "아리옥의 바늘",
+    "baseNameKo": "hyperion spear",
+    "aliases": []
+  },
+  "unique-251": {
+    "nameKo": "아르케인의 용맹",
+    "baseNameKo": "Balrog Skin",
+    "aliases": []
+  },
+  "unique-141": {
+    "nameKo": "레오릭 왕의 팔",
+    "baseNameKo": "툼 원드",
+    "aliases": []
+  },
+  "unique-279": {
+    "nameKo": "아리앗의 얼굴",
+    "baseNameKo": "슬레이어 가드",
+    "aliases": []
+  },
+  "unique-408": {
+    "nameKo": "디아블로의 비전",
+    "baseNameKo": "blasphemous grimoire",
+    "aliases": []
+  },
+  "unique-410": {
+    "nameKo": "메피스토의 비전",
+    "baseNameKo": "occult tome",
+    "aliases": []
+  },
+  "unique-409": {
+    "nameKo": "바알의 비전",
+    "baseNameKo": "blasphemous compendium",
+    "aliases": []
+  },
+  "unique-179": {
+    "nameKo": "아테나의 진노",
+    "baseNameKo": "배틀 싸이드",
+    "aliases": []
+  },
+  "unique-273": {
+    "nameKo": "아트마의 스카라베",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-220": {
+    "nameKo": "아트마의 통곡",
+    "baseNameKo": "임바스트 플레이트",
+    "aliases": []
+  },
+  "unique-301": {
+    "nameKo": "푸른 서슬",
+    "baseNameKo": "phase blade",
+    "aliases": []
+  },
+  "unique-150": {
+    "nameKo": "배질의 소용돌이",
+    "baseNameKo": "나우트",
+    "aliases": []
+  },
+  "unique-54": {
+    "nameKo": "재앙의 재",
+    "baseNameKo": "숏스태프",
+    "aliases": []
+  },
+  "unique-256": {
+    "nameKo": "바라나르의 별",
+    "baseNameKo": "데빌 스타",
+    "aliases": []
+  },
+  "unique-163": {
+    "nameKo": "얼음의 왕",
+    "baseNameKo": "다키안 팔크스",
+    "aliases": []
+  },
+  "unique-221": {
+    "nameKo": "검은 하데스",
+    "baseNameKo": "카오스 아머",
+    "aliases": []
+  },
+  "unique-170": {
+    "nameKo": "블랙보그의 날붙이",
+    "baseNameKo": "싱쿠디아",
+    "aliases": []
+  },
+  "unique-142": {
+    "nameKo": "검은손 열쇠",
+    "baseNameKo": "그레이브 원드",
+    "aliases": []
+  },
+  "unique-207": {
+    "nameKo": "블랙혼의 얼굴",
+    "baseNameKo": "데스 마스크",
+    "aliases": []
+  },
+  "unique-178": {
+    "nameKo": "검은거머리 칼날",
+    "baseNameKo": "빌",
+    "aliases": []
+  },
+  "unique-252": {
+    "nameKo": "검은참나무 방패",
+    "baseNameKo": "루나",
+    "aliases": []
+  },
+  "unique-36": {
+    "nameKo": "검은혀",
+    "baseNameKo": "바스타드 소드",
+    "aliases": []
+  },
+  "unique-157": {
+    "nameKo": "알리바바의 칼날",
+    "baseNameKo": "털워",
+    "aliases": []
+  },
+  "unique-2": {
+    "nameKo": "칼날뼈",
+    "baseNameKo": "더블 액스",
+    "aliases": []
+  },
+  "unique-116": {
+    "nameKo": "칼날 죔쇠",
+    "baseNameKo": "Girdle",
+    "aliases": []
+  },
+  "unique-66": {
+    "nameKo": "폭발껍질",
+    "baseNameKo": "롱 워 보우",
+    "aliases": []
+  },
+  "unique-80": {
+    "nameKo": "점멸박쥐의 형상",
+    "baseNameKo": "레더 아머",
+    "aliases": []
+  },
+  "unique-26": {
+    "nameKo": "피의 초승달",
+    "baseNameKo": "시미터",
+    "aliases": []
+  },
+  "unique-103": {
+    "nameKo": "피주먹",
+    "baseNameKo": "헤비 글러브",
+    "aliases": []
+  },
+  "unique-154": {
+    "nameKo": "유혈자",
+    "baseNameKo": "글래디우스",
+    "aliases": []
+  },
+  "unique-289": {
+    "nameKo": "핏빛 달",
+    "baseNameKo": "elegant blade",
+    "aliases": []
+  },
+  "unique-414": {
+    "nameKo": "피의 계약 파편",
+    "baseNameKo": "mithril point",
+    "aliases": []
+  },
+  "unique-332": {
+    "nameKo": "핏빛 큰까마귀의 돌진",
+    "baseNameKo": "matriarchal bow",
+    "aliases": []
+  },
+  "unique-20": {
+    "nameKo": "피오름",
+    "baseNameKo": "모닝스타",
+    "aliases": []
+  },
+  "unique-45": {
+    "nameKo": "피도둑",
+    "baseNameKo": "브랜디스탁",
+    "aliases": []
+  },
+  "unique-152": {
+    "nameKo": "피나무 그루터기",
+    "baseNameKo": "워 클럽",
+    "aliases": []
+  },
+  "unique-341": {
+    "nameKo": "뼈불길",
+    "baseNameKo": "succubae skull",
+    "aliases": []
+  },
+  "unique-88": {
+    "nameKo": "뼈살점",
+    "baseNameKo": "플레이트 메일",
+    "aliases": []
+  },
+  "unique-387": {
+    "nameKo": "뼈자르개",
+    "baseNameKo": "ogre axe",
+    "aliases": []
+  },
+  "unique-351": {
+    "nameKo": "뼈그늘",
+    "baseNameKo": "lich wand",
+    "aliases": []
+  },
+  "unique-137": {
+    "nameKo": "뼈학살자 칼날",
+    "baseNameKo": "고딕 액스",
+    "aliases": []
+  },
+  "unique-23": {
+    "nameKo": "뼈절단기",
+    "baseNameKo": "쇠메",
+    "aliases": []
+  },
+  "unique-8": {
+    "nameKo": "뇌절단기",
+    "baseNameKo": "그레이트 액스",
+    "aliases": []
+  },
+  "unique-268": {
+    "nameKo": "불카토스의 결혼반지",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "unique-198": {
+    "nameKo": "눈보라 포",
+    "baseNameKo": "Balista",
+    "aliases": []
+  },
+  "unique-130": {
+    "nameKo": "도살자의 제자",
+    "baseNameKo": "가르개",
+    "aliases": []
+  },
+  "unique-100": {
+    "nameKo": "브베리트 성채",
+    "baseNameKo": "타워 쉴드",
+    "aliases": []
+  },
+  "unique-140": {
+    "nameKo": "카린 파편",
+    "baseNameKo": "페트리파이드 원드",
+    "aliases": []
+  },
+  "unique-378": {
+    "nameKo": "부패의 바람",
+    "baseNameKo": "ring",
+    "aliases": []
+  },
+  "unique-310": {
+    "nameKo": "세레부스의 이빨",
+    "baseNameKo": "blood spirit",
+    "aliases": []
+  },
+  "unique-104": {
+    "nameKo": "행운의 장갑",
+    "baseNameKo": "Bracers",
+    "aliases": []
+  },
+  "unique-185": {
+    "nameKo": "찬란한 분노",
+    "baseNameKo": "시더 스태프",
+    "aliases": []
+  },
+  "unique-193": {
+    "nameKo": "벼랑몰이",
+    "baseNameKo": "Long Siege Bow",
+    "aliases": []
+  },
+  "unique-165": {
+    "nameKo": "구름가르개",
+    "baseNameKo": "고딕 소드",
+    "aliases": []
+  },
+  "unique-73": {
+    "nameKo": "영예의 두건모",
+    "baseNameKo": "헬름",
+    "aliases": []
+  },
+  "unique-129": {
+    "nameKo": "차가운 죽음",
+    "baseNameKo": "해칫",
+    "aliases": []
+  },
+  "unique-155": {
+    "nameKo": "얼음강철 눈",
+    "baseNameKo": "커틀러스",
+    "aliases": []
+  },
+  "unique-222": {
+    "nameKo": "망자의 애도",
+    "baseNameKo": "Ornate Armor",
+    "aliases": []
+  },
+  "unique-162": {
+    "nameKo": "공포 구토자",
+    "baseNameKo": "Espadon",
+    "aliases": []
+  },
+  "unique-383": {
+    "nameKo": "학부리",
+    "baseNameKo": "war spike",
+    "aliases": []
+  },
+  "unique-271": {
+    "nameKo": "초승달",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-214": {
+    "nameKo": "까마귀 울음",
+    "baseNameKo": "티귤레이티드 메일",
+    "aliases": []
+  },
+  "unique-344": {
+    "nameKo": "시대의 왕관",
+    "baseNameKo": "corona",
+    "aliases": []
+  },
+  "unique-206": {
+    "nameKo": "도둑의 왕관",
+    "baseNameKo": "그랜드 크라운",
+    "aliases": []
+  },
+  "unique-19": {
+    "nameKo": "분쇄테",
+    "baseNameKo": "메이스",
+    "aliases": []
+  },
+  "unique-32": {
+    "nameKo": "컬웬의 날붙이",
+    "baseNameKo": "워 소드",
+    "aliases": []
+  },
+  "unique-286": {
+    "nameKo": "바르툭의 목 따개",
+    "baseNameKo": "Runic Talons",
+    "aliases": []
+  },
+  "unique-143": {
+    "nameKo": "어둠의 일족 분쇄자",
+    "baseNameKo": "커절",
+    "aliases": []
+  },
+  "unique-330": {
+    "nameKo": "어둠의 종자",
+    "baseNameKo": "bloodlord skull",
+    "aliases": []
+  },
+  "unique-83": {
+    "nameKo": "어둠빛",
+    "baseNameKo": "링 메일",
+    "aliases": []
+  },
+  "unique-204": {
+    "nameKo": "어둑눈 투구",
+    "baseNameKo": "배서넷",
+    "aliases": []
+  },
+  "unique-291": {
+    "nameKo": "죽음조각",
+    "baseNameKo": "battle dart",
+    "aliases": []
+  },
+  "unique-314": {
+    "nameKo": "죽음 가르개",
+    "baseNameKo": "berserker axe",
+    "aliases": []
+  },
+  "unique-299": {
+    "nameKo": "죽음의 거미줄",
+    "baseNameKo": "unearthed wand",
+    "aliases": []
+  },
+  "unique-1": {
+    "nameKo": "죽음의 날",
+    "baseNameKo": "액스",
+    "aliases": []
+  },
+  "unique-199": {
+    "nameKo": "악마의 기계",
+    "baseNameKo": "추코누",
+    "aliases": []
+  },
+  "unique-340": {
+    "nameKo": "악마의 호",
+    "baseNameKo": "balrog spear",
+    "aliases": []
+  },
+  "unique-325": {
+    "nameKo": "악마뿔의 날",
+    "baseNameKo": "destroyer helm",
+    "aliases": []
+  },
+  "unique-296": {
+    "nameKo": "악마의 사지",
+    "baseNameKo": "tyrant club",
+    "aliases": []
+  },
+  "unique-48": {
+    "nameKo": "디모악의 절단",
+    "baseNameKo": "바디쉬",
+    "aliases": []
+  },
+  "unique-290": {
+    "nameKo": "신령 학살자",
+    "baseNameKo": "ataghan",
+    "aliases": []
+  },
+  "unique-260": {
+    "nameKo": "궤멸자",
+    "baseNameKo": "챔피언 소드",
+    "aliases": []
+  },
+  "unique-70": {
+    "nameKo": "멸궁",
+    "baseNameKo": "리피팅 크로스보우",
+    "aliases": []
+  },
+  "unique-364": {
+    "nameKo": "드라쿨의 손아귀",
+    "baseNameKo": "vampirebone gloves",
+    "aliases": []
+  },
+  "unique-347": {
+    "nameKo": "용비늘",
+    "baseNameKo": "zakarum shield",
+    "aliases": []
+  },
+  "unique-412": {
+    "nameKo": "공포의 송곳니",
+    "baseNameKo": "legend sword",
+    "aliases": []
+  },
+  "unique-216": {
+    "nameKo": "두리엘의 껍질",
+    "baseNameKo": "퀴래스",
+    "aliases": []
+  },
+  "unique-74": {
+    "nameKo": "황혼심연",
+    "baseNameKo": "풀 헬름",
+    "aliases": []
+  },
+  "unique-274": {
+    "nameKo": "왜성",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "unique-265": {
+    "nameKo": "수리뿔",
+    "baseNameKo": "크루세이더 보우",
+    "aliases": []
+  },
+  "unique-151": {
+    "nameKo": "대지진의 망치",
+    "baseNameKo": "배틀 해머",
+    "aliases": []
+  },
+  "unique-385": {
+    "nameKo": "대지 변형자",
+    "baseNameKo": "thunder maul",
+    "aliases": []
+  },
+  "unique-191": {
+    "nameKo": "끝없는 우박",
+    "baseNameKo": "더블 보우",
+    "aliases": []
+  },
+  "unique-417": {
+    "nameKo": "엔트로피 목걸이",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-367": {
+    "nameKo": "에슈타의 성미",
+    "baseNameKo": "eldritch orb",
+    "aliases": []
+  },
+  "unique-324": {
+    "nameKo": "무형의 날붙이",
+    "baseNameKo": "silver-edged axe",
+    "aliases": []
+  },
+  "unique-315": {
+    "nameKo": "집행자의 정의",
+    "baseNameKo": "glorious axe",
+    "aliases": []
+  },
+  "unique-354": {
+    "nameKo": "죽음의 깊이",
+    "baseNameKo": "dimensional shard",
+    "aliases": []
+  },
+  "unique-5": {
+    "nameKo": "페크마르의 도끼",
+    "baseNameKo": "라지 액스",
+    "aliases": []
+  },
+  "unique-14": {
+    "nameKo": "쓰러진 참나무",
+    "baseNameKo": "클럽",
+    "aliases": []
+  },
+  "unique-368": {
+    "nameKo": "불도마뱀의 발톱",
+    "baseNameKo": "feral claws",
+    "aliases": []
+  },
+  "unique-353": {
+    "nameKo": "기염검",
+    "baseNameKo": "balrog blade",
+    "aliases": []
+  },
+  "unique-147": {
+    "nameKo": "살점 분쇄봉",
+    "baseNameKo": "바브드 클럽",
+    "aliases": []
+  },
+  "unique-304": {
+    "nameKo": "살점갈퀴",
+    "baseNameKo": "fanged knife",
+    "aliases": []
+  },
+  "unique-106": {
+    "nameKo": "서리불꽃",
+    "baseNameKo": "건틀릿",
+    "aliases": []
+  },
+  "unique-365": {
+    "nameKo": "서리바람",
+    "baseNameKo": "cryptic sword",
+    "aliases": []
+  },
+  "unique-320": {
+    "nameKo": "가고일의 이빨",
+    "baseNameKo": "winged harpoon",
+    "aliases": []
+  },
+  "unique-359": {
+    "nameKo": "기드의 행운",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-418": {
+    "nameKo": "기드의 내기",
+    "baseNameKo": "troll belt",
+    "aliases": []
+  },
+  "unique-333": {
+    "nameKo": "유령불꽃",
+    "baseNameKo": "legend spike",
+    "aliases": []
+  },
+  "unique-234": {
+    "nameKo": "구울 가죽",
+    "baseNameKo": "헤비 브레이서",
+    "aliases": []
+  },
+  "unique-379": {
+    "nameKo": "거인 두개골",
+    "baseNameKo": "bone visage",
+    "aliases": []
+  },
+  "unique-335": {
+    "nameKo": "아른날",
+    "baseNameKo": "flying axe",
+    "aliases": []
+  },
+  "unique-158": {
+    "nameKo": "긴터의 균열",
+    "baseNameKo": "디멘셔널 블레이드",
+    "aliases": []
+  },
+  "unique-28": {
+    "nameKo": "서광칼낫",
+    "baseNameKo": "펄션",
+    "aliases": []
+  },
+  "unique-244": {
+    "nameKo": "어스름의 덫",
+    "baseNameKo": "메쉬 벨트",
+    "aliases": []
+  },
+  "unique-110": {
+    "nameKo": "고블린 발가락",
+    "baseNameKo": "Light Plate Boots",
+    "aliases": []
+  },
+  "unique-195": {
+    "nameKo": "황금일격 활",
+    "baseNameKo": "고딕 보우",
+    "aliases": []
+  },
+  "unique-91": {
+    "nameKo": "황금 가죽",
+    "baseNameKo": "풀 플레이트 메일",
+    "aliases": []
+  },
+  "unique-115": {
+    "nameKo": "금박 허리띠",
+    "baseNameKo": "헤비 벨트",
+    "aliases": []
+  },
+  "unique-108": {
+    "nameKo": "핏덩이발",
+    "baseNameKo": "헤비 부츠",
+    "aliases": []
+  },
+  "unique-241": {
+    "nameKo": "선혈 기수",
+    "baseNameKo": "워 부츠",
+    "aliases": []
+  },
+  "unique-6": {
+    "nameKo": "피투성이삽",
+    "baseNameKo": "브로드 액스",
+    "aliases": []
+  },
+  "unique-12": {
+    "nameKo": "새김등뼈",
+    "baseNameKo": "본 원드",
+    "aliases": []
+  },
+  "unique-233": {
+    "nameKo": "무덤손바닥",
+    "baseNameKo": "샤크스킨 글러브",
+    "aliases": []
+  },
+  "unique-79": {
+    "nameKo": "회색 형체",
+    "baseNameKo": "퀼티드 아머",
+    "aliases": []
+  },
+  "unique-336": {
+    "nameKo": "그리폰의 눈",
+    "baseNameKo": "diadem",
+    "aliases": [
+      "다뎀",
+      "그리폰"
+    ]
+  },
+  "unique-182": {
+    "nameKo": "사신의 불타는 망자",
+    "baseNameKo": "그림 싸이드",
+    "aliases": []
+  },
+  "unique-30": {
+    "nameKo": "그리스월드의 날",
+    "baseNameKo": "브로드소드",
+    "aliases": []
+  },
+  "unique-218": {
+    "nameKo": "수호 천사",
+    "baseNameKo": "템플러 코트",
+    "aliases": []
+  },
+  "unique-133": {
+    "nameKo": "수호자 나가",
+    "baseNameKo": "나가",
+    "aliases": []
+  },
+  "unique-39": {
+    "nameKo": "속임수",
+    "baseNameKo": "대거",
+    "aliases": []
+  },
+  "unique-293": {
+    "nameKo": "내장 흡수",
+    "baseNameKo": "demon crossbow",
+    "aliases": []
+  },
+  "unique-361": {
+    "nameKo": "할라버드의 통치",
+    "baseNameKo": "conqueror crown",
+    "aliases": []
+  },
+  "unique-146": {
+    "nameKo": "축복받은 빛의 손",
+    "baseNameKo": "디바인 셉터",
+    "aliases": []
+  },
+  "unique-248": {
+    "nameKo": "할리퀸 관모",
+    "baseNameKo": "샤코",
+    "aliases": [
+      "샤코"
+    ]
+  },
+  "unique-84": {
+    "nameKo": "매 사슬갑옷",
+    "baseNameKo": "스케일 메일",
+    "aliases": []
+  },
+  "unique-390": {
+    "nameKo": "머리 사냥꾼의 영예",
+    "baseNameKo": "troll nest",
+    "aliases": []
+  },
+  "unique-159": {
+    "nameKo": "머리분쇄기",
+    "baseNameKo": "배틀 소드",
+    "aliases": []
+  },
+  "unique-169": {
+    "nameKo": "심장 도리개",
+    "baseNameKo": "런들",
+    "aliases": []
+  },
+  "unique-371": {
+    "nameKo": "천상의 빛",
+    "baseNameKo": "mighty scepter",
+    "aliases": []
+  },
+  "unique-93": {
+    "nameKo": "천상의 의복",
+    "baseNameKo": "라이트 플레이트",
+    "aliases": []
+  },
+  "unique-126": {
+    "nameKo": "지옥의 대장간 망치",
+    "baseNameKo": "Hammer",
+    "aliases": []
+  },
+  "unique-69": {
+    "nameKo": "지옥발사기",
+    "baseNameKo": "헤비 크로스보우",
+    "aliases": []
+  },
+  "unique-65": {
+    "nameKo": "지옥맞이",
+    "baseNameKo": "숏 워 보우",
+    "aliases": []
+  },
+  "unique-400": {
+    "nameKo": "지옥불 횃불",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-236": {
+    "nameKo": "지옥어귀",
+    "baseNameKo": "워 건틀릿",
+    "aliases": []
+  },
+  "unique-31": {
+    "nameKo": "지옥역병",
+    "baseNameKo": "롱소드",
+    "aliases": []
+  },
+  "unique-328": {
+    "nameKo": "지옥포",
+    "baseNameKo": "colossus crossbow",
+    "aliases": []
+  },
+  "unique-254": {
+    "nameKo": "지옥학살자",
+    "baseNameKo": "디캐피테이터",
+    "aliases": []
+  },
+  "unique-285": {
+    "nameKo": "자카룸의 전령",
+    "baseNameKo": "에어린 쉴드",
+    "aliases": []
+  },
+  "unique-156": {
+    "nameKo": "사술불길",
+    "baseNameKo": "샴쉬르",
+    "aliases": []
+  },
+  "unique-276": {
+    "nameKo": "대군주의 진노",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-280": {
+    "nameKo": "호문쿨루스",
+    "baseNameKo": "Heirophant Trophy",
+    "aliases": []
+  },
+  "unique-175": {
+    "nameKo": "골 토막",
+    "baseNameKo": "야리",
+    "aliases": []
+  },
+  "unique-125": {
+    "nameKo": "호라드림 지팡이",
+    "baseNameKo": "Staff",
+    "aliases": []
+  },
+  "unique-306": {
+    "nameKo": "지평선의 회오리",
+    "baseNameKo": "참화",
+    "aliases": []
+  },
+  "unique-107": {
+    "nameKo": "다혈질",
+    "baseNameKo": "Leather Boots",
+    "aliases": []
+  },
+  "unique-76": {
+    "nameKo": "울부짖는 엄니",
+    "baseNameKo": "그레이트 헬름",
+    "aliases": []
+  },
+  "unique-181": {
+    "nameKo": "후솔달 에보",
+    "baseNameKo": "벡드코방",
+    "aliases": []
+  },
+  "unique-87": {
+    "nameKo": "얼음빛",
+    "baseNameKo": "스플린트 메일",
+    "aliases": []
+  },
+  "unique-68": {
+    "nameKo": "신혈쐐기",
+    "baseNameKo": "크로스보우",
+    "aliases": []
+  },
+  "unique-237": {
+    "nameKo": "지옥불걸음",
+    "baseNameKo": "데몬하이드 부츠",
+    "aliases": []
+  },
+  "unique-42": {
+    "nameKo": "혼령 파편",
+    "baseNameKo": "칼날의",
+    "aliases": []
+  },
+  "unique-212": {
+    "nameKo": "무쇠 털가죽",
+    "baseNameKo": "Tresllised Armor",
+    "aliases": []
+  },
+  "unique-22": {
+    "nameKo": "무쇠돌",
+    "baseNameKo": "워 해머",
+    "aliases": []
+  },
+  "unique-380": {
+    "nameKo": "아스트레온의 무쇠 호신부",
+    "baseNameKo": "caduceus",
+    "aliases": []
+  },
+  "unique-10": {
+    "nameKo": "이로의 횃불",
+    "baseNameKo": "마법봉",
+    "aliases": []
+  },
+  "unique-131": {
+    "nameKo": "섬습격자",
+    "baseNameKo": "트윈 액스",
+    "aliases": []
+  },
+  "unique-308": {
+    "nameKo": "비취 발톱",
+    "baseNameKo": "wrist sword",
+    "aliases": []
+  },
+  "unique-287": {
+    "nameKo": "잘랄의 갈기",
+    "baseNameKo": "드림 스피리트",
+    "aliases": []
+  },
+  "unique-173": {
+    "nameKo": "켈피 올가미",
+    "baseNameKo": "푸스키나",
+    "aliases": []
+  },
+  "unique-228": {
+    "nameKo": "게르케의 성역",
+    "baseNameKo": "파비스",
+    "aliases": []
+  },
+  "unique-127": {
+    "nameKo": "칼림의 도리깨",
+    "baseNameKo": "Flail",
+    "aliases": []
+  },
+  "unique-35": {
+    "nameKo": "키네밀의 송곳",
+    "baseNameKo": "자이언트 소드",
+    "aliases": []
+  },
+  "unique-357": {
+    "nameKo": "키라의 수호자",
+    "baseNameKo": "tiara",
+    "aliases": []
+  },
+  "unique-15": {
+    "nameKo": "종을 울리는 자",
+    "baseNameKo": "셉터",
+    "aliases": []
+  },
+  "unique-27": {
+    "nameKo": "크린티즈의 꼬챙이",
+    "baseNameKo": "Saber",
+    "aliases": []
+  },
+  "unique-190": {
+    "nameKo": "쿠코 샤카쿠",
+    "baseNameKo": "CedarBow",
+    "aliases": []
+  },
+  "unique-321": {
+    "nameKo": "난도질 도끼",
+    "baseNameKo": "winged axe",
+    "aliases": []
+  },
+  "unique-231": {
+    "nameKo": "기병창 보호구",
+    "baseNameKo": "바브드 쉴드",
+    "aliases": []
+  },
+  "unique-46": {
+    "nameKo": "야가이의 기병창",
+    "baseNameKo": "스페텀",
+    "aliases": []
+  },
+  "unique-196": {
+    "nameKo": "랑거 브리저",
+    "baseNameKo": "아발리스트",
+    "aliases": []
+  },
+  "unique-235": {
+    "nameKo": "용암 불똥",
+    "baseNameKo": "Battle Guantlets",
+    "aliases": []
+  },
+  "unique-56": {
+    "nameKo": "라자루스의 첨탑",
+    "baseNameKo": "나알드 스태프",
+    "aliases": []
+  },
+  "unique-67": {
+    "nameKo": "납까마귀",
+    "baseNameKo": "라이트 크로스보우",
+    "aliases": []
+  },
+  "unique-112": {
+    "nameKo": "레니모",
+    "baseNameKo": "새시",
+    "aliases": []
+  },
+  "unique-317": {
+    "nameKo": "거대괴수",
+    "baseNameKo": "kraken shell",
+    "aliases": []
+  },
+  "unique-230": {
+    "nameKo": "각성의 벽",
+    "baseNameKo": "그림 쉴드",
+    "aliases": []
+  },
+  "unique-259": {
+    "nameKo": "라이트세이버",
+    "baseNameKo": "Phase Blade",
+    "aliases": []
+  },
+  "unique-282": {
+    "nameKo": "라이칸더의 조준",
+    "baseNameKo": "세러모니얼 보우",
+    "aliases": []
+  },
+  "unique-283": {
+    "nameKo": "라이칸더의 측방",
+    "baseNameKo": "세러모니얼 파이크",
+    "aliases": []
+  },
+  "unique-11": {
+    "nameKo": "소용돌이",
+    "baseNameKo": "유 원드",
+    "aliases": []
+  },
+  "unique-105": {
+    "nameKo": "마수",
+    "baseNameKo": "라이트 건틀릿",
+    "aliases": [
+      "메피장"
+    ]
+  },
+  "unique-194": {
+    "nameKo": "마술사의 진노",
+    "baseNameKo": "룬 보우",
+    "aliases": []
+  },
+  "unique-121": {
+    "nameKo": "마날드 치유 반지",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "unique-322": {
+    "nameKo": "망 송의 가르침",
+    "baseNameKo": "archon staff",
+    "aliases": []
+  },
+  "unique-272": {
+    "nameKo": "마라의 만화경",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-370": {
+    "nameKo": "골수걸음",
+    "baseNameKo": "boneweave boots",
+    "aliases": []
+  },
+  "unique-411": {
+    "nameKo": "절제된 분노",
+    "baseNameKo": "burnt text",
+    "aliases": []
+  },
+  "unique-349": {
+    "nameKo": "메두사의 눈길",
+    "baseNameKo": "이지스",
+    "aliases": []
+  },
+  "unique-255": {
+    "nameKo": "메서슈미트의 도끼",
+    "baseNameKo": "챔피언 액스",
+    "aliases": []
+  },
+  "unique-375": {
+    "nameKo": "금속 격자",
+    "baseNameKo": "amulet",
+    "aliases": []
+  },
+  "unique-3": {
+    "nameKo": "두개골 절단기",
+    "baseNameKo": "밀리터리 픽",
+    "aliases": []
+  },
+  "unique-149": {
+    "nameKo": "달내림",
+    "baseNameKo": "재기드 스타",
+    "aliases": []
+  },
+  "unique-225": {
+    "nameKo": "모저의 축복받은 고리",
+    "baseNameKo": "라운드 쉴드",
+    "aliases": []
+  },
+  "unique-120": {
+    "nameKo": "나겔링 반지",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "unique-300": {
+    "nameKo": "자연의 평화",
+    "baseNameKo": "ring",
+    "aliases": []
+  },
+  "unique-114": {
+    "nameKo": "밤연기",
+    "baseNameKo": "벨트",
+    "aliases": []
+  },
+  "unique-343": {
+    "nameKo": "밤날개의 너울",
+    "baseNameKo": "spired helm",
+    "aliases": []
+  },
+  "unique-117": {
+    "nameKo": "노코잔 유물",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-384": {
+    "nameKo": "노르드의 고기 방망이",
+    "baseNameKo": "truncheon",
+    "aliases": []
+  },
+  "unique-374": {
+    "nameKo": "노스페라투의 고리",
+    "baseNameKo": "vampirefang belt",
+    "aliases": []
+  },
+  "unique-388": {
+    "nameKo": "온달의 지혜",
+    "baseNameKo": "elder staff",
+    "aliases": []
+  },
+  "unique-416": {
+    "nameKo": "오팔맥",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "unique-358": {
+    "nameKo": "오르무스의 장포",
+    "baseNameKo": "dusk shroud",
+    "aliases": []
+  },
+  "unique-201": {
+    "nameKo": "평민의 왕관",
+    "baseNameKo": "워 햇",
+    "aliases": []
+  },
+  "unique-94": {
+    "nameKo": "펠타 루나타",
+    "baseNameKo": "버클러",
+    "aliases": []
+  },
+  "unique-62": {
+    "nameKo": "도적의 활",
+    "baseNameKo": "컴포지트 보우",
+    "aliases": []
+  },
+  "unique-180": {
+    "nameKo": "피에르 통발 쿠앙",
+    "baseNameKo": "파르티잔",
+    "aliases": []
+  },
+  "unique-160": {
+    "nameKo": "역병 유발자",
+    "baseNameKo": "룬 소드",
+    "aliases": []
+  },
+  "unique-59": {
+    "nameKo": "눈살",
+    "baseNameKo": "숏보우",
+    "aliases": []
+  },
+  "unique-132": {
+    "nameKo": "폼페이의 진노",
+    "baseNameKo": "크로우빌",
+    "aliases": []
+  },
+  "unique-432": {
+    "nameKo": "사전 제작된 검은 균열",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-431": {
+    "nameKo": "사전 제작된 뼈의 분쇄",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-426": {
+    "nameKo": "사전 제작된 추위의 파열",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-429": {
+    "nameKo": "사전 제작된 천상의 틈",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-428": {
+    "nameKo": "사전 제작된 불길의 균열",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-430": {
+    "nameKo": "사전 제작된 부패의 분열",
+    "baseNameKo": "charm",
+    "aliases": []
+  },
+  "unique-63": {
+    "nameKo": "폭풍격",
+    "baseNameKo": "숏 배틀 보우",
+    "aliases": []
+  },
+  "unique-197": {
+    "nameKo": "고름 쏘개",
+    "baseNameKo": "시즈 크로스보우",
+    "aliases": []
+  },
+  "unique-223": {
+    "nameKo": "쿠에 히간의 지혜",
+    "baseNameKo": "Mage Plate",
+    "aliases": []
+  },
+  "unique-229": {
+    "nameKo": "라다먼트의 명주",
+    "baseNameKo": "에인션트 쉴드",
+    "aliases": []
+  },
+  "unique-392": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-393": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-394": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-395": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-396": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-397": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-398": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-399": {
+    "nameKo": "무지개 자락",
+    "baseNameKo": "jewel",
+    "aliases": []
+  },
+  "unique-4": {
+    "nameKo": "갈퀴흉터",
+    "baseNameKo": "워 액스",
+    "aliases": []
+  },
+  "unique-90": {
+    "nameKo": "성가신 철창",
+    "baseNameKo": "고딕 플레이트",
+    "aliases": []
+  },
+  "unique-275": {
+    "nameKo": "칠흑 서리",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "unique-350": {
+    "nameKo": "까마귀전승",
+    "baseNameKo": "sky spirit",
+    "aliases": []
+  },
+  "unique-294": {
+    "nameKo": "서슬푸른 날붙이",
+    "baseNameKo": "tomahawk",
+    "aliases": []
+  },
+  "unique-183": {
+    "nameKo": "서슬돌기",
+    "baseNameKo": "Jo Stalf",
+    "aliases": []
+  },
+  "unique-243": {
+    "nameKo": "서슬꼬리",
+    "baseNameKo": "샤크스킨 벨트",
+    "aliases": []
+  },
+  "unique-44": {
+    "nameKo": "서슬가지",
+    "baseNameKo": "트라이던트",
+    "aliases": []
+  },
+  "unique-184": {
+    "nameKo": "늑골분쇄기",
+    "baseNameKo": "쿼터스태프",
+    "aliases": []
+  },
+  "unique-61": {
+    "nameKo": "큰까마귀 발톱",
+    "baseNameKo": "롱보우",
+    "aliases": []
+  },
+  "unique-189": {
+    "nameKo": "파열갈고리",
+    "baseNameKo": "레이저 보우",
+    "aliases": []
+  },
+  "unique-37": {
+    "nameKo": "톱날검",
+    "baseNameKo": "플랑베르쥬",
+    "aliases": []
+  },
+  "unique-25": {
+    "nameKo": "릭소트의 날카로움",
+    "baseNameKo": "숏소드",
+    "aliases": []
+  },
+  "unique-89": {
+    "nameKo": "바위털가죽",
+    "baseNameKo": "필드 플레이트",
+    "aliases": []
+  },
+  "unique-202": {
+    "nameKo": "바위막이",
+    "baseNameKo": "샐릿",
+    "aliases": []
+  },
+  "unique-313": {
+    "nameKo": "룬 지배자",
+    "baseNameKo": "ettin axe",
+    "aliases": []
+  },
+  "unique-16": {
+    "nameKo": "녹슨손잡이",
+    "baseNameKo": "그랜드 셉터",
+    "aliases": []
+  },
+  "unique-369": {
+    "nameKo": "모래폭풍 여로",
+    "baseNameKo": "scarabshell boots",
+    "aliases": []
+  },
+  "unique-277": {
+    "nameKo": "사라센의 기회",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-257": {
+    "nameKo": "섀퍼의 망치",
+    "baseNameKo": "레전더리 맬릿",
+    "aliases": []
+  },
+  "unique-302": {
+    "nameKo": "천사의 찬송가",
+    "baseNameKo": "amulet",
+    "aliases": []
+  },
+  "unique-55": {
+    "nameKo": "구렁이 군주",
+    "baseNameKo": "롱스태프",
+    "aliases": []
+  },
+  "unique-309": {
+    "nameKo": "그림자 춤꾼",
+    "baseNameKo": "myrmidon greaves",
+    "aliases": []
+  },
+  "unique-33": {
+    "nameKo": "그림자송곳니",
+    "baseNameKo": "2-Handed Sword",
+    "aliases": []
+  },
+  "unique-334": {
+    "nameKo": "죽음의 그림자",
+    "baseNameKo": "battle cestus",
+    "aliases": []
+  },
+  "unique-215": {
+    "nameKo": "장대막이",
+    "baseNameKo": "메쉬 아머",
+    "aliases": []
+  },
+  "unique-239": {
+    "nameKo": "비단매듭",
+    "baseNameKo": "메쉬 부츠",
+    "aliases": []
+  },
+  "unique-211": {
+    "nameKo": "벗겨진 자의 가죽",
+    "baseNameKo": "데몬하이드 아머",
+    "aliases": []
+  },
+  "unique-210": {
+    "nameKo": "독사마술사의 가죽",
+    "baseNameKo": "SerpentSkin Armor",
+    "aliases": []
+  },
+  "unique-187": {
+    "nameKo": "두개골 수집가",
+    "baseNameKo": "룬 스태프",
+    "aliases": []
+  },
+  "unique-217": {
+    "nameKo": "스쿨더의 분노",
+    "baseNameKo": "러셋 아머",
+    "aliases": []
+  },
+  "unique-188": {
+    "nameKo": "하늘일격",
+    "baseNameKo": "엣지 보우",
+    "aliases": []
+  },
+  "unique-415": {
+    "nameKo": "투석구",
+    "baseNameKo": "반지",
+    "aliases": []
+  },
+  "unique-113": {
+    "nameKo": "뱀노끈",
+    "baseNameKo": "라이트 벨트",
+    "aliases": []
+  },
+  "unique-245": {
+    "nameKo": "눈싸움",
+    "baseNameKo": "배틀 벨트",
+    "aliases": []
+  },
+  "unique-50": {
+    "nameKo": "혼령 수확자",
+    "baseNameKo": "낫",
+    "aliases": []
+  },
+  "unique-312": {
+    "nameKo": "영혼 흡수자",
+    "baseNameKo": "vambraces",
+    "aliases": []
+  },
+  "unique-174": {
+    "nameKo": "영혼포식 뿔",
+    "baseNameKo": "워 포크",
+    "aliases": []
+  },
+  "unique-34": {
+    "nameKo": "영혼난도",
+    "baseNameKo": "클레이모어",
+    "aliases": []
+  },
+  "unique-85": {
+    "nameKo": "불꽃 튀는 사슬 갑옷",
+    "baseNameKo": "체인 메일",
+    "aliases": []
+  },
+  "unique-135": {
+    "nameKo": "주문 강철",
+    "baseNameKo": "비어디드 액스",
+    "aliases": []
+  },
+  "unique-363": {
+    "nameKo": "쐐기 가시",
+    "baseNameKo": "blade barrier",
+    "aliases": []
+  },
+  "unique-168": {
+    "nameKo": "척추적출자",
+    "baseNameKo": "포이나드",
+    "aliases": []
+  },
+  "unique-176": {
+    "nameKo": "명예의 첨탑",
+    "baseNameKo": "기병창",
+    "aliases": []
+  },
+  "unique-356": {
+    "nameKo": "혼령 호신부",
+    "baseNameKo": "워드",
+    "aliases": []
+  },
+  "unique-213": {
+    "nameKo": "영혼의 용광로",
+    "baseNameKo": "링크드 메일",
+    "aliases": []
+  },
+  "unique-327": {
+    "nameKo": "영혼 수호자",
+    "baseNameKo": "earth spirit",
+    "aliases": []
+  },
+  "unique-124": {
+    "nameKo": "왕들의 지팡이",
+    "baseNameKo": "Staff",
+    "aliases": []
+  },
+  "unique-203": {
+    "nameKo": "두개골 도둑",
+    "baseNameKo": "캐스크",
+    "aliases": []
+  },
+  "unique-348": {
+    "nameKo": "강철 갑피",
+    "baseNameKo": "shadow plate",
+    "aliases": []
+  },
+  "unique-99": {
+    "nameKo": "강철격돌",
+    "baseNameKo": "카이트 쉴드",
+    "aliases": []
+  },
+  "unique-24": {
+    "nameKo": "강철박이",
+    "baseNameKo": "그레이트 마울",
+    "aliases": []
+  },
+  "unique-49": {
+    "nameKo": "강철 몰이막대",
+    "baseNameKo": "불즈",
+    "aliases": []
+  },
+  "unique-342": {
+    "nameKo": "강철 기둥",
+    "baseNameKo": "war pike",
+    "aliases": []
+  },
+  "unique-391": {
+    "nameKo": "강철찢개",
+    "baseNameKo": "ogre gauntlets",
+    "aliases": []
+  },
+  "unique-297": {
+    "nameKo": "강철 그늘",
+    "baseNameKo": "armet",
+    "aliases": []
+  },
+  "unique-307": {
+    "nameKo": "돌 분쇄자",
+    "baseNameKo": "legendary mallet",
+    "aliases": []
+  },
+  "unique-316": {
+    "nameKo": "돌까마귀",
+    "baseNameKo": "matriarchal spear",
+    "aliases": []
+  },
+  "unique-226": {
+    "nameKo": "폭풍추격자",
+    "baseNameKo": "스큐텀",
+    "aliases": []
+  },
+  "unique-17": {
+    "nameKo": "폭풍눈",
+    "baseNameKo": "War Scepter",
+    "aliases": []
+  },
+  "unique-96": {
+    "nameKo": "폭풍길드",
+    "baseNameKo": "라지 쉴드",
+    "aliases": []
+  },
+  "unique-360": {
+    "nameKo": "폭풍채찍",
+    "baseNameKo": "참화",
+    "aliases": []
+  },
+  "unique-136": {
+    "nameKo": "폭풍 기수",
+    "baseNameKo": "타바",
+    "aliases": []
+  },
+  "unique-253": {
+    "nameKo": "폭풍막이",
+    "baseNameKo": "Monarch",
+    "aliases": []
+  },
+  "unique-171": {
+    "nameKo": "폭풍쐐기",
+    "baseNameKo": "Stilleto",
+    "aliases": []
+  },
+  "unique-264": {
+    "nameKo": "폭풍첨탑",
+    "baseNameKo": "Giant Thresher",
+    "aliases": []
+  },
+  "unique-18": {
+    "nameKo": "굵은못",
+    "baseNameKo": "스파이크 클럽",
+    "aliases": []
+  },
+  "unique-242": {
+    "nameKo": "귀 꿰미",
+    "baseNameKo": "데몬하이드 새시",
+    "aliases": []
+  },
+  "unique-139": {
+    "nameKo": "자해의 가지",
+    "baseNameKo": "번트 원드",
+    "aliases": []
+  },
+  "unique-128": {
+    "nameKo": "칼림의 의지",
+    "baseNameKo": "Flail",
+    "aliases": []
+  },
+  "unique-148": {
+    "nameKo": "외마디 서리",
+    "baseNameKo": "플랜지드 메이스",
+    "aliases": []
+  },
+  "unique-98": {
+    "nameKo": "검등 잡이",
+    "baseNameKo": "스파이크 쉴드",
+    "aliases": []
+  },
+  "unique-167": {
+    "nameKo": "검막이",
+    "baseNameKo": "엑시큐셔너 소드",
+    "aliases": []
+  },
+  "unique-72": {
+    "nameKo": "타른헬름",
+    "baseNameKo": "스컬 캡",
+    "aliases": []
+  },
+  "unique-111": {
+    "nameKo": "둔부찢개",
+    "baseNameKo": "Plate Boots",
+    "aliases": []
+  },
+  "unique-366": {
+    "nameKo": "기사단의 위세",
+    "baseNameKo": "sacred armor",
+    "aliases": []
+  },
+  "unique-161": {
+    "nameKo": "아틀란티안",
+    "baseNameKo": "에인션트 소드",
+    "aliases": []
+  },
+  "unique-51": {
+    "nameKo": "전투가지",
+    "baseNameKo": "폴액스",
+    "aliases": []
+  },
+  "unique-269": {
+    "nameKo": "고양이 눈",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-81": {
+    "nameKo": "백인대장",
+    "baseNameKo": "Hard Leather",
+    "aliases": []
+  },
+  "unique-7": {
+    "nameKo": "족장",
+    "baseNameKo": "배틀 액스",
+    "aliases": []
+  },
+  "unique-258": {
+    "nameKo": "두개골 분쇄망치",
+    "baseNameKo": "Thunder Maul",
+    "aliases": []
+  },
+  "unique-40": {
+    "nameKo": "디글러",
+    "baseNameKo": "더크",
+    "aliases": []
+  },
+  "unique-43": {
+    "nameKo": "용창",
+    "baseNameKo": "스피어",
+    "aliases": []
+  },
+  "unique-118": {
+    "nameKo": "에틀리크의 눈",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-78": {
+    "nameKo": "섬뜩한 얼굴",
+    "baseNameKo": "마스크",
+    "aliases": []
+  },
+  "unique-145": {
+    "nameKo": "썩은 뿌리개",
+    "baseNameKo": "홀리 워터 스프링클러",
+    "aliases": []
+  },
+  "unique-153": {
+    "nameKo": "고통의 망치",
+    "baseNameKo": "마르텔 드 페르",
+    "aliases": []
+  },
+  "unique-21": {
+    "nameKo": "장군의 단도리깨",
+    "baseNameKo": "Flail",
+    "aliases": []
+  },
+  "unique-250": {
+    "nameKo": "검투사의 재앙",
+    "baseNameKo": "Wire Fleece",
+    "aliases": []
+  },
+  "unique-0": {
+    "nameKo": "갉아먹는 자",
+    "baseNameKo": "핸드 액스",
+    "aliases": []
+  },
+  "unique-261": {
+    "nameKo": "한아비",
+    "baseNameKo": "Colossus Blade",
+    "aliases": []
+  },
+  "unique-53": {
+    "nameKo": "사신의 낫",
+    "baseNameKo": "워 싸이드",
+    "aliases": []
+  },
+  "unique-102": {
+    "nameKo": "브록의 손",
+    "baseNameKo": "Gloves",
+    "aliases": []
+  },
+  "unique-9": {
+    "nameKo": "무지막지",
+    "baseNameKo": "자이언트 액스",
+    "aliases": []
+  },
+  "unique-172": {
+    "nameKo": "꿰뚫는 자",
+    "baseNameKo": "워 스피어",
+    "aliases": []
+  },
+  "unique-58": {
+    "nameKo": "무쇠 장봉",
+    "baseNameKo": "워 스태프",
+    "aliases": []
+  },
+  "unique-41": {
+    "nameKo": "비취 단도",
+    "baseNameKo": "크리스",
+    "aliases": []
+  },
+  "unique-119": {
+    "nameKo": "마힘오크 수집품",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-177": {
+    "nameKo": "고기 긁개",
+    "baseNameKo": "로카버 액스",
+    "aliases": []
+  },
+  "unique-138": {
+    "nameKo": "미노타우루스",
+    "baseNameKo": "에인션트 액스",
+    "aliases": []
+  },
+  "unique-284": {
+    "nameKo": "망울",
+    "baseNameKo": "스월링 크리스탈",
+    "aliases": [
+      "신오브"
+    ]
+  },
+  "unique-38": {
+    "nameKo": "장로",
+    "baseNameKo": "그레이트 소드",
+    "aliases": []
+  },
+  "unique-326": {
+    "nameKo": "사신의 종소리",
+    "baseNameKo": "thresher",
+    "aliases": []
+  },
+  "unique-389": {
+    "nameKo": "구원자",
+    "baseNameKo": "mighty scepter",
+    "aliases": []
+  },
+  "unique-270": {
+    "nameKo": "떠오르는 태양",
+    "baseNameKo": "목걸이",
+    "aliases": []
+  },
+  "unique-57": {
+    "nameKo": "불도마뱀",
+    "baseNameKo": "배틀 스태프",
+    "aliases": []
+  },
+  "unique-288": {
+    "nameKo": "무두도끼",
+    "baseNameKo": "프란시스카",
+    "aliases": []
+  },
+  "unique-209": {
+    "nameKo": "혼령 장막",
+    "baseNameKo": "고스트 아머",
+    "aliases": []
+  },
+  "unique-122": {
+    "nameKo": "요르단의 반지",
+    "baseNameKo": "반지",
+    "aliases": [
+      "조던",
+      "조던링"
+    ]
+  },
+  "unique-47": {
+    "nameKo": "탄르 고어로드",
+    "baseNameKo": "파이크",
+    "aliases": []
+  },
+  "unique-164": {
+    "nameKo": "지독한 껍질",
+    "baseNameKo": "터스크 소드",
+    "aliases": []
+  },
+  "unique-101": {
+    "nameKo": "호신부",
+    "baseNameKo": "고딕 쉴드",
+    "aliases": []
+  },
+  "unique-246": {
+    "nameKo": "천둥신의 박력",
+    "baseNameKo": "워 벨트",
+    "aliases": []
+  },
+  "unique-338": {
+    "nameKo": "천둥일격",
+    "baseNameKo": "matriarchal javelin",
+    "aliases": []
+  },
+  "unique-227": {
+    "nameKo": "티아마트의 질책",
+    "baseNameKo": "드래곤 쉴드",
+    "aliases": []
+  },
+  "unique-281": {
+    "nameKo": "거인의 복수",
+    "baseNameKo": "세러모니얼 재벌린",
+    "aliases": [
+      "타이탄"
+    ]
+  },
+  "unique-166": {
+    "nameKo": "죽음나락 불길",
+    "baseNameKo": "Zweihander",
+    "aliases": []
+  },
+  "unique-298": {
+    "nameKo": "무덤 강탈자",
+    "baseNameKo": "cryptic axe",
+    "aliases": []
+  },
+  "unique-219": {
+    "nameKo": "강철니",
+    "baseNameKo": "샤크투스 아머",
+    "aliases": []
+  },
+  "unique-109": {
+    "nameKo": "크톤의 발 보호대",
+    "baseNameKo": "체인 부츠",
+    "aliases": []
+  },
+  "unique-82": {
+    "nameKo": "뒤틀린 단말마",
+    "baseNameKo": "스터디드 레더",
+    "aliases": []
+  },
+  "unique-311": {
+    "nameKo": "티리엘의 권능",
+    "baseNameKo": "sacred armor",
+    "aliases": []
+  },
+  "unique-95": {
+    "nameKo": "그림자 원반",
+    "baseNameKo": "스몰 쉴드",
+    "aliases": []
+  },
+  "unique-13": {
+    "nameKo": "우메의 탄식",
+    "baseNameKo": "그림 원드",
+    "aliases": []
+  },
+  "unique-77": {
+    "nameKo": "언데드 왕관",
+    "baseNameKo": "크라운",
+    "aliases": []
+  },
+  "unique-419": {
+    "nameKo": "고유 흑마법사 투구",
+    "baseNameKo": "death mask",
+    "aliases": []
+  },
+  "unique-205": {
+    "nameKo": "발키리 날개",
+    "baseNameKo": "윙드 헬름",
+    "aliases": []
+  },
+  "unique-208": {
+    "nameKo": "흡혈귀의 눈길",
+    "baseNameKo": "그림 헬름",
+    "aliases": []
+  },
+  "unique-249": {
+    "nameKo": "강철의 베일",
+    "baseNameKo": "스파이어드 헬름",
+    "aliases": []
+  },
+  "unique-232": {
+    "nameKo": "맹독 손아귀",
+    "baseNameKo": "데몬하이드 글러브",
+    "aliases": []
+  },
+  "unique-86": {
+    "nameKo": "맹독 호신부",
+    "baseNameKo": "브레스트 플레이트",
+    "aliases": []
+  },
+  "unique-376": {
+    "nameKo": "베르둔고의 튼튼한 노끈",
+    "baseNameKo": "mithril coil",
+    "aliases": []
+  },
+  "unique-92": {
+    "nameKo": "승자의 비단",
+    "baseNameKo": "AncientArmor",
+    "aliases": []
+  },
+  "unique-323": {
+    "nameKo": "맹독갈퀴",
+    "baseNameKo": "war fork",
+    "aliases": []
+  },
+  "unique-224": {
+    "nameKo": "적출자",
+    "baseNameKo": "디펜더",
+    "aliases": []
+  },
+  "unique-97": {
+    "nameKo": "눈 없는 자의 벽",
+    "baseNameKo": "본 쉴드",
+    "aliases": []
+  },
+  "unique-71": {
+    "nameKo": "비긴의 모자",
+    "baseNameKo": "캡",
+    "aliases": []
+  },
+  "unique-134": {
+    "nameKo": "군장의 신뢰",
+    "baseNameKo": "밀리터리 액스",
+    "aliases": []
+  },
+  "unique-186": {
+    "nameKo": "왜곡창",
+    "baseNameKo": "고딕 스태프",
+    "aliases": []
+  },
+  "unique-292": {
+    "nameKo": "전쟁표창",
+    "baseNameKo": "winged knife",
+    "aliases": []
+  },
+  "unique-240": {
+    "nameKo": "전쟁 여행자",
+    "baseNameKo": "배틀 부츠",
+    "aliases": [
+      "배추"
+    ]
+  },
+  "unique-238": {
+    "nameKo": "물나그네",
+    "baseNameKo": "샤크스킨 부츠",
+    "aliases": []
+  },
+  "unique-192": {
+    "nameKo": "마녀림의 시위",
+    "baseNameKo": "숏 시즈 보우",
+    "aliases": []
+  },
+  "unique-331": {
+    "nameKo": "과부제조기",
+    "baseNameKo": "ward bow",
+    "aliases": []
+  },
+  "unique-266": {
+    "nameKo": "바람살",
+    "baseNameKo": "히드라 보우",
+    "aliases": []
+  },
+  "unique-337": {
+    "nameKo": "바람망치",
+    "baseNameKo": "ogre maul",
+    "aliases": []
+  },
+  "unique-319": {
+    "nameKo": "위습 투사기",
+    "baseNameKo": "ring",
+    "aliases": []
+  },
+  "unique-60": {
+    "nameKo": "마른시위",
+    "baseNameKo": "Hunter\\92s Bow",
+    "aliases": []
+  },
+  "unique-262": {
+    "nameKo": "마법사의 쐐기검",
+    "baseNameKo": "본 나이프",
+    "aliases": []
+  },
+  "unique-64": {
+    "nameKo": "슬기매김",
+    "baseNameKo": "롱 배틀 보우",
+    "aliases": []
+  },
+  "unique-52": {
+    "nameKo": "재앙의 지팡이",
+    "baseNameKo": "헬버드",
+    "aliases": []
+  },
+  "unique-355": {
+    "nameKo": "울부짖는 늑대",
+    "baseNameKo": "fury visor",
+    "aliases": []
+  },
+  "unique-75": {
+    "nameKo": "벌레두개골",
+    "baseNameKo": "본 헬름",
+    "aliases": []
+  },
+  "unique-386": {
+    "nameKo": "망령의 비행",
+    "baseNameKo": "ghost glaive",
+    "aliases": []
+  },
+  "unique-413": {
+    "nameKo": "망령걸음",
+    "baseNameKo": "mirrored boots",
+    "aliases": []
+  },
+  "unique-144": {
+    "nameKo": "자카룸의 손",
+    "baseNameKo": "룬 셉터",
+    "aliases": []
+  }
+}

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '..')
 const rawRoot = resolve(root, 'data/raw/3.3/rotw')
+const localization = JSON.parse(readFileSync(resolve(root, 'data/localization/catalog-ko.json'), 'utf8'))
 
 function readTsv(name) {
   const [header, ...lines] = readFileSync(resolve(rawRoot, name), 'utf8').replace(/^\uFEFF/, '').split(/\r?\n/)
@@ -103,5 +104,6 @@ for (const [index, row] of readTsv('runes.txt').filter((item) => item.complete =
 }
 
 catalog.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
+for (const item of catalog) Object.assign(item, localization[item.id] ?? { nameKo: item.name, baseNameKo: item.baseName, aliases: [] })
 writeFileSync(resolve(root, 'src/data/catalog.generated.ts'), `// Generated from installed Reign of the Warlock 3.3 data.\nexport const ITEM_CATALOG = ${JSON.stringify(catalog)} as const\n`)
 console.log(`Generated ${catalog.length} catalog entries.`)
