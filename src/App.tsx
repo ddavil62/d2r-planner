@@ -46,6 +46,10 @@ type Page = 'overview' | 'skills' | 'attributes' | 'equipment' | 'inventory' | '
 type ItemLanguage = 'ko' | 'en'
 
 const ITEM_LANGUAGE_KEY = 'd2r-planner-item-language'
+const classGlyphs: Record<ClassId, string> = {
+  amazon: '⌁', sorceress: '✧', necromancer: '☠', paladin: '✚', barbarian: '⚒', druid: '❦', assassin: '◈', warlock: '⛧',
+}
+const classOrder: ClassId[] = ['amazon', 'sorceress', 'necromancer', 'paladin', 'barbarian', 'druid', 'assassin', 'warlock']
 
 const pages: { id: Page; label: string; icon: string }[] = [
   { id: 'overview', label: '빌드 요약', icon: '◆' },
@@ -68,11 +72,23 @@ const slotLabels: Record<EquipmentSlot, string> = {
 }
 
 const modifierFields: { key: keyof Modifiers; label: string }[] = [
-  { key: 'allSkills', label: '모든 기술' }, { key: 'necromancerSkills', label: '네크 기술' },
-  { key: 'sorceressSkills', label: '소서 기술' }, { key: 'summoningSkills', label: '소환 기술' },
+  { key: 'allSkills', label: '모든 기술' }, { key: 'amazonSkills', label: '아마존 기술' },
+  { key: 'sorceressSkills', label: '원소술사 기술' }, { key: 'necromancerSkills', label: '네크로맨서 기술' },
+  { key: 'paladinSkills', label: '성기사 기술' }, { key: 'barbarianSkills', label: '야만용사 기술' },
+  { key: 'druidSkills', label: '드루이드 기술' }, { key: 'assassinSkills', label: '암살자 기술' },
+  { key: 'warlockSkills', label: '악마술사 기술' }, { key: 'summoningSkills', label: '소환 기술' },
   { key: 'poisonBoneSkills', label: '독과 뼈' }, { key: 'cursesSkills', label: '저주 기술' },
   { key: 'coldSkills', label: '냉기 기술' }, { key: 'lightningSkills', label: '번개 기술' },
-  { key: 'fireSkills', label: '화염 기술' }, { key: 'strength', label: '힘' },
+  { key: 'fireSkills', label: '화염 기술' }, { key: 'bowCrossbowSkills', label: '활과 쇠뇌' },
+  { key: 'passiveMagicSkills', label: '지속 효과와 마법' }, { key: 'javelinSpearSkills', label: '투창과 창' },
+  { key: 'paladinCombatSkills', label: '성기사 전투 기술' }, { key: 'offensiveAuraSkills', label: '공격 오라' },
+  { key: 'defensiveAuraSkills', label: '방어 오라' }, { key: 'barbarianCombatSkills', label: '야만용사 전투 기술' },
+  { key: 'combatMasteriesSkills', label: '전투 숙련' }, { key: 'warcriesSkills', label: '함성' },
+  { key: 'druidSummoningSkills', label: '드루이드 소환' }, { key: 'shapeShiftingSkills', label: '변신' },
+  { key: 'elementalSkills', label: '원소' }, { key: 'trapsSkills', label: '덫' },
+  { key: 'shadowDisciplinesSkills', label: '그림자 단련' }, { key: 'martialArtsSkills', label: '무술' },
+  { key: 'demonicBindingSkills', label: '악마 결속' }, { key: 'eldritchWeaponsSkills', label: '기괴 무기' },
+  { key: 'artsOfChaosSkills', label: '혼돈 기술' }, { key: 'strength', label: '힘' },
   { key: 'dexterity', label: '민첩' }, { key: 'vitality', label: '활력' },
   { key: 'energy', label: '마력' }, { key: 'life', label: '생명력' }, { key: 'mana', label: '마나' },
   { key: 'allResist', label: '모든 저항' }, { key: 'fireResist', label: '화염 저항' },
@@ -132,7 +148,7 @@ function App() {
       questSkillPoints: build.questSkillPoints,
       questStatPoints: build.questStatPoints,
       questResistPoints: build.questResistPoints,
-      name: classId === 'necromancer' ? '새 네크로맨서 빌드' : '새 원소술사 빌드',
+      name: `새 ${CLASS_DEFINITIONS[classId].nameKo} 빌드`,
     })
     setToast('직업에 맞춰 기술과 장비를 초기화했습니다.')
   }
@@ -273,9 +289,9 @@ function ProfileBar({ build, updateBuild, switchClass, applyTemplate }: {
   return (
     <section className="profile-bar panel">
       <div className="class-switcher">
-        {(Object.values(CLASS_DEFINITIONS)).map((definition) => (
-          <button key={definition.id} className={build.classId === definition.id ? 'selected' : ''} onClick={() => switchClass(definition.id)}>
-            <span className={`class-sigil ${definition.id}`}>{definition.id === 'necromancer' ? '☠' : '✧'}</span>
+        {classOrder.map((classId) => CLASS_DEFINITIONS[classId]).map((definition) => (
+          <button key={definition.id} type="button" data-testid={`class-${definition.id}`} className={build.classId === definition.id ? 'selected' : ''} onClick={() => switchClass(definition.id)}>
+            <span className={`class-sigil ${definition.id}`}>{classGlyphs[definition.id]}</span>
             <span><strong>{definition.nameKo}</strong><small>{definition.nameEn}</small></span>
           </button>
         ))}
@@ -689,7 +705,7 @@ function Library({ builds, history, current, onLoad, onDelete }: { builds: Build
           const definition = CLASS_DEFINITIONS[item.classId]
           const itemSummary = calculateSummary(item)
           return <article className="saved-build panel" key={item.id}>
-            <span className={`class-sigil ${item.classId}`}>{item.classId === 'necromancer' ? '☠' : '✧'}</span>
+            <span className={`class-sigil ${item.classId}`}>{classGlyphs[item.classId]}</span>
             <div className="saved-copy"><small>{definition.nameKo} · 레벨 {item.level}</small><h2>{item.name}</h2><p>기술 {itemSummary.spentSkillPoints}/{itemSummary.availableSkillPoints} · 패캐 {itemSummary.fasterCastRate} · 매찬 {itemSummary.magicFind}</p></div>
             <time>{new Date(item.updatedAt).toLocaleString('ko-KR')}</time>
             <div><button className="button ghost" onClick={() => onLoad({ ...item })}>불러오기</button><button className="delete-button" onClick={() => onDelete(item.id)}>삭제</button></div>
@@ -724,13 +740,18 @@ function ComparePanel({ left, leftSummary, right, rightSummary }: { left: BuildP
 
 function BreakpointPanel({ build, summary }: { build: BuildProfile; summary: BuildSummary }) {
   const values = [{ type: 'fcr' as const, label: '패캐', value: summary.fasterCastRate }, { type: 'fhr' as const, label: '패힛', value: summary.fasterHitRecovery }, { type: 'fbr' as const, label: '패블럭', value: summary.fasterBlockRate }]
-  const recommended = build.classId === 'sorceress' ? { fcr: 105, fhr: 60, fbr: 48 } : { fcr: 125, fhr: 56, fbr: 52 }
-  return <section className="panel section-card breakpoint-card"><div className="section-heading"><div><small>BREAKPOINTS</small><h2>프레임 목표</h2></div><span>{build.classId === 'sorceress' ? '소서 105 패캐 권장' : '네크 125 패캐 권장'}</span></div><div className="breakpoint-list">{values.map((entry) => { const progress = breakpointProgress(build.classId, entry.type, entry.value); const target = recommended[entry.type]; const targetNeed = Math.max(0, target - entry.value); return <div key={entry.type}><span>{entry.label}</span><strong>{entry.value}% · {progress.frame}프레임</strong><div><i style={{ width: `${Math.min(100, entry.value / target * 100)}%` }} /></div><small>{progress.next ? `다음 ${progress.next}% (${progress.nextFrame}프레임)까지 ${progress.needed}` : '최고 구간 도달'} · 권장 {targetNeed ? `${targetNeed} 부족` : '달성'}</small></div> })}</div><p className="calc-caveat">일반 시전·피격·방패 막기 애니메이션 기준입니다. 번개·연쇄 번개처럼 별도 시전 프레임을 쓰는 기술은 일반 패캐와 구분하세요.</p></section>
+  const recommendedByClass: Record<ClassId, { fcr: number; fhr: number; fbr: number }> = {
+    amazon: { fcr: 99, fhr: 86, fbr: 56 }, sorceress: { fcr: 105, fhr: 60, fbr: 48 }, necromancer: { fcr: 125, fhr: 56, fbr: 52 },
+    paladin: { fcr: 125, fhr: 86, fbr: 48 }, barbarian: { fcr: 105, fhr: 86, fbr: 42 }, druid: { fcr: 99, fhr: 86, fbr: 52 },
+    assassin: { fcr: 102, fhr: 86, fbr: 32 }, warlock: { fcr: 125, fhr: 86, fbr: 48 },
+  }
+  const recommended = recommendedByClass[build.classId]
+  return <section className="panel section-card breakpoint-card"><div className="section-heading"><div><small>BREAKPOINTS</small><h2>프레임 목표</h2></div><span>{CLASS_DEFINITIONS[build.classId].nameKo} {recommended.fcr} 패캐 권장</span></div><div className="breakpoint-list">{values.map((entry) => { const progress = breakpointProgress(build.classId, entry.type, entry.value); const target = recommended[entry.type]; const targetNeed = Math.max(0, target - entry.value); return <div key={entry.type}><span>{entry.label}</span><strong>{entry.value}% · {progress.frame}프레임</strong><div><i style={{ width: `${Math.min(100, entry.value / target * 100)}%` }} /></div><small>{progress.next ? `다음 ${progress.next}% (${progress.nextFrame}프레임)까지 ${progress.needed}` : '최고 구간 도달'} · 권장 {targetNeed ? `${targetNeed} 부족` : '달성'}</small></div> })}</div><p className="calc-caveat">일반 시전·피격·방패 막기 애니메이션 기준입니다. 변신, 특수 시전, 기술 고유 애니메이션은 별도 프레임을 사용할 수 있습니다.</p></section>
 }
 
 function SummaryRail({ build, summary }: { build: BuildProfile; summary: BuildSummary }) {
   const definition = CLASS_DEFINITIONS[build.classId]
-  return <aside className="summary-rail"><div className="rail-class"><span className={`class-sigil ${build.classId}`}>{build.classId === 'necromancer' ? '☠' : '✧'}</span><div><small>ACTIVE BUILD</small><strong>{definition.nameKo}</strong><span>레벨 {build.level}</span></div></div><section><h3>핵심 수치</h3><dl><div><dt>생명력</dt><dd>{summary.life}</dd></div><div><dt>마나</dt><dd>{summary.mana}</dd></div><div><dt>패캐</dt><dd>{summary.fasterCastRate}%</dd></div><div><dt>패힛</dt><dd>{summary.fasterHitRecovery}%</dd></div><div><dt>달리기</dt><dd>{summary.fasterRunWalk}%</dd></div><div><dt>매찬</dt><dd>{summary.magicFind}%</dd></div></dl></section><section><h3>능력치</h3><dl>{(Object.keys(attributeLabels) as AttributeId[]).map((key) => <div key={key}><dt>{attributeLabels[key]}</dt><dd>{summary.attributes[key]}</dd></div>)}</dl></section><section className="rail-budget"><h3>포인트 예산</h3><div><span>기술</span><progress max={summary.availableSkillPoints} value={summary.spentSkillPoints} /><strong>{summary.spentSkillPoints}/{summary.availableSkillPoints}</strong></div><div><span>능력치</span><progress max={summary.availableStatPoints} value={summary.spentStatPoints} /><strong>{summary.spentStatPoints}/{summary.availableStatPoints}</strong></div></section></aside>
+  return <aside className="summary-rail"><div className="rail-class"><span className={`class-sigil ${build.classId}`}>{classGlyphs[build.classId]}</span><div><small>ACTIVE BUILD</small><strong>{definition.nameKo}</strong><span>레벨 {build.level}</span></div></div><section><h3>핵심 수치</h3><dl><div><dt>생명력</dt><dd>{summary.life}</dd></div><div><dt>마나</dt><dd>{summary.mana}</dd></div><div><dt>패캐</dt><dd>{summary.fasterCastRate}%</dd></div><div><dt>패힛</dt><dd>{summary.fasterHitRecovery}%</dd></div><div><dt>달리기</dt><dd>{summary.fasterRunWalk}%</dd></div><div><dt>매찬</dt><dd>{summary.magicFind}%</dd></div></dl></section><section><h3>능력치</h3><dl>{(Object.keys(attributeLabels) as AttributeId[]).map((key) => <div key={key}><dt>{attributeLabels[key]}</dt><dd>{summary.attributes[key]}</dd></div>)}</dl></section><section className="rail-budget"><h3>포인트 예산</h3><div><span>기술</span><progress max={summary.availableSkillPoints} value={summary.spentSkillPoints} /><strong>{summary.spentSkillPoints}/{summary.availableSkillPoints}</strong></div><div><span>능력치</span><progress max={summary.availableStatPoints} value={summary.spentStatPoints} /><strong>{summary.spentStatPoints}/{summary.availableStatPoints}</strong></div></section></aside>
 }
 
 function EmptyState({ text, action, onClick }: { text: string; action: string; onClick?: () => void }) {

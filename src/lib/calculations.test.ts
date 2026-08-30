@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createBuild, decodeBuild, decodeBuildCompressed, encodeBuild, encodeBuildCompressed } from './builds'
-import { availableSkillPoints, availableStatPoints, breakpointProgress, calculateSummary, skillCanIncrement } from './calculations'
+import { availableSkillPoints, availableStatPoints, breakpointProgress, calculateSummary, skillBonusFor, skillCanIncrement } from './calculations'
 import { CLASS_DEFINITIONS } from '../data/classes'
 
 describe('build calculations', () => {
@@ -45,6 +45,21 @@ describe('build calculations', () => {
 
   it('reports the next breakpoint', () => {
     expect(breakpointProgress('sorceress', 'fcr', 64)).toEqual({ reached: 63, next: 105, needed: 41, frame: 9, nextFrame: 8 })
+  })
+
+  it('creates a valid build summary for every playable class', () => {
+    for (const classId of Object.keys(CLASS_DEFINITIONS) as (keyof typeof CLASS_DEFINITIONS)[]) {
+      const summary = calculateSummary(createBuild(classId))
+      expect(summary.life, classId).toBeGreaterThan(0)
+      expect(summary.mana, classId).toBeGreaterThan(0)
+    }
+  })
+
+  it('combines Warlock class and Arts of Chaos tree bonuses', () => {
+    const build = createBuild('warlock')
+    build.equipment.armor = { definitionId: 'custom', modifiers: { warlockSkills: 2, artsOfChaosSkills: 3 } }
+    const chaosSkill = CLASS_DEFINITIONS.warlock.skills.find((skill) => skill.branch === '혼돈 기술')!
+    expect(skillBonusFor(build, chaosSkill)).toBe(5)
   })
 
   it('uses only the active weapon set', () => {

@@ -25,7 +25,8 @@ function skillId(value = '') {
 
 const simpleModifierMap = {
   str: 'strength', dex: 'dexterity', vit: 'vitality', enr: 'energy', hp: 'life', mana: 'mana',
-  'hp%': 'lifePercent', 'mana%': 'manaPercent', allskills: 'allSkills', nec: 'necromancerSkills', sor: 'sorceressSkills',
+  'hp%': 'lifePercent', 'mana%': 'manaPercent', allskills: 'allSkills', ama: 'amazonSkills', nec: 'necromancerSkills',
+  sor: 'sorceressSkills', pal: 'paladinSkills', bar: 'barbarianSkills', dru: 'druidSkills', ass: 'assassinSkills', war: 'warlockSkills',
   fireskill: 'fireSkills', 'res-fire': 'fireResist', 'res-cold': 'coldResist', 'res-ltng': 'lightningResist',
   'res-pois': 'poisonResist', 'res-all': 'allResist', 'gold%': 'goldFind', 'mag%': 'magicFind',
   'red-dmg%': 'damageReduction', 'red-mag': 'magicDamageReduction', block: 'blockChance', nofreeze: 'cannotBeFrozen',
@@ -56,7 +57,15 @@ function modifiers(row, limit, runeword = false) {
     else if (code === 'mana/lvl') add('manaPerLevel', (Number(param) || 0) / 8)
     else if (code === 'mag%/lvl') add('magicFindPerLevel', (Number(param) || 0) / 8)
     else if (code === 'skilltab') {
-      const tabs = { 3: 'fireSkills', 4: 'lightningSkills', 5: 'coldSkills', 6: 'cursesSkills', 7: 'poisonBoneSkills', 8: 'summoningSkills' }
+      const tabs = {
+        0: 'bowCrossbowSkills', 1: 'passiveMagicSkills', 2: 'javelinSpearSkills',
+        3: 'fireSkills', 4: 'lightningSkills', 5: 'coldSkills', 6: 'cursesSkills', 7: 'poisonBoneSkills', 8: 'summoningSkills',
+        9: 'paladinCombatSkills', 10: 'offensiveAuraSkills', 11: 'defensiveAuraSkills',
+        12: 'barbarianCombatSkills', 13: 'combatMasteriesSkills', 14: 'warcriesSkills',
+        15: 'druidSummoningSkills', 16: 'shapeShiftingSkills', 17: 'elementalSkills',
+        18: 'trapsSkills', 19: 'shadowDisciplinesSkills', 20: 'martialArtsSkills',
+        21: 'demonicBindingSkills', 22: 'eldritchWeaponsSkills', 23: 'artsOfChaosSkills',
+      }
       add(tabs[Number(param)], value)
     } else if (code === 'skill' || code === 'oskill') add(`skill:${skillId(param)}`, value)
   }

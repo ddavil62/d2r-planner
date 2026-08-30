@@ -16,6 +16,11 @@ function readSkills() {
 describe('3.3 skill snapshot', () => {
   const rawSkills = readSkills()
 
+  it('exposes all eight playable classes and 240 skills', () => {
+    expect(Object.keys(CLASS_DEFINITIONS)).toHaveLength(8)
+    expect(Object.values(CLASS_DEFINITIONS).flatMap((definition) => definition.skills)).toHaveLength(240)
+  })
+
   for (const classDefinition of Object.values(CLASS_DEFINITIONS)) {
     it(`${classDefinition.nameEn} has 30 skills matching required levels and prerequisites`, () => {
       expect(classDefinition.skills).toHaveLength(30)

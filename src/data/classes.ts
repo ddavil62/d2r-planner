@@ -1,4 +1,5 @@
-import type { ClassDefinition, SkillDefinition } from '../types'
+import { ADDITIONAL_CLASS_DEFINITIONS } from './additional-classes.generated'
+import type { ClassDefinition, ClassId, SkillDefinition } from '../types'
 
 const skill = (
   id: string,
@@ -83,7 +84,8 @@ const sorceressSkills: SkillDefinition[] = [
   skill('hydra', '히드라', 'Hydra', '화염', 5, 3, 30, '화염탄을 발사하는 히드라를 소환합니다.', ['enchant']),
 ]
 
-export const CLASS_DEFINITIONS: Record<'necromancer' | 'sorceress', ClassDefinition> = {
+export const CLASS_DEFINITIONS: Record<ClassId, ClassDefinition> = {
+  ...ADDITIONAL_CLASS_DEFINITIONS,
   necromancer: {
     id: 'necromancer',
     nameKo: '네크로맨서',

@@ -6,6 +6,7 @@
   "scripts": {
     "data:catalog": "node scripts/generate-catalog.mjs",
     "data:localization": "node scripts/sync-catalog-localization.mjs && node scripts/generate-catalog.mjs",
+    "data:classes": "node scripts/generate-additional-classes.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",

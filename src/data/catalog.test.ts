@@ -22,4 +22,10 @@ describe('generated 3.3 item catalog', () => {
     const wizardspike = ITEM_CATALOG.find((item) => item.name === 'Wizardspike')
     expect(wizardspike?.modifiers).toMatchObject({ fasterCastRate: 50, allResist: 75, manaPerLevel: 2 })
   })
+
+  it('normalizes class and skill-tree bonuses for every expansion generation', () => {
+    expect(ITEM_CATALOG.find((item) => item.name === 'Peace')?.modifiers).toMatchObject({ amazonSkills: 2 })
+    expect(ITEM_CATALOG.find((item) => item.name === 'Authority')?.modifiers).toMatchObject({ warlockSkills: 2 })
+    expect(ITEM_CATALOG.find((item) => item.name === "Ars Al'Diablolos")?.modifiers).toMatchObject({ artsOfChaosSkills: 2 })
+  })
 })

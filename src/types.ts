@@ -1,4 +1,4 @@
-export type ClassId = 'necromancer' | 'sorceress'
+export type ClassId = 'amazon' | 'sorceress' | 'necromancer' | 'paladin' | 'barbarian' | 'druid' | 'assassin' | 'warlock'
 export type Difficulty = 'normal' | 'nightmare' | 'hell'
 export type AttributeId = 'strength' | 'dexterity' | 'vitality' | 'energy'
 export type EquipmentSlot =
@@ -63,12 +63,36 @@ export interface Modifiers {
   allSkills?: number
   necromancerSkills?: number
   sorceressSkills?: number
+  amazonSkills?: number
+  paladinSkills?: number
+  barbarianSkills?: number
+  druidSkills?: number
+  assassinSkills?: number
+  warlockSkills?: number
   summoningSkills?: number
   poisonBoneSkills?: number
   cursesSkills?: number
   coldSkills?: number
   lightningSkills?: number
   fireSkills?: number
+  bowCrossbowSkills?: number
+  passiveMagicSkills?: number
+  javelinSpearSkills?: number
+  paladinCombatSkills?: number
+  offensiveAuraSkills?: number
+  defensiveAuraSkills?: number
+  barbarianCombatSkills?: number
+  combatMasteriesSkills?: number
+  warcriesSkills?: number
+  druidSummoningSkills?: number
+  shapeShiftingSkills?: number
+  elementalSkills?: number
+  trapsSkills?: number
+  shadowDisciplinesSkills?: number
+  martialArtsSkills?: number
+  demonicBindingSkills?: number
+  eldritchWeaponsSkills?: number
+  artsOfChaosSkills?: number
   fireResist?: number
   coldResist?: number
   lightningResist?: number

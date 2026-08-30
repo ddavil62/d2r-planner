@@ -12,6 +12,48 @@ export interface BuildTemplate {
 
 export const BUILD_TEMPLATES: BuildTemplate[] = [
   {
+    id: 'lightning-fury-amazon', classId: 'amazon', name: '번개 격노 아마존 골격',
+    description: '번개 격노와 전류의 일격을 함께 사용하는 투창 중심 빌드',
+    skills: { jab: 1, 'power-strike': 20, 'poison-javelin': 1, 'lightning-bolt': 1, 'charged-strike': 20, 'plague-javelin': 1, 'lightning-strike': 20, 'lightning-fury': 20, 'critical-strike': 1, penetrate: 1, pierce: 15 },
+    attributes: { strength: 120, dexterity: 140, vitality: 200, energy: 0 },
+    equipment: { head: { definitionId: 'griffons-eye' }, amulet: { definitionId: 'maras' }, armor: { definitionId: 'enigma' }, gloves: { definitionId: 'custom' }, belt: { definitionId: 'custom' }, boots: { definitionId: 'war-traveler' } },
+  },
+  {
+    id: 'hammer-paladin', classId: 'paladin', name: '축복받은 망치 성기사 골격',
+    description: '축복받은 망치와 집중, 원기를 조합한 대표적인 시전 빌드',
+    skills: { 'holy-bolt': 1, 'blessed-hammer': 20, might: 1, 'blessed-aim': 20, concentration: 20, prayer: 1, cleansing: 1, defiance: 1, vigor: 20, redemption: 1, smite: 1, charge: 1, 'holy-shield': 13 },
+    attributes: { strength: 120, dexterity: 100, vitality: 240, energy: 0 },
+    equipment: { head: { definitionId: 'harlequin-crest' }, amulet: { definitionId: 'maras' }, weapon: { definitionId: 'heart-of-the-oak' }, offhand: { definitionId: 'spirit-shield' }, armor: { definitionId: 'enigma' }, gloves: { definitionId: 'magefist' }, belt: { definitionId: 'arachnid-mesh' }, boots: { definitionId: 'war-traveler' } },
+  },
+  {
+    id: 'whirlwind-barbarian', classId: 'barbarian', name: '소용돌이 야만용사 골격',
+    description: '소용돌이와 검 숙련, 전투 명령 계열을 갖춘 근접 빌드',
+    skills: { bash: 1, leap: 1, stun: 1, 'leap-attack': 1, concentrate: 1, whirlwind: 20, 'blade-mastery': 20, 'iron-skin': 1, 'natural-resistance': 13, howl: 1, shout: 20, 'battle-orders': 20, 'battle-command': 1 },
+    attributes: { strength: 180, dexterity: 80, vitality: 200, energy: 0 },
+    equipment: { head: { definitionId: 'harlequin-crest' }, amulet: { definitionId: 'highlords' }, armor: { definitionId: 'enigma' }, belt: { definitionId: 'verdungos' }, boots: { definitionId: 'war-traveler' } },
+  },
+  {
+    id: 'tornado-druid', classId: 'druid', name: '회오리바람 드루이드 골격',
+    description: '회오리바람과 허리케인, 회오리 갑옷 시너지 중심의 원소 빌드',
+    skills: { raven: 1, 'arctic-blast': 1, 'cyclone-armor': 20, twister: 20, tornado: 20, hurricane: 20, 'oak-sage': 19 },
+    attributes: { strength: 120, dexterity: 0, vitality: 340, energy: 0 },
+    equipment: { head: { definitionId: 'harlequin-crest' }, amulet: { definitionId: 'maras' }, weapon: { definitionId: 'heart-of-the-oak' }, offhand: { definitionId: 'spirit-shield' }, armor: { definitionId: 'enigma' }, gloves: { definitionId: 'magefist' }, belt: { definitionId: 'arachnid-mesh' }, boots: { definitionId: 'sandstorm-trek' } },
+  },
+  {
+    id: 'lightning-trap-assassin', classId: 'assassin', name: '번개 덫 암살자 골격',
+    description: '번개 파수기와 죽음 파수기, 그림자 기술을 조합한 덫 빌드',
+    skills: { 'fire-trauma': 1, 'shock-field': 1, 'charged-bolt-sentry': 20, 'lightning-sentry': 20, 'death-sentry': 20, 'blade-sentinel': 1, 'wake-of-fire-sentry': 1, 'blade-fury': 1, 'claw-mastery': 1, quickness: 1, fade: 1, venom: 20, 'weapon-block': 1, 'psychic-hammer': 1, 'cloak-of-shadows': 1, 'shadow-warrior': 1, 'shadow-master': 9 },
+    attributes: { strength: 120, dexterity: 80, vitality: 260, energy: 0 },
+    equipment: { head: { definitionId: 'harlequin-crest' }, amulet: { definitionId: 'maras' }, armor: { definitionId: 'enigma' }, gloves: { definitionId: 'magefist' }, belt: { definitionId: 'arachnid-mesh' }, boots: { definitionId: 'sandstorm-trek' } },
+  },
+  {
+    id: 'abyss-warlock', classId: 'warlock', name: '심연 악마술사 골격',
+    description: '독기와 엔트로피를 축적해 심연과 대재앙으로 마무리하는 혼돈 빌드',
+    skills: { 'miasma-bolt': 20, 'miasma-chains': 20, 'enhanced-entropy': 16, abyss: 20, 'ring-of-fire': 1, 'flame-wave': 20, 'sigil-lethargy': 1, 'sigil-rancor': 1, 'sigil-death': 1, apocalypse: 1 },
+    attributes: { strength: 120, dexterity: 0, vitality: 220, energy: 120 },
+    equipment: { head: { definitionId: 'harlequin-crest' }, amulet: { definitionId: 'maras' }, armor: { definitionId: 'enigma' }, gloves: { definitionId: 'magefist' }, belt: { definitionId: 'arachnid-mesh' }, boots: { definitionId: 'war-traveler' } },
+  },
+  {
     id: 'summon-necro', classId: 'necromancer', name: '조폭 네크 골격',
     description: '해골 군단과 시체 폭발 중심의 안정적인 사냥 빌드',
     skills: { 'raise-skeleton': 20, 'skeleton-mastery': 20, 'clay-golem': 1, 'golem-mastery': 1, 'raise-skeletal-mage': 20, 'blood-golem': 1, 'iron-golem': 1, 'summon-resist': 1, revive: 1, teeth: 1, 'corpse-explosion': 20, 'amplify-damage': 1, weaken: 1, terror: 1, decrepify: 1 },

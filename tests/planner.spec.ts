@@ -43,6 +43,26 @@ test('switches to Sorceress and exports a share code', async ({ page }) => {
   await expect(page.getByText('서버 없이 공유')).toBeVisible()
 })
 
+test('switches across all eight classes and renders the Warlock trees', async ({ page }) => {
+  const classes = [
+    ['amazon', '아마존'], ['sorceress', '원소술사'], ['necromancer', '네크로맨서'], ['paladin', '성기사'],
+    ['barbarian', '야만용사'], ['druid', '드루이드'], ['assassin', '암살자'], ['warlock', '악마술사'],
+  ] as const
+
+  for (const [classId, name] of classes) {
+    await page.getByTestId(`class-${classId}`).click()
+    await expect(page.getByTestId(`class-${classId}`)).toHaveClass(/selected/)
+    await expect(page.locator('.summary-rail')).toContainText(name)
+  }
+
+  await page.getByTestId('nav-skills').click()
+  await expect(page.getByRole('heading', { name: '악마술사 기술' })).toBeVisible()
+  await expect(page.getByRole('tab', { name: '악마 결속' })).toBeVisible()
+  await expect(page.getByRole('tab', { name: '기괴 무기' })).toBeVisible()
+  await expect(page.getByRole('tab', { name: '혼돈 기술' })).toBeVisible()
+  await expect(page.locator('.skill-node')).toHaveCount(10)
+})
+
 test('applies a legal starter template', async ({ page }) => {
   await page.locator('.template-field select').selectOption('poison-necro')
   await expect(page.getByRole('heading', { name: '독조넥 골격' })).toBeVisible()
@@ -109,6 +129,15 @@ test('renders desktop overview', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'desktop capture only')
   await expect(page.getByRole('heading', { name: '새 네크로맨서 빌드' })).toBeVisible()
   await page.screenshot({ path: 'tests/screenshots/overview-desktop.png', fullPage: true })
+})
+
+test('renders the eight-class selector and Warlock skill planner', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'desktop capture only')
+  await expect(page.locator('.class-switcher button')).toHaveCount(8)
+  await page.getByTestId('class-warlock').click()
+  await page.getByTestId('nav-skills').click()
+  await expect(page.getByRole('heading', { name: '악마술사 기술' })).toBeVisible()
+  await page.screenshot({ path: 'tests/screenshots/classes-desktop.png', fullPage: true })
 })
 
 test('renders mobile skill planner with bottom navigation', async ({ page }, testInfo) => {

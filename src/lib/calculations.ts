@@ -6,8 +6,13 @@ import type { AttributeId, BuildProfile, BuildSummary, ClassId, EquippedItem, Mo
 const numericKeys: (keyof Modifiers)[] = [
   'strength', 'strengthPerLevel', 'dexterity', 'vitality', 'energy', 'life', 'mana', 'lifePerLevel',
   'manaPerLevel', 'lifePercent', 'manaPercent',
-  'allSkills', 'necromancerSkills', 'sorceressSkills', 'summoningSkills', 'poisonBoneSkills',
-  'cursesSkills', 'coldSkills', 'lightningSkills', 'fireSkills', 'fireResist', 'coldResist',
+  'allSkills', 'necromancerSkills', 'sorceressSkills', 'amazonSkills', 'paladinSkills', 'barbarianSkills',
+  'druidSkills', 'assassinSkills', 'warlockSkills', 'summoningSkills', 'poisonBoneSkills', 'cursesSkills',
+  'coldSkills', 'lightningSkills', 'fireSkills', 'bowCrossbowSkills', 'passiveMagicSkills', 'javelinSpearSkills',
+  'paladinCombatSkills', 'offensiveAuraSkills', 'defensiveAuraSkills', 'barbarianCombatSkills',
+  'combatMasteriesSkills', 'warcriesSkills', 'druidSummoningSkills', 'shapeShiftingSkills', 'elementalSkills',
+  'trapsSkills', 'shadowDisciplinesSkills', 'martialArtsSkills', 'demonicBindingSkills', 'eldritchWeaponsSkills',
+  'artsOfChaosSkills', 'fireResist', 'coldResist',
   'lightningResist', 'poisonResist', 'allResist', 'fasterCastRate', 'fasterHitRecovery',
   'fasterBlockRate', 'increasedAttackSpeed', 'fasterRunWalk', 'magicFind', 'goldFind',
   'damageReduction', 'magicDamageReduction', 'blockChance', 'cannotBeFrozen', 'magicFindPerLevel',
@@ -72,13 +77,22 @@ export function skillCanIncrement(build: BuildProfile, definition: SkillDefiniti
 }
 
 export function skillBonusFor(build: BuildProfile, skill: SkillDefinition, modifiers = getEquipmentModifiers(build)): number {
-  const classKey = build.classId === 'necromancer' ? 'necromancerSkills' : 'sorceressSkills'
+  const classKeyById: Record<ClassId, keyof Modifiers> = {
+    amazon: 'amazonSkills', sorceress: 'sorceressSkills', necromancer: 'necromancerSkills', paladin: 'paladinSkills',
+    barbarian: 'barbarianSkills', druid: 'druidSkills', assassin: 'assassinSkills', warlock: 'warlockSkills',
+  }
   const branchKeyByName: Record<string, keyof Modifiers> = {
     '소환': 'summoningSkills', '독과 뼈': 'poisonBoneSkills', '저주': 'cursesSkills',
     '냉기': 'coldSkills', '번개': 'lightningSkills', '화염': 'fireSkills',
+    '활과 쇠뇌': 'bowCrossbowSkills', '지속 효과와 마법': 'passiveMagicSkills', '투창과 창': 'javelinSpearSkills',
+    '전투 기술': build.classId === 'barbarian' ? 'barbarianCombatSkills' : 'paladinCombatSkills',
+    '공격 오라': 'offensiveAuraSkills', '방어 오라': 'defensiveAuraSkills', '전투 숙련': 'combatMasteriesSkills',
+    '함성': 'warcriesSkills', '변신': 'shapeShiftingSkills', '원소': 'elementalSkills', '덫': 'trapsSkills',
+    '그림자 단련': 'shadowDisciplinesSkills', '무술': 'martialArtsSkills', '악마 결속': 'demonicBindingSkills',
+    '기괴 무기': 'eldritchWeaponsSkills', '혼돈 기술': 'artsOfChaosSkills',
   }
   return (modifiers.allSkills ?? 0)
-    + (modifiers[classKey] ?? 0)
+    + (modifiers[classKeyById[build.classId]] ?? 0)
     + (modifiers[branchKeyByName[skill.branch]] ?? 0)
     + (modifiers[`skill:${skill.id}`] ?? 0)
 }
@@ -132,6 +146,7 @@ export function calculateSummary(build: BuildProfile): BuildSummary {
 }
 
 export const BREAKPOINTS: Record<ClassId, { fcr: number[]; fhr: number[]; fbr: number[] }> = {
+  amazon: { fcr: [0, 7, 14, 22, 32, 48, 68, 99, 152], fhr: [0, 6, 13, 20, 32, 52, 86, 174, 600], fbr: [0, 4, 6, 11, 15, 23, 29, 40, 56, 80, 120, 200, 480] },
   sorceress: {
     fcr: [0, 9, 20, 37, 63, 105, 200],
     fhr: [0, 5, 9, 14, 20, 30, 42, 60, 86, 142, 280],
@@ -142,11 +157,22 @@ export const BREAKPOINTS: Record<ClassId, { fcr: number[]; fhr: number[]; fbr: n
     fhr: [0, 5, 10, 16, 26, 39, 56, 86, 152, 377],
     fbr: [0, 6, 13, 20, 32, 52, 86, 174, 600],
   },
+  paladin: { fcr: [0, 9, 18, 30, 48, 75, 125], fhr: [0, 7, 15, 27, 48, 86, 200], fbr: [0, 7, 15, 27, 48, 86, 200] },
+  barbarian: { fcr: [0, 9, 20, 37, 63, 105, 200], fhr: [0, 7, 15, 27, 48, 86, 200], fbr: [0, 9, 20, 42, 86, 280] },
+  druid: { fcr: [0, 4, 10, 19, 30, 46, 68, 99, 163], fhr: [0, 5, 10, 16, 26, 39, 56, 86, 152, 377], fbr: [0, 6, 13, 20, 32, 52, 86, 174, 600] },
+  assassin: { fcr: [0, 8, 16, 27, 42, 65, 102, 174], fhr: [0, 7, 15, 27, 48, 86, 200], fbr: [0, 13, 32, 86, 600] },
+  warlock: { fcr: [0, 9, 18, 30, 48, 75, 125], fhr: [0, 7, 15, 27, 48, 86, 200], fbr: [0, 7, 15, 27, 48, 86, 200] },
 }
 
 const BREAKPOINT_FRAMES: Record<ClassId, { fcr: number[]; fhr: number[]; fbr: number[] }> = {
+  amazon: { fcr: [19, 18, 17, 16, 15, 14, 13, 12, 11], fhr: [11, 10, 9, 8, 7, 6, 5, 4, 3], fbr: [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5] },
   sorceress: { fcr: [13, 12, 11, 10, 9, 8, 7], fhr: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5], fbr: [9, 8, 7, 6, 5, 4, 3] },
   necromancer: { fcr: [15, 14, 13, 12, 11, 10, 9], fhr: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4], fbr: [11, 10, 9, 8, 7, 6, 5, 4, 3] },
+  paladin: { fcr: [15, 14, 13, 12, 11, 10, 9], fhr: [9, 8, 7, 6, 5, 4, 3], fbr: [8, 7, 6, 5, 4, 3, 2] },
+  barbarian: { fcr: [13, 12, 11, 10, 9, 8, 7], fhr: [9, 8, 7, 6, 5, 4, 3], fbr: [7, 6, 5, 4, 3, 2] },
+  druid: { fcr: [18, 17, 16, 15, 14, 13, 12, 11, 10], fhr: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4], fbr: [11, 10, 9, 8, 7, 6, 5, 4, 3] },
+  assassin: { fcr: [16, 15, 14, 13, 12, 11, 10, 9], fhr: [9, 8, 7, 6, 5, 4, 3], fbr: [8, 7, 6, 5, 4] },
+  warlock: { fcr: [15, 14, 13, 12, 11, 10, 9], fhr: [9, 8, 7, 6, 5, 4, 3], fbr: [8, 7, 6, 5, 4, 3, 2] },
 }
 
 export function breakpointProgress(classId: ClassId, type: 'fcr' | 'fhr' | 'fbr', value: number) {

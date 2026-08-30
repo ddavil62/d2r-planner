@@ -8,9 +8,10 @@ export const WISHLIST_KEY = 'sanctuary-blueprint-wishlist-v1'
 
 export function createBuild(classId: ClassId = 'necromancer'): BuildProfile {
   const now = new Date().toISOString()
+  const definition = CLASS_DEFINITIONS[classId]
   return {
     id: crypto.randomUUID(),
-    name: classId === 'necromancer' ? '새 네크로맨서 빌드' : '새 원소술사 빌드',
+    name: `새 ${definition.nameKo} 빌드`,
     classId,
     level: 90,
     difficulty: 'hell',
@@ -35,7 +36,7 @@ export function createBuild(classId: ClassId = 'necromancer'): BuildProfile {
 export function normalizeBuild(value: unknown): BuildProfile {
   if (!value || typeof value !== 'object') throw new Error('빌드 데이터가 올바르지 않습니다.')
   const raw = value as Partial<BuildProfile>
-  if (raw.classId !== 'necromancer' && raw.classId !== 'sorceress') throw new Error('지원하지 않는 직업입니다.')
+  if (!raw.classId || !(raw.classId in CLASS_DEFINITIONS)) throw new Error('지원하지 않는 직업입니다.')
   const base = createBuild(raw.classId)
   const attributes = { ...base.attributes }
   for (const key of Object.keys(attributes) as AttributeId[]) {
