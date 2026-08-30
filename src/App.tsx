@@ -17,16 +17,19 @@ import {
 } from './lib/calculations'
 import {
   createBuild,
+  buildExportFilename,
   decodeBuild,
   decodeBuildCompressed,
   DRAFT_KEY,
   encodeBuild,
   encodeBuildCompressed,
+  exportBuildFile,
   HISTORY_KEY,
   loadHistory,
   loadBuilds,
   loadDraft,
   normalizeBuild,
+  importBuildFile,
   STORAGE_KEY,
   WISHLIST_KEY,
 } from './lib/builds'
@@ -204,6 +207,43 @@ function App() {
     setToast('공유 링크를 복사했습니다.')
   }
 
+  const shareExternally = async () => {
+    if (!navigator.share) {
+      await copyShareLink()
+      setToast('이 브라우저에서는 공유 앱을 열 수 없어 링크를 복사했습니다.')
+      return
+    }
+    try {
+      await navigator.share({ title: build.name, text: `${build.name} · D2R 3.3 빌드`, url: shareLink })
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return
+      setToast('외부 공유를 열지 못했습니다.')
+    }
+  }
+
+  const downloadBuild = () => {
+    const blob = new Blob([exportBuildFile(build)], { type: 'application/json;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = buildExportFilename(build.name)
+    anchor.click()
+    URL.revokeObjectURL(url)
+    setToast('빌드 파일을 내보냈습니다.')
+  }
+
+  const importFile = async (file?: File) => {
+    if (!file) return
+    try {
+      const imported = importBuildFile(await file.text())
+      setBuild({ ...imported, id: crypto.randomUUID(), name: `${imported.name} (가져옴)` })
+      setShareOpen(false)
+      setToast('빌드 파일을 가져왔습니다.')
+    } catch (error) {
+      setToast(error instanceof Error ? error.message : '빌드 파일을 읽지 못했습니다.')
+    }
+  }
+
   const toggleWishlist = (id: string) => {
     const next = wishlist.includes(id) ? wishlist.filter((item) => item !== id) : [...wishlist, id]
     setWishlist(next)
@@ -263,15 +303,22 @@ function App() {
       {shareOpen && (
         <div className="modal-backdrop" onMouseDown={() => setShareOpen(false)}>
           <section className="modal" onMouseDown={(event) => event.stopPropagation()}>
-            <div className="modal-header"><div><small>서버 없이 공유</small><h2>빌드 코드</h2></div><button onClick={() => setShareOpen(false)}>×</button></div>
-            <p>아래 코드를 텔레그램으로 보내면 상대가 같은 화면에서 가져올 수 있습니다.</p>
-            <label className="share-link-field"><span>압축 URL</span><input value={shareLink} readOnly /></label>
-            <textarea value={shareCode} onChange={(event) => setShareCode(event.target.value)} rows={8} spellCheck={false} />
-            <div className="modal-actions">
-              <button className="button primary" onClick={copyShareLink}>링크 복사</button>
-              <button className="button ghost" onClick={copyShareCode}>현재 빌드 복사</button>
-              <button className="button primary" onClick={importCode}>입력한 코드 가져오기</button>
+            <div className="modal-header"><div><small>EXPORT · IMPORT</small><h2>빌드 내보내기</h2></div><button aria-label="공유 창 닫기" onClick={() => setShareOpen(false)}>×</button></div>
+            <p>링크나 파일로 전체 세팅을 공유하면 상대가 같은 기술, 능력치, 장비와 메모를 불러올 수 있습니다.</p>
+            <div className="export-options">
+              <button className="export-option primary" data-testid="share-external" onClick={shareExternally}><span>↗</span><strong>외부 앱으로 공유</strong><small>텔레그램·카카오톡 등에 링크 전송</small></button>
+              <button className="export-option" data-testid="download-build" onClick={downloadBuild}><span>⇩</span><strong>파일로 내보내기</strong><small>.d2rbuild 파일로 세팅 보관</small></button>
             </div>
+            <label className="share-link-field"><span>공유 링크</span><input value={shareLink} readOnly /></label>
+            <div className="share-link-actions"><button className="button primary" onClick={copyShareLink}>링크 복사</button><button className="button ghost" onClick={copyShareCode}>빌드 코드 복사</button></div>
+            <details className="advanced-import">
+              <summary>코드 또는 파일 가져오기</summary>
+              <textarea aria-label="빌드 코드" value={shareCode} onChange={(event) => setShareCode(event.target.value)} rows={6} spellCheck={false} />
+              <div className="modal-actions">
+                <label className="button ghost file-import">파일 선택<input data-testid="import-build-file" type="file" accept=".d2rbuild,.json,application/json" onChange={(event) => importFile(event.target.files?.[0])} /></label>
+                <button className="button primary" onClick={importCode}>입력한 코드 가져오기</button>
+              </div>
+            </details>
           </section>
         </div>
       )}

@@ -40,7 +40,42 @@ test('switches to Sorceress and exports a share code', async ({ page }) => {
   await page.getByRole('button', { name: '빌드 공유' }).click()
   const code = page.locator('.modal textarea')
   await expect(code).not.toHaveValue('')
-  await expect(page.getByText('서버 없이 공유')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '빌드 내보내기' })).toBeVisible()
+})
+
+test('shares externally and exports the complete build as a file', async ({ page }) => {
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: async (payload: ShareData) => { (window as typeof window & { sharedPayload?: ShareData }).sharedPayload = payload },
+    })
+  })
+  await page.locator('.build-name input').fill('공유용 네크 빌드')
+  await page.getByRole('button', { name: '빌드 공유' }).click()
+  await page.getByTestId('share-external').click()
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { sharedPayload?: ShareData }).sharedPayload?.title)).toBe('공유용 네크 빌드')
+
+  const downloadPromise = page.waitForEvent('download')
+  await page.getByTestId('download-build').click()
+  const download = await downloadPromise
+  expect(download.suggestedFilename()).toBe('공유용 네크 빌드.d2rbuild')
+  const downloadPath = await download.path()
+  expect(downloadPath).not.toBeNull()
+})
+
+test('imports a d2rbuild file', async ({ page }) => {
+  const draft = await page.evaluate(() => JSON.parse(localStorage.getItem('sanctuary-blueprint-draft-v1')!))
+  draft.name = '파일에서 온 빌드'
+  draft.notes = '파일 가져오기 확인'
+  await page.getByRole('button', { name: '빌드 공유' }).click()
+  await page.getByText('코드 또는 파일 가져오기', { exact: true }).click()
+  await page.getByTestId('import-build-file').setInputFiles({
+    name: 'shared.d2rbuild',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ format: 'd2r-planner-build', version: 1, exportedAt: new Date().toISOString(), build: draft })),
+  })
+  await expect(page.locator('.build-name input')).toHaveValue('파일에서 온 빌드 (가져옴)')
+  await expect(page.getByText('빌드 파일을 가져왔습니다.')).toBeVisible()
 })
 
 test('switches across all eight classes and renders the Warlock trees', async ({ page }) => {
@@ -120,7 +155,7 @@ test('creates a compressed URL and keeps save history', async ({ page }) => {
   await page.getByRole('button', { name: '현재 저장' }).click()
   await page.getByRole('button', { name: '빌드 공유' }).click()
   await expect(page.locator('.share-link-field input')).toHaveValue(/#b=/)
-  await page.getByRole('button', { name: '×' }).click()
+  await page.getByRole('button', { name: '공유 창 닫기' }).click()
   await page.getByTestId('nav-library').click()
   await expect(page.getByRole('heading', { name: '변경 이력', exact: true })).toBeVisible()
 })
@@ -129,6 +164,13 @@ test('renders desktop overview', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'desktop capture only')
   await expect(page.getByRole('heading', { name: '새 네크로맨서 빌드' })).toBeVisible()
   await page.screenshot({ path: 'tests/screenshots/overview-desktop.png', fullPage: true })
+})
+
+test('renders the responsive export dialog', async ({ page }, testInfo) => {
+  await page.getByRole('button', { name: '빌드 공유' }).click()
+  await expect(page.getByRole('heading', { name: '빌드 내보내기' })).toBeVisible()
+  const formFactor = testInfo.project.name === 'desktop-chromium' ? 'desktop' : 'mobile'
+  await page.screenshot({ path: `tests/screenshots/export-${formFactor}.png`, fullPage: true })
 })
 
 test('renders the eight-class selector and Warlock skill planner', async ({ page }, testInfo) => {

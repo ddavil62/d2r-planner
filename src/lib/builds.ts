@@ -113,6 +113,38 @@ export function decodeBuild(code: string): BuildProfile {
   return normalizeBuild(JSON.parse(new TextDecoder().decode(bytes)))
 }
 
+interface BuildExportFile {
+  format: 'd2r-planner-build'
+  version: 1
+  exportedAt: string
+  build: BuildProfile
+}
+
+export function exportBuildFile(build: BuildProfile): string {
+  const payload: BuildExportFile = {
+    format: 'd2r-planner-build',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    build,
+  }
+  return JSON.stringify(payload, null, 2)
+}
+
+export function importBuildFile(contents: string): BuildProfile {
+  const parsed: unknown = JSON.parse(contents)
+  if (!parsed || typeof parsed !== 'object') throw new Error('빌드 파일이 올바르지 않습니다.')
+  const payload = parsed as Partial<BuildExportFile>
+  if (payload.format !== 'd2r-planner-build' || payload.version !== 1 || !payload.build) {
+    throw new Error('지원하지 않는 빌드 파일입니다.')
+  }
+  return normalizeBuild(payload.build)
+}
+
+export function buildExportFilename(name: string): string {
+  const safeName = name.trim().replace(/[\\/:*?"<>|%]+/g, '-').replace(/\s+/g, ' ').replace(/^[.\-\s]+|[.\-\s]+$/g, '').slice(0, 60)
+  return `${safeName || 'd2r-build'}.d2rbuild`
+}
+
 function bytesToBase64Url(bytes: Uint8Array): string {
   let binary = ''
   bytes.forEach((byte) => { binary += String.fromCharCode(byte) })
