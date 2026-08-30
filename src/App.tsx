@@ -364,9 +364,15 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
                   const sourceY = (treeRow(prerequisite) - 1) * treeRowHeight + skillNodeTop + skillNodeHeight
                   const targetY = (treeRow(item) - 1) * treeRowHeight + skillNodeTop
                   const middleY = (sourceY + targetY) / 2
+                  const sameRow = treeRow(prerequisite) === treeRow(item)
+                  const sameRowAnchorY = (treeRow(item) - 1) * treeRowHeight + skillNodeTop
+                  const sameRowRouteY = (treeRow(item) - 1) * treeRowHeight
                   const active = (build.skills[prerequisite.id] ?? 0) > 0
                   const invested = (build.skills[item.id] ?? 0) > 0
-                  return <path key={`${prerequisiteId}-${item.id}`} className={`${active ? 'ready' : ''} ${invested ? 'active' : ''}`} d={`M ${sourceX} ${sourceY} V ${middleY} H ${targetX} V ${targetY}`} />
+                  const path = sameRow
+                    ? `M ${sourceX} ${sameRowAnchorY} V ${sameRowRouteY} H ${targetX} V ${sameRowAnchorY}`
+                    : `M ${sourceX} ${sourceY} V ${middleY} H ${targetX} V ${targetY}`
+                  return <path key={`${prerequisiteId}-${item.id}`} className={`${active ? 'ready' : ''} ${invested ? 'active' : ''}`} d={path} />
                 }))}
               </svg>
               {branchSkills.sort((a, b) => a.requiredLevel - b.requiredLevel || a.col - b.col).map((item) => {
