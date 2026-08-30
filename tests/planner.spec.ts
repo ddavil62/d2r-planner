@@ -141,6 +141,31 @@ test('applies stats from a non-preset database item', async ({ page }) => {
   await expect(page.locator('.summary-rail')).toContainText('50%')
 })
 
+test('equips Obedience with its catalog identity, full options and calculated stats', async ({ page }, testInfo) => {
+  await page.getByTestId('nav-equipment').click()
+  await page.getByLabel('아이템 검색').fill('순종')
+  const result = page.locator('.catalog-item').filter({ hasText: 'Obedience' })
+  await expect(result).toHaveCount(1)
+  await result.getByRole('button', { name: '착용' }).click()
+
+  await expect(page.getByTestId('equipment-detail').getByRole('heading', { name: '순종' })).toBeVisible()
+  await expect(page.getByTestId('focus-item-select-weapon').locator('option:checked')).toHaveText('순종 · Obedience')
+  const properties = page.getByTestId('selected-catalog-properties')
+  await expect(properties.locator('li')).toHaveCount(7)
+  await expect(properties).toContainText('피해 증가 · 370%')
+  await expect(properties).toContainText('강타 확률 · 40%')
+  await expect(properties).toContainText('적 화염 저항 감소 · 25%')
+  await expect(properties).toContainText('적 처치 시 기술 · 마법부여')
+  await expect(page.getByTestId('equipment-detail')).toContainText('패힛+40')
+  await expect(page.getByTestId('equipment-detail')).toContainText('모든 저항+30')
+  await expect(page.locator('.summary-rail')).toContainText('40%')
+  if (testInfo.project.name === 'desktop-chromium') await page.screenshot({ path: 'tests/screenshots/obedience-equipped-desktop.png', fullPage: true })
+
+  await page.reload()
+  await page.getByTestId('nav-equipment').click()
+  await expect(page.getByTestId('equipment-detail').getByRole('heading', { name: '순종' })).toBeVisible()
+})
+
 test('places a charm in the inventory grid', async ({ page }) => {
   await page.getByTestId('nav-inventory').click()
   await page.getByLabel('추가할 부적').selectOption('annihilus')

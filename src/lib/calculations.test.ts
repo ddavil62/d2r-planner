@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { createBuild, decodeBuild, decodeBuildCompressed, encodeBuild, encodeBuildCompressed } from './builds'
-import { availableSkillPoints, availableStatPoints, breakpointProgress, calculateSummary, skillBonusFor, skillCanIncrement } from './calculations'
+import { availableSkillPoints, availableStatPoints, breakpointProgress, calculateSummary, getEquippedItemModifiers, skillBonusFor, skillCanIncrement } from './calculations'
 import { CLASS_DEFINITIONS } from '../data/classes'
+import { ITEM_CATALOG } from '../data/catalog.generated'
 
 describe('build calculations', () => {
   it('calculates level and quest point budgets', () => {
@@ -81,6 +82,18 @@ describe('build calculations', () => {
     const summary = calculateSummary(build)
     expect(summary.fasterCastRate).toBe(50)
     expect(summary.resistances.fire).toBe(-60)
+  })
+
+  it('keeps normalized Obedience stats when equipped from the runeword catalog', () => {
+    const obedience = ITEM_CATALOG.find((item) => item.name === 'Obedience')!
+    const equipped = { definitionId: 'custom', catalogId: obedience.id, name: obedience.name, modifiers: { ...obedience.modifiers } }
+    expect(getEquippedItemModifiers(equipped)).toMatchObject({ fasterHitRecovery: 40, allResist: 30 })
+
+    const build = createBuild('barbarian')
+    build.equipment.weapon = equipped
+    const summary = calculateSummary(build)
+    expect(summary.fasterHitRecovery).toBe(40)
+    expect(summary.resistances.fire).toBe(-40)
   })
 
   it('round-trips Korean build data through a share code', () => {

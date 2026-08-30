@@ -103,6 +103,33 @@ const modifierFields: { key: keyof Modifiers; label: string }[] = [
   { key: 'damageReduction', label: '피해 감소 %' },
 ]
 
+const catalogPropertyLabels: Record<string, string> = {
+  'dmg%': '피해 증가', crush: '강타 확률', deadly: '치명적 공격', openwounds: '상처 악화',
+  'kill-skill': '적 처치 시 기술', 'hit-skill': '타격 시 기술', 'gethit-skill': '피격 시 기술',
+  'att-skill': '공격 시 기술', 'death-skill': '사망 시 기술', 'levelup-skill': '레벨 상승 시 기술',
+  'pierce-fire': '적 화염 저항 감소', 'pierce-cold': '적 냉기 저항 감소', 'pierce-ltng': '적 번개 저항 감소',
+  'pierce-pois': '적 독 저항 감소', 'pierce-mag': '적 마법 저항 감소', ac: '방어력', 'ac%': '방어력 증가',
+  balance1: '타격 회복 속도', balance2: '타격 회복 속도', balance3: '타격 회복 속도',
+  'res-all': '모든 저항', 'res-fire': '화염 저항', 'res-cold': '냉기 저항', 'res-ltng': '번개 저항', 'res-pois': '독 저항',
+  allskills: '모든 기술', str: '힘', dex: '민첩', vit: '활력', enr: '마력', hp: '생명력', mana: '마나',
+  swing1: '공격 속도', swing2: '공격 속도', swing3: '공격 속도', cast1: '시전 속도', cast2: '시전 속도', cast3: '시전 속도',
+  move1: '달리기/걷기 속도', move2: '달리기/걷기 속도', move3: '달리기/걷기 속도',
+  lifesteal: '생명력 훔침', manasteal: '마나 훔침', 'mag%': '마법 아이템 발견', 'gold%': '금화 획득',
+  aura: '장착 시 오라', oskill: '기술 사용 가능', skill: '개별 기술', skilltab: '기술 계열', charged: '충전 기술',
+  nofreeze: '빙결되지 않음', indestruct: '파괴 불가', 'all-stats': '모든 능력치',
+}
+const catalogPercentProperties = new Set(['dmg%', 'crush', 'deadly', 'openwounds', 'pierce-fire', 'pierce-cold', 'pierce-ltng', 'pierce-pois', 'pierce-mag', 'ac%', 'balance1', 'balance2', 'balance3', 'res-all', 'res-fire', 'res-cold', 'res-ltng', 'res-pois', 'swing1', 'swing2', 'swing3', 'cast1', 'cast2', 'cast3', 'move1', 'move2', 'move3', 'lifesteal', 'manasteal', 'mag%', 'gold%'])
+const catalogSkillPropertyCodes = new Set(['kill-skill', 'hit-skill', 'gethit-skill', 'att-skill', 'death-skill', 'levelup-skill', 'aura', 'oskill', 'skill', 'charged'])
+const catalogSkillNames = new Map(Object.values(CLASS_DEFINITIONS).flatMap((definition) => definition.skills.flatMap((skill) => [skill.nameEn, skill.dataKey].filter(Boolean).map((name) => [name!.toLowerCase(), skill.nameKo] as const))))
+
+function formatCatalogProperty(property: string): string {
+  const [code, ...values] = property.split(' · ')
+  const displayedValues = [...values]
+  if (catalogSkillPropertyCodes.has(code) && displayedValues[0]) displayedValues[0] = catalogSkillNames.get(displayedValues[0].toLowerCase()) ?? displayedValues[0]
+  if (catalogPercentProperties.has(code) && displayedValues.length === 1) displayedValues[0] = `${displayedValues[0]}%`
+  return `${catalogPropertyLabels[code] ?? code}${displayedValues.length ? ` · ${displayedValues.join(' · ')}` : ''}`
+}
+
 function App() {
   const [page, setPage] = useState<Page>('overview')
   const [build, setBuild] = useState<BuildProfile>(() => loadDraft())
@@ -636,13 +663,14 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         </section>
         <aside className="equipment-detail-panel panel" data-testid="equipment-detail">
           <div className="equipment-detail-heading"><small>SELECTED SLOT</small><span>{slotLabels[selectedSlot]}</span></div>
-          <div className="equipment-detail-title"><i>{slotGlyphs[selectedSlot] ?? '◇'}</i><div><h2>{selectedDefinition ? (itemLanguage === 'ko' ? selectedDefinition.nameKo : selectedDefinition.nameEn) : selectedCatalogItem ? catalogName(selectedCatalogItem) : selectedEquipped?.name ?? '비어 있음'}</h2><p>{selectedDefinition ? (itemLanguage === 'ko' ? selectedDefinition.nameEn : selectedDefinition.nameKo) : selectedCatalogItem ? catalogSecondaryName(selectedCatalogItem) : '장착할 아이템을 선택하세요'}</p></div></div>
-          <label className="equipment-item-select"><span>장착 아이템</span><select data-testid={`focus-item-select-${selectedSlot}`} value={selectedEquipped?.definitionId ?? ''} onChange={(event) => selectItem(selectedSlot, event.target.value)}><option value="">비어 있음</option>{selectedChoices.map((item) => <option key={item.id} value={item.id}>{itemLanguage === 'ko' ? `${item.nameKo} · ${item.nameEn}` : `${item.nameEn} · ${item.nameKo}`}</option>)}</select></label>
+          <div className="equipment-detail-title"><i>{slotGlyphs[selectedSlot] ?? '◇'}</i><div><h2>{selectedCatalogItem ? catalogName(selectedCatalogItem) : selectedDefinition ? (itemLanguage === 'ko' ? selectedDefinition.nameKo : selectedDefinition.nameEn) : selectedEquipped?.name ?? '비어 있음'}</h2><p>{selectedCatalogItem ? catalogSecondaryName(selectedCatalogItem) : selectedDefinition ? (itemLanguage === 'ko' ? selectedDefinition.nameEn : selectedDefinition.nameKo) : '장착할 아이템을 선택하세요'}</p></div></div>
+          <label className="equipment-item-select"><span>장착 아이템</span><select data-testid={`focus-item-select-${selectedSlot}`} value={selectedEquipped?.definitionId ?? ''} onChange={(event) => selectItem(selectedSlot, event.target.value)}><option value="">비어 있음</option>{selectedCatalogItem && <option value="custom">{catalogName(selectedCatalogItem)} · {catalogSecondaryName(selectedCatalogItem)}</option>}{selectedChoices.filter((item) => !selectedCatalogItem || item.id !== 'custom').map((item) => <option key={item.id} value={item.id}>{itemLanguage === 'ko' ? `${item.nameKo} · ${item.nameEn}` : `${item.nameEn} · ${item.nameKo}`}</option>)}</select></label>
           {selectedEquipped && selectedDefinition && <>
-            {selectedDefinition.id === 'custom' && <input className="custom-name" value={selectedEquipped.name ?? ''} placeholder="아이템 이름" onChange={(event) => updateItem(selectedSlot, { name: event.target.value })} />}
-            <div className="equipment-detail-mods">{Object.entries(selectedModifiers).filter(([, value]) => value).map(([key, value]) => <span key={key}>{modifierFields.find((field) => field.key === key)?.label ?? key}<strong>{Number(value) > 0 ? '+' : ''}{value}</strong></span>)}</div>
-            {selectedDefinition.note && <p className="item-note">{selectedDefinition.note}</p>}
-            <details className="equipment-detail-custom"><summary>{selectedDefinition.id === 'custom' ? '옵션 입력' : '추가 보정 입력'}</summary><div className="individual-skill-editor"><span>개별 기술 보너스</span><select value="" onChange={(event) => { const skillId = event.target.value; if (skillId) updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [`skill:${skillId}`]: 1 } }) }}><option value="">기술 추가…</option>{classSkills.map((skill) => <option value={skill.id} key={skill.id}>{skill.nameKo}</option>)}</select>{Object.entries(selectedEquipped.modifiers ?? {}).filter(([key]) => key.startsWith('skill:')).map(([key, value]) => { const skillId = key.slice(6); const skill = classSkills.find((item) => item.id === skillId); return <label key={key}><span>{skill?.nameKo ?? skillId}</span><input type="number" value={value ?? 0} onChange={(event) => updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [key]: Number(event.target.value) || 0 } })} /></label> })}</div><div className="modifier-editor">{modifierFields.map((field) => <label key={field.key as string}><span>{field.label}</span><input type="number" value={(selectedEquipped.modifiers?.[field.key] as number | undefined) ?? ''} placeholder="0" onChange={(event) => updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [field.key]: Number(event.target.value) || 0 } })} /></label>)}</div></details>
+            {selectedDefinition.id === 'custom' && !selectedCatalogItem && <input className="custom-name" value={selectedEquipped.name ?? ''} placeholder="아이템 이름" onChange={(event) => updateItem(selectedSlot, { name: event.target.value })} />}
+            {Object.values(selectedModifiers).some((value) => value) && <><h3 className="equipment-mod-section-title">시뮬레이터 계산 반영</h3><div className="equipment-detail-mods">{Object.entries(selectedModifiers).filter(([, value]) => value).map(([key, value]) => <span key={key}>{modifierFields.find((field) => field.key === key)?.label ?? key}<strong>{Number(value) > 0 ? '+' : ''}{value}</strong></span>)}</div></>}
+            {selectedCatalogItem && <section className="catalog-equipped-properties" data-testid="selected-catalog-properties"><h3>아이템 전체 옵션</h3><ul>{selectedCatalogItem.properties.map((property) => <li key={property}>{formatCatalogProperty(property)}</li>)}</ul><p>현재 수치 계산이 지원되는 옵션은 위 계산 반영 구역에 합산되며, 나머지 원본 옵션도 장비 정보에 그대로 유지됩니다.</p></section>}
+            {selectedDefinition.note && !selectedCatalogItem && <p className="item-note">{selectedDefinition.note}</p>}
+            <details className="equipment-detail-custom"><summary>{selectedDefinition.id === 'custom' && !selectedCatalogItem ? '옵션 입력' : '추가 보정 입력'}</summary><div className="individual-skill-editor"><span>개별 기술 보너스</span><select value="" onChange={(event) => { const skillId = event.target.value; if (skillId) updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [`skill:${skillId}`]: 1 } }) }}><option value="">기술 추가…</option>{classSkills.map((skill) => <option value={skill.id} key={skill.id}>{skill.nameKo}</option>)}</select>{Object.entries(selectedEquipped.modifiers ?? {}).filter(([key]) => key.startsWith('skill:')).map(([key, value]) => { const skillId = key.slice(6); const skill = classSkills.find((item) => item.id === skillId); return <label key={key}><span>{skill?.nameKo ?? skillId}</span><input type="number" value={value ?? 0} onChange={(event) => updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [key]: Number(event.target.value) || 0 } })} /></label> })}</div><div className="modifier-editor">{modifierFields.map((field) => <label key={field.key as string}><span>{field.label}</span><input type="number" value={(selectedEquipped.modifiers?.[field.key] as number | undefined) ?? ''} placeholder="0" onChange={(event) => updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [field.key]: Number(event.target.value) || 0 } })} /></label>)}</div></details>
           </>}
         </aside>
       </div>
@@ -665,14 +693,14 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
           const fcrDelta = previewSummary ? previewSummary.fasterCastRate - currentSummary.fasterCastRate : 0
           return <article className={`catalog-item ${selected ? 'selected' : ''}`} key={item.id}>
             <div><small>{item.category.toUpperCase()} · LV {item.requiredLevel || '—'}</small><strong>{catalogName(item)}</strong><span className="catalog-item-english">{catalogSecondaryName(item)}</span><span>{catalogBaseName(item)} · {item.slot}</span></div>
-            <p>{item.properties.slice(0, 4).join(' / ') || '원본 옵션 없음'}</p>
+            <p>{item.properties.slice(0, 4).map(formatCatalogProperty).join(' / ') || '원본 옵션 없음'}</p>
             {previewSummary && <small className="impact-chip">현재 장비 교체 시 패캐 {fcrDelta >= 0 ? '+' : ''}{fcrDelta} · 생명력 {previewSummary.life - currentSummary.life >= 0 ? '+' : ''}{previewSummary.life - currentSummary.life}</small>}
             <div><button onClick={() => toggleWishlist(item.id)}>{wishlist.includes(item.id) ? '★ 파밍 중' : '☆ 파밍'}</button><button onClick={() => setCandidateIds(([left, right]) => !left ? [item.id, right] : !right ? [left, item.id] : [item.id, ''])}>비교</button>{item.slot !== 'charm' && <button onClick={() => equipCatalogItem(item)}>착용</button>}</div>
           </article>
         })}</div>
         {filteredCatalog.length === 0 && <EmptyState text="조건에 맞는 아이템이 없습니다." action="검색어나 필터를 바꿔보세요." />}
       </section>
-      {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>후보 장비 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{catalogName(item)}</h3><p>{catalogSecondaryName(item)} · {catalogBaseName(item)} · 요구 레벨 {item.requiredLevel || '없음'}</p><ul>{item.properties.map((property) => <li key={property}>{property}</li>)}</ul></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>)}</div></section>}
+      {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>후보 장비 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{catalogName(item)}</h3><p>{catalogSecondaryName(item)} · {catalogBaseName(item)} · 요구 레벨 {item.requiredLevel || '없음'}</p><ul>{item.properties.map((property) => <li key={property}>{formatCatalogProperty(property)}</li>)}</ul></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>)}</div></section>}
       <div className="equipment-grid legacy-equipment-grid" aria-hidden="true">
         {slots.map((slot) => {
           const equipped = build.equipment[slot]
