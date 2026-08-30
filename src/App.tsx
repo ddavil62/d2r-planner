@@ -328,6 +328,7 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
   const spent = spentSkillPoints(build)
   const available = availableSkillPoints(build)
   const equipmentModifiers = getEquipmentModifiers(build)
+  const treeRow = (skill: SkillDefinition) => skill.requiredLevel === 1 ? 1 : skill.requiredLevel / 6 + 1
   const changeSkill = (skill: SkillDefinition, delta: number) => {
     setBuild((current) => {
       const currentPoints = current.skills[skill.id] ?? 0
@@ -343,24 +344,44 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
   return (
     <div className="page-stack">
       <section className="page-title"><div><small>SKILL PLANNER</small><h1>{definition.nameKo} 기술</h1><p>선행 기술과 요구 레벨을 검사하며 장비 보너스는 청록색으로 따로 표시합니다.</p></div><div className={`budget-pill ${spent > available ? 'over' : ''}`}><span>사용</span><strong>{spent}</strong><i>/</i><span>보유</span><strong>{available}</strong><button onClick={() => setBuild((current) => ({ ...current, skills: {} }))}>초기화</button></div></section>
+      <p className="mobile-tree-hint">좌우로 밀어 다른 기술 트리 보기</p>
       <div className="skill-columns">
-        {definition.branches.map((branch) => (
-          <section className="skill-tree panel" key={branch}>
+        {definition.branches.map((branch) => {
+          const branchSkills = definition.skills.filter((item) => item.branch === branch)
+          const branchIds = new Set(branchSkills.map((item) => item.id))
+          return <section className="skill-tree panel" key={branch}>
             <div className="tree-title"><small>SKILL TREE</small><h2>{branch}</h2><span>{definition.skills.filter((item) => item.branch === branch).reduce((sum, item) => sum + (build.skills[item.id] ?? 0), 0)} 포인트</span></div>
-            <div className="skill-list">
-              {definition.skills.filter((item) => item.branch === branch).sort((a, b) => a.requiredLevel - b.requiredLevel || a.col - b.col).map((item) => {
+            <div className="skill-tree-canvas">
+              <div className="tree-level-guide">{[1, 6, 12, 18, 24, 30].map((level) => <span key={level}>LV {level}</span>)}</div>
+              <svg className="skill-connectors" viewBox="0 0 300 672" preserveAspectRatio="none" aria-hidden="true">
+                {branchSkills.flatMap((item) => (item.prerequisites ?? []).filter((id) => branchIds.has(id)).map((prerequisiteId) => {
+                  const prerequisite = branchSkills.find((candidate) => candidate.id === prerequisiteId)!
+                  const sourceX = (prerequisite.col - .5) * 100
+                  const targetX = (item.col - .5) * 100
+                  const sourceY = (treeRow(prerequisite) - 1) * 112 + 88
+                  const targetY = (treeRow(item) - 1) * 112 + 8
+                  const middleY = (sourceY + targetY) / 2
+                  const active = (build.skills[prerequisite.id] ?? 0) > 0
+                  const invested = (build.skills[item.id] ?? 0) > 0
+                  return <path key={`${prerequisiteId}-${item.id}`} className={`${active ? 'ready' : ''} ${invested ? 'active' : ''}`} d={`M ${sourceX} ${sourceY} V ${middleY} H ${targetX} V ${targetY}`} />
+                }))}
+              </svg>
+              {branchSkills.sort((a, b) => a.requiredLevel - b.requiredLevel || a.col - b.col).map((item) => {
                 const hard = build.skills[item.id] ?? 0
                 const bonus = skillBonusFor(build, item, equipmentModifiers)
                 const locked = build.level < item.requiredLevel || !(item.prerequisites ?? []).every((id) => (build.skills[id] ?? 0) > 0)
-                return <article key={item.id} className={`skill-node ${hard ? 'invested' : ''} ${locked ? 'locked' : ''}`}>
-                  <div className="skill-icon">{item.nameKo.slice(0, 1)}</div>
-                  <div className="skill-copy"><div><strong>{item.nameKo}</strong><small>요구 레벨 {item.requiredLevel}</small></div><p>{item.description}</p>{item.prerequisites?.length ? <em>선행: {item.prerequisites.map((id) => definition.skills.find((candidate) => candidate.id === id)?.nameKo).join(', ')}</em> : null}</div>
-                  <div className="skill-counter"><button aria-label={`${item.nameKo} 감소`} onClick={() => changeSkill(item, -1)}>−</button><strong>{hard}{bonus > 0 && <span>+{bonus}</span>}</strong><button aria-label={`${item.nameKo} 증가`} onClick={() => changeSkill(item, 1)} disabled={!skillCanIncrement(build, item)}>+</button></div>
+                const canAdd = skillCanIncrement(build, item)
+                return <article data-testid={`skill-${item.id}`} style={{ gridColumn: item.col, gridRow: treeRow(item) }} key={item.id} className={`skill-node ${hard ? 'invested' : ''} ${canAdd ? 'available' : ''} ${locked ? 'locked' : ''}`}>
+                  <div className="skill-icon"><span>{item.nameKo.slice(0, 1)}</span><em>{hard}{bonus > 0 ? `+${bonus}` : ''}</em></div>
+                  <strong className="skill-name">{item.nameKo}</strong>
+                  <small className="skill-level">레벨 {item.requiredLevel}</small>
+                  <div className="skill-counter"><button aria-label={`${item.nameKo} 감소`} onClick={() => changeSkill(item, -1)} disabled={hard <= 0}>−</button><strong>{hard}{bonus > 0 && <span>+{bonus}</span>}</strong><button aria-label={`${item.nameKo} 증가`} onClick={() => changeSkill(item, 1)} disabled={!canAdd}>+</button></div>
+                  <div className="skill-tooltip"><strong>{item.nameKo}</strong><p>{item.description}</p>{item.prerequisites?.length ? <em>선행: {item.prerequisites.map((id) => definition.skills.find((candidate) => candidate.id === id)?.nameKo).join(', ')}</em> : <em>선행 기술 없음</em>}</div>
                 </article>
               })}
             </div>
           </section>
-        ))}
+        } )}
       </div>
     </div>
   )

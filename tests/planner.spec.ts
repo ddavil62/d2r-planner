@@ -103,6 +103,14 @@ test('renders mobile skill planner with bottom navigation', async ({ page }, tes
   await page.screenshot({ path: 'tests/screenshots/skills-mobile.png', fullPage: true })
 })
 
+test('renders desktop skill trees with prerequisite connectors', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'desktop capture only')
+  await page.getByTestId('nav-skills').click()
+  await expect(page.locator('.skill-tree')).toHaveCount(3)
+  await expect(page.locator('.skill-connectors path')).not.toHaveCount(0)
+  await page.screenshot({ path: 'tests/screenshots/skills-desktop-tree.png', fullPage: true })
+})
+
 test('renders desktop item catalog', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'desktop capture only')
   await page.getByTestId('nav-equipment').click()
