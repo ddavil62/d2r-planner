@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createBuild, decodeBuild, encodeBuild } from './builds'
+import { createBuild, decodeBuild, decodeBuildCompressed, encodeBuild, encodeBuildCompressed } from './builds'
 import { availableSkillPoints, availableStatPoints, breakpointProgress, calculateSummary, skillCanIncrement } from './calculations'
 import { CLASS_DEFINITIONS } from '../data/classes'
 
@@ -44,7 +44,7 @@ describe('build calculations', () => {
   })
 
   it('reports the next breakpoint', () => {
-    expect(breakpointProgress('sorceress', 'fcr', 64)).toEqual({ reached: 63, next: 105, needed: 41 })
+    expect(breakpointProgress('sorceress', 'fcr', 64)).toEqual({ reached: 63, next: 105, needed: 41, frame: 9, nextFrame: 8 })
   })
 
   it('uses only the active weapon set', () => {
@@ -65,5 +65,13 @@ describe('build calculations', () => {
     build.name = '독조넥 실험'
     build.skills['poison-nova'] = 20
     expect(decodeBuild(encodeBuild(build))).toMatchObject({ name: build.name, skills: build.skills, gameVersion: '3.3' })
+  })
+
+  it('round-trips a compressed URL payload', async () => {
+    const build = createBuild('sorceress')
+    build.name = '친구 공유용 냉기 소서'
+    const code = await encodeBuildCompressed(build)
+    expect(code.length).toBeLessThan(encodeBuild(build).length)
+    await expect(decodeBuildCompressed(code)).resolves.toMatchObject({ name: build.name, classId: 'sorceress' })
   })
 })

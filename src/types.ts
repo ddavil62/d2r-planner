@@ -108,6 +108,25 @@ export interface EquippedItem {
   modifiers?: Modifiers
 }
 
+export interface InventoryItem {
+  id: string
+  definitionId: string
+  x: number
+  y: number
+}
+
+export interface CatalogItem {
+  id: string
+  name: string
+  baseName: string
+  category: 'unique' | 'set' | 'runeword'
+  requiredLevel: number
+  slot: 'head' | 'amulet' | 'weapon' | 'offhand' | 'armor' | 'gloves' | 'ring' | 'belt' | 'boots' | 'charm'
+  width: number
+  height: number
+  properties: readonly string[]
+}
+
 export interface BuildProfile {
   id: string
   name: string
@@ -120,11 +139,12 @@ export interface BuildProfile {
   attributes: Record<AttributeId, number>
   skills: Record<string, number>
   equipment: Partial<Record<EquipmentSlot, EquippedItem>>
+  inventory: InventoryItem[]
   activeWeaponSet: 1 | 2
   notes: string
   createdAt: string
   updatedAt: string
-  schemaVersion: 1
+  schemaVersion: 2
   gameVersion: '3.3'
   era: 'reign-of-the-warlock'
   ladder: false

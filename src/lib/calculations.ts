@@ -31,10 +31,11 @@ export function getEquipmentModifiers(build: BuildProfile, includeSwap = false):
     if (slot === 'swapWeapon' || slot === 'swapOffhand') return build.activeWeaponSet === 2
     return true
   })
+  const inventoryModifiers = build.inventory.map((item) => ITEMS_BY_ID[item.definitionId]?.modifiers)
   return mergeModifiers(...entries.map(([, equipped]) => {
     if (!equipped) return undefined
     return mergeModifiers(ITEMS_BY_ID[equipped.definitionId]?.modifiers, equipped.modifiers)
-  }))
+  }), ...inventoryModifiers)
 }
 
 export function availableSkillPoints(build: Pick<BuildProfile, 'level' | 'questSkillPoints'>): number {
@@ -133,11 +134,17 @@ export const BREAKPOINTS: Record<ClassId, { fcr: number[]; fhr: number[]; fbr: n
   },
 }
 
+const BREAKPOINT_FRAMES: Record<ClassId, { fcr: number[]; fhr: number[]; fbr: number[] }> = {
+  sorceress: { fcr: [13, 12, 11, 10, 9, 8, 7], fhr: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5], fbr: [9, 8, 7, 6, 5, 4, 3] },
+  necromancer: { fcr: [15, 14, 13, 12, 11, 10, 9], fhr: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4], fbr: [11, 10, 9, 8, 7, 6, 5, 4, 3] },
+}
+
 export function breakpointProgress(classId: ClassId, type: 'fcr' | 'fhr' | 'fbr', value: number) {
   const points = BREAKPOINTS[classId][type]
   const reached = [...points].reverse().find((point) => point <= value) ?? 0
   const next = points.find((point) => point > value)
-  return { reached, next, needed: next === undefined ? 0 : next - value }
+  const index = points.indexOf(reached)
+  return { reached, next, needed: next === undefined ? 0 : next - value, frame: BREAKPOINT_FRAMES[classId][type][index], nextFrame: next === undefined ? undefined : BREAKPOINT_FRAMES[classId][type][index + 1] }
 }
 
 export function emptyModifiers(): Modifiers {

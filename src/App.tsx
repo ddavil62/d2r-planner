@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CLASS_DEFINITIONS } from './data/classes'
 import { ITEMS, ITEMS_BY_ID } from './data/items'
+import { ITEM_CATALOG } from './data/catalog.generated'
 import { BUILD_TEMPLATES } from './data/templates'
 import {
   availableSkillPoints,
@@ -16,29 +17,38 @@ import {
 import {
   createBuild,
   decodeBuild,
+  decodeBuildCompressed,
   DRAFT_KEY,
   encodeBuild,
+  encodeBuildCompressed,
+  HISTORY_KEY,
+  loadHistory,
   loadBuilds,
   loadDraft,
+  normalizeBuild,
   STORAGE_KEY,
+  WISHLIST_KEY,
 } from './lib/builds'
+import { canPlaceInventory, charmSize, firstInventoryPosition, INVENTORY_HEIGHT, INVENTORY_WIDTH } from './lib/inventory'
 import type {
   AttributeId,
   BuildProfile,
   BuildSummary,
+  CatalogItem,
   ClassId,
   EquipmentSlot,
   Modifiers,
   SkillDefinition,
 } from './types'
 
-type Page = 'overview' | 'skills' | 'attributes' | 'equipment' | 'library'
+type Page = 'overview' | 'skills' | 'attributes' | 'equipment' | 'inventory' | 'library'
 
 const pages: { id: Page; label: string; icon: string }[] = [
   { id: 'overview', label: '빌드 요약', icon: '◆' },
   { id: 'skills', label: '기술', icon: '✦' },
   { id: 'attributes', label: '능력치', icon: '▲' },
   { id: 'equipment', label: '장비', icon: '◇' },
+  { id: 'inventory', label: '인벤토리', icon: '▦' },
   { id: 'library', label: '보관함·비교', icon: '▤' },
 ]
 
@@ -74,8 +84,13 @@ function App() {
   const [page, setPage] = useState<Page>('overview')
   const [build, setBuild] = useState<BuildProfile>(() => loadDraft())
   const [savedBuilds, setSavedBuilds] = useState<BuildProfile[]>(() => loadBuilds())
+  const [history, setHistory] = useState<BuildProfile[]>(() => loadHistory())
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(WISHLIST_KEY) ?? '[]') } catch { return [] }
+  })
   const [shareOpen, setShareOpen] = useState(false)
   const [shareCode, setShareCode] = useState('')
+  const [shareLink, setShareLink] = useState('')
   const [toast, setToast] = useState('')
   const summary = useMemo(() => calculateSummary(build), [build])
   const classDefinition = CLASS_DEFINITIONS[build.classId]
@@ -83,6 +98,15 @@ function App() {
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(build))
   }, [build])
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.hash.slice(1)).get('b')
+    if (!code) return
+    decodeBuildCompressed(code).then((imported) => {
+      setBuild({ ...imported, id: crypto.randomUUID(), name: `${imported.name} (링크)` })
+      setToast('공유 링크의 빌드를 불러왔습니다.')
+    }).catch(() => setToast('공유 링크를 읽지 못했습니다.'))
+  }, [])
 
   useEffect(() => {
     if (!toast) return
@@ -113,12 +137,18 @@ function App() {
     const template = BUILD_TEMPLATES.find((item) => item.id === templateId)
     if (!template) return
     const base = createBuild(template.classId)
-    setBuild({ ...base, name: template.name, skills: { ...template.skills }, attributes: { ...template.attributes }, equipment: { ...template.equipment }, notes: template.description })
+    setBuild(normalizeBuild({ ...base, name: template.name, skills: { ...template.skills }, attributes: { ...template.attributes }, equipment: { ...template.equipment }, notes: template.description }))
     setToast(`${template.name}을 적용했습니다.`)
   }
 
   const saveCurrent = () => {
     const snapshot = { ...build, updatedAt: new Date().toISOString() }
+    const previous = savedBuilds.find((item) => item.id === snapshot.id)
+    if (previous) {
+      const nextHistory = [previous, ...history].slice(0, 20)
+      setHistory(nextHistory)
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory))
+    }
     const next = [...savedBuilds.filter((item) => item.id !== snapshot.id), snapshot]
     setSavedBuilds(next)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
@@ -126,8 +156,10 @@ function App() {
     setToast('보관함에 저장했습니다.')
   }
 
-  const openShare = () => {
+  const openShare = async () => {
     setShareCode(encodeBuild(build))
+    const compressed = await encodeBuildCompressed(build)
+    setShareLink(`${window.location.origin}${window.location.pathname}#b=${compressed}`)
     setShareOpen(true)
   }
 
@@ -145,6 +177,17 @@ function App() {
   const copyShareCode = async () => {
     await navigator.clipboard.writeText(encodeBuild(build))
     setToast('빌드 코드를 복사했습니다.')
+  }
+
+  const copyShareLink = async () => {
+    await navigator.clipboard.writeText(shareLink)
+    setToast('공유 링크를 복사했습니다.')
+  }
+
+  const toggleWishlist = (id: string) => {
+    const next = wishlist.includes(id) ? wishlist.filter((item) => item !== id) : [...wishlist, id]
+    setWishlist(next)
+    localStorage.setItem(WISHLIST_KEY, JSON.stringify(next))
   }
 
   return (
@@ -186,8 +229,9 @@ function App() {
         {page === 'overview' && <Overview build={build} summary={summary} setPage={setPage} updateBuild={updateBuild} />}
         {page === 'skills' && <SkillPlanner build={build} setBuild={setBuild} />}
         {page === 'attributes' && <AttributePlanner build={build} setBuild={setBuild} summary={summary} />}
-        {page === 'equipment' && <EquipmentPlanner build={build} setBuild={setBuild} />}
-        {page === 'library' && <Library builds={savedBuilds} current={build} onLoad={setBuild} onDelete={(id) => {
+        {page === 'equipment' && <EquipmentPlanner build={build} setBuild={setBuild} wishlist={wishlist} toggleWishlist={toggleWishlist} />}
+        {page === 'inventory' && <InventoryPlanner build={build} setBuild={setBuild} />}
+        {page === 'library' && <Library builds={savedBuilds} history={history} current={build} onLoad={setBuild} onDelete={(id) => {
           const next = savedBuilds.filter((item) => item.id !== id)
           setSavedBuilds(next)
           localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
@@ -201,8 +245,10 @@ function App() {
           <section className="modal" onMouseDown={(event) => event.stopPropagation()}>
             <div className="modal-header"><div><small>서버 없이 공유</small><h2>빌드 코드</h2></div><button onClick={() => setShareOpen(false)}>×</button></div>
             <p>아래 코드를 텔레그램으로 보내면 상대가 같은 화면에서 가져올 수 있습니다.</p>
+            <label className="share-link-field"><span>압축 URL</span><input value={shareLink} readOnly /></label>
             <textarea value={shareCode} onChange={(event) => setShareCode(event.target.value)} rows={8} spellCheck={false} />
             <div className="modal-actions">
+              <button className="button primary" onClick={copyShareLink}>링크 복사</button>
               <button className="button ghost" onClick={copyShareCode}>현재 빌드 복사</button>
               <button className="button primary" onClick={importCode}>입력한 코드 가져오기</button>
             </div>
@@ -351,9 +397,25 @@ function AttributePlanner({ build, setBuild, summary }: { build: BuildProfile; s
   )
 }
 
-function EquipmentPlanner({ build, setBuild }: { build: BuildProfile; setBuild: React.Dispatch<React.SetStateAction<BuildProfile>> }) {
-  const slots = Object.keys(slotLabels) as EquipmentSlot[]
+function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build: BuildProfile; setBuild: React.Dispatch<React.SetStateAction<BuildProfile>>; wishlist: string[]; toggleWishlist: (id: string) => void }) {
+  const slots = (Object.keys(slotLabels) as EquipmentSlot[]).filter((slot) => !slot.startsWith('charm'))
   const classSkills = CLASS_DEFINITIONS[build.classId].skills
+  const catalog = ITEM_CATALOG as readonly unknown[] as readonly CatalogItem[]
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('all')
+  const [catalogSlot, setCatalogSlot] = useState('all')
+  const [maxRequiredLevel, setMaxRequiredLevel] = useState(99)
+  const [wishlistOnly, setWishlistOnly] = useState(false)
+  const [candidateIds, setCandidateIds] = useState<[string, string]>(['', ''])
+  const filteredCatalog = useMemo(() => catalog.filter((item) => {
+    const needle = query.trim().toLowerCase()
+    return (!needle || `${item.name} ${item.baseName} ${item.properties.join(' ')}`.toLowerCase().includes(needle))
+      && (category === 'all' || item.category === category)
+      && (catalogSlot === 'all' || item.slot === catalogSlot)
+      && (!item.requiredLevel || item.requiredLevel <= maxRequiredLevel)
+      && (!wishlistOnly || wishlist.includes(item.id))
+  }).slice(0, 24), [catalog, query, category, catalogSlot, maxRequiredLevel, wishlistOnly, wishlist])
+  const candidates = candidateIds.map((id) => catalog.find((item) => item.id === id))
   const selectItem = (slot: EquipmentSlot, definitionId: string) => setBuild((current) => {
     const equipment = { ...current.equipment }
     if (!definitionId) delete equipment[slot]
@@ -365,9 +427,45 @@ function EquipmentPlanner({ build, setBuild }: { build: BuildProfile; setBuild: 
     equipment: { ...current.equipment, [slot]: { ...current.equipment[slot]!, ...patch } },
     updatedAt: new Date().toISOString(),
   }))
+  const equipCatalogItem = (item: CatalogItem) => {
+    const known = ITEMS.find((candidate) => candidate.nameEn.toLowerCase() === item.name.toLowerCase())
+    const slot = (item.slot === 'ring' ? 'ring1' : item.slot) as EquipmentSlot
+    if (!slots.includes(slot)) return
+    setBuild((current) => ({
+      ...current,
+      equipment: { ...current.equipment, [slot]: known ? { definitionId: known.id, modifiers: {} } : { definitionId: 'custom', name: item.name, modifiers: {} } },
+      updatedAt: new Date().toISOString(),
+    }))
+  }
   return (
     <div className="page-stack">
       <section className="page-title"><div><small>EQUIPMENT LAB</small><h1>장비 구성</h1><p>대표 아이템은 최대 변동치 기준입니다. 실제 수치는 추가 보정에서 차이를 입력할 수 있습니다.</p></div><div className="weapon-set-toggle"><span>활성 무기</span><button className={build.activeWeaponSet === 1 ? 'active' : ''} onClick={() => setBuild((current) => ({ ...current, activeWeaponSet: 1 }))}>I</button><button className={build.activeWeaponSet === 2 ? 'active' : ''} onClick={() => setBuild((current) => ({ ...current, activeWeaponSet: 2 }))}>II</button></div></section>
+      <section className="panel catalog-panel">
+        <div className="section-heading"><div><small>3.3 ITEM CATALOG</small><h2>전체 아이템 검색</h2></div><span>고유 403 · 세트 135 · 룬워드 99</span></div>
+        <div className="catalog-filters">
+          <input aria-label="아이템 검색" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="이름, 베이스, 원본 옵션 검색" />
+          <select value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">모든 등급</option><option value="unique">고유</option><option value="set">세트</option><option value="runeword">룬워드</option></select>
+          <select value={catalogSlot} onChange={(event) => setCatalogSlot(event.target.value)}><option value="all">모든 부위</option>{['head','amulet','weapon','offhand','armor','gloves','ring','belt','boots','charm'].map((slot) => <option key={slot} value={slot}>{slot === 'ring' ? '반지' : slot === 'charm' ? '부적' : slotLabels[slot as EquipmentSlot]}</option>)}</select>
+          <label>요구 레벨 ≤ <input aria-label="최대 요구 레벨" type="number" min={1} max={99} value={maxRequiredLevel} onChange={(event) => setMaxRequiredLevel(Math.max(1, Math.min(99, Number(event.target.value) || 1)))} /></label>
+          <label><input type="checkbox" checked={wishlistOnly} onChange={(event) => setWishlistOnly(event.target.checked)} /> 파밍 목록만</label>
+        </div>
+        <div className="catalog-results">{filteredCatalog.map((item) => {
+          const selected = candidateIds.includes(item.id)
+          const known = ITEMS.find((candidate) => candidate.nameEn.toLowerCase() === item.name.toLowerCase())
+          const previewSlot = (item.slot === 'ring' ? 'ring1' : item.slot) as EquipmentSlot
+          const currentSummary = calculateSummary(build)
+          const previewSummary = known && slots.includes(previewSlot) ? calculateSummary({ ...build, equipment: { ...build.equipment, [previewSlot]: { definitionId: known.id } } }) : undefined
+          const fcrDelta = previewSummary ? previewSummary.fasterCastRate - currentSummary.fasterCastRate : 0
+          return <article className={`catalog-item ${selected ? 'selected' : ''}`} key={item.id}>
+            <div><small>{item.category.toUpperCase()} · LV {item.requiredLevel || '—'}</small><strong>{item.name}</strong><span>{item.baseName} · {item.slot}</span></div>
+            <p>{item.properties.slice(0, 4).join(' / ') || '원본 옵션 없음'}</p>
+            {previewSummary && <small className="impact-chip">현재 장비 교체 시 패캐 {fcrDelta >= 0 ? '+' : ''}{fcrDelta} · 생명력 {previewSummary.life - currentSummary.life >= 0 ? '+' : ''}{previewSummary.life - currentSummary.life}</small>}
+            <div><button onClick={() => toggleWishlist(item.id)}>{wishlist.includes(item.id) ? '★ 파밍 중' : '☆ 파밍'}</button><button onClick={() => setCandidateIds(([left, right]) => !left ? [item.id, right] : !right ? [left, item.id] : [item.id, ''])}>비교</button>{item.slot !== 'charm' && <button onClick={() => equipCatalogItem(item)}>착용</button>}</div>
+          </article>
+        })}</div>
+        {filteredCatalog.length === 0 && <EmptyState text="조건에 맞는 아이템이 없습니다." action="검색어나 필터를 바꿔보세요." />}
+      </section>
+      {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>후보 장비 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{item.name}</h3><p>{item.baseName} · 요구 레벨 {item.requiredLevel || '없음'}</p><ul>{item.properties.map((property) => <li key={property}>{property}</li>)}</ul></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>)}</div></section>}
       <div className="equipment-grid">
         {slots.map((slot) => {
           const equipped = build.equipment[slot]
@@ -393,14 +491,53 @@ function EquipmentPlanner({ build, setBuild }: { build: BuildProfile; setBuild: 
   )
 }
 
-function Library({ builds, current, onLoad, onDelete }: { builds: BuildProfile[]; current: BuildProfile; onLoad: (build: BuildProfile) => void; onDelete: (id: string) => void }) {
+function InventoryPlanner({ build, setBuild }: { build: BuildProfile; setBuild: React.Dispatch<React.SetStateAction<BuildProfile>> }) {
+  const charms = ITEMS.filter((item) => item.category === 'charm')
+  const [selectedCharm, setSelectedCharm] = useState(charms[0]?.id ?? '')
+  const [movingId, setMovingId] = useState('')
+  const usedCells = build.inventory.reduce((sum, item) => { const size = charmSize(item.definitionId); return sum + size.width * size.height }, 0)
+  const addCharm = () => {
+    const position = firstInventoryPosition(build.inventory, selectedCharm)
+    if (!position) return
+    const unique = ['annihilus', 'hellfire-torch-necro', 'hellfire-torch-sorc', 'sunder-cold', 'sunder-poison'].includes(selectedCharm)
+    if (unique && build.inventory.some((item) => item.definitionId === selectedCharm)) return
+    setBuild((current) => ({ ...current, inventory: [...current.inventory, { id: crypto.randomUUID(), definitionId: selectedCharm, ...position }], updatedAt: new Date().toISOString() }))
+  }
+  const moveTo = (x: number, y: number) => {
+    const moving = build.inventory.find((item) => item.id === movingId)
+    if (!moving || !canPlaceInventory(build.inventory, moving, x, y)) return
+    setBuild((current) => ({ ...current, inventory: current.inventory.map((item) => item.id === movingId ? { ...item, x, y } : item), updatedAt: new Date().toISOString() }))
+    setMovingId('')
+  }
+  return <div className="page-stack">
+    <section className="page-title"><div><small>CHARM INVENTORY</small><h1>인벤토리와 부적</h1><p>10×4 공간에 부적과 큐브를 배치하면 옵션과 남은 공간을 함께 확인할 수 있습니다.</p></div><div className="budget-pill"><span>사용</span><strong>{usedCells}</strong><i>·</i><span>빈 공간</span><strong>{INVENTORY_WIDTH * INVENTORY_HEIGHT - usedCells}</strong></div></section>
+    <div className="inventory-layout">
+      <section className="panel inventory-panel">
+        <div className="inventory-board">
+          {Array.from({ length: INVENTORY_WIDTH * INVENTORY_HEIGHT }, (_, index) => { const x = index % INVENTORY_WIDTH; const y = Math.floor(index / INVENTORY_WIDTH); return <button aria-label={`인벤토리 ${x + 1},${y + 1}`} key={index} className="inventory-cell" onClick={() => moveTo(x, y)} /> })}
+          {build.inventory.map((item) => { const definition = ITEMS_BY_ID[item.definitionId]; const size = charmSize(item.definitionId); const name = item.definitionId === 'horadric-cube' ? '호라드림의 함' : definition?.nameKo ?? item.definitionId; return <button title={name} key={item.id} className={`inventory-charm ${item.definitionId === 'horadric-cube' ? 'cube' : ''} ${movingId === item.id ? 'moving' : ''}`} style={{ gridColumn: `${item.x + 1} / span ${size.width}`, gridRow: `${item.y + 1} / span ${size.height}` }} onClick={() => setMovingId(movingId === item.id ? '' : item.id)}><strong>{size.width === 1 && size.height === 1 ? name.slice(0, 1) : name}</strong><small>{item.definitionId === 'horadric-cube' ? '2×2' : size.height === 1 ? '작은 부적' : size.height === 2 ? '큰 부적' : '거대 부적'}</small></button> })}
+        </div>
+        <p className="calc-caveat">옮길 부적을 선택한 다음 빈 칸을 누르세요. 겹치거나 범위를 벗어나는 위치에는 놓을 수 없습니다.</p>
+      </section>
+      <section className="panel charm-palette">
+        <div className="section-heading"><div><small>CHARM RACK</small><h2>부적 추가</h2></div><span>{build.inventory.length}개</span></div>
+        <select aria-label="추가할 부적" value={selectedCharm} onChange={(event) => setSelectedCharm(event.target.value)}>{charms.map((item) => <option key={item.id} value={item.id}>{item.nameKo} · {item.nameEn}</option>)}</select>
+        <button className="button primary" onClick={addCharm} disabled={!firstInventoryPosition(build.inventory, selectedCharm)}>빈 공간에 추가</button>
+        <button className="button ghost cube-toggle" onClick={() => setBuild((current) => { const existing = current.inventory.find((item) => item.definitionId === 'horadric-cube'); if (existing) return { ...current, inventory: current.inventory.filter((item) => item.id !== existing.id), updatedAt: new Date().toISOString() }; const position = firstInventoryPosition(current.inventory, 'horadric-cube'); return position ? { ...current, inventory: [...current.inventory, { id: crypto.randomUUID(), definitionId: 'horadric-cube', ...position }], updatedAt: new Date().toISOString() } : current })}>{build.inventory.some((item) => item.definitionId === 'horadric-cube') ? '호라드림의 함 제거' : '호라드림의 함 2×2 추가'}</button>
+        <div className="charm-list">{build.inventory.map((item) => <div key={item.id}><span>{item.definitionId === 'horadric-cube' ? '호라드림의 함' : ITEMS_BY_ID[item.definitionId]?.nameKo ?? item.definitionId}</span><button onClick={() => setBuild((current) => ({ ...current, inventory: current.inventory.filter((candidate) => candidate.id !== item.id), updatedAt: new Date().toISOString() }))}>제거</button></div>)}</div>
+      </section>
+    </div>
+  </div>
+}
+
+function Library({ builds, history, current, onLoad, onDelete }: { builds: BuildProfile[]; history: BuildProfile[]; current: BuildProfile; onLoad: (build: BuildProfile) => void; onDelete: (id: string) => void }) {
   const [compareId, setCompareId] = useState('')
   const compared = builds.find((item) => item.id === compareId)
   const currentSummary = calculateSummary(current)
   const comparedSummary = compared ? calculateSummary(compared) : undefined
   return (
     <div className="page-stack">
-      <section className="page-title"><div><small>LOCAL VAULT</small><h1>보관함과 비교</h1><p>모든 데이터는 이 브라우저에만 저장됩니다. 공유는 상단의 빌드 코드를 사용하세요.</p></div><select value={compareId} onChange={(event) => setCompareId(event.target.value)}><option value="">현재 빌드와 비교할 저장본 선택</option>{builds.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></section>
+      <section className="page-title"><div><small>LOCAL VAULT</small><h1>보관함과 비교</h1><p>저장할 때 이전 상태가 최대 20개까지 남습니다. 상단 공유 버튼에서는 압축 URL을 만들 수 있습니다.</p></div><select value={compareId} onChange={(event) => setCompareId(event.target.value)}><option value="">현재 빌드와 비교할 저장본 선택</option>{builds.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></section>
       {compared && comparedSummary && <ComparePanel left={current} leftSummary={currentSummary} right={compared} rightSummary={comparedSummary} />}
       <div className="build-library">
         {builds.length === 0 ? <EmptyState text="아직 저장된 빌드가 없습니다." action="상단의 현재 저장을 눌러 첫 빌드를 보관하세요." /> : [...builds].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map((item) => {
@@ -414,6 +551,7 @@ function Library({ builds, current, onLoad, onDelete }: { builds: BuildProfile[]
           </article>
         })}
       </div>
+      {history.length > 0 && <section className="panel history-panel"><div className="section-heading"><div><small>REVISION HISTORY</small><h2>변경 이력</h2></div><span>최근 {history.length}개</span></div><div>{history.slice(0, 10).map((item, index) => <article key={`${item.id}-${item.updatedAt}-${index}`}><div><strong>{item.name}</strong><small>{new Date(item.updatedAt).toLocaleString('ko-KR')} · 패캐 {calculateSummary(item).fasterCastRate}</small></div><button className="button ghost" onClick={() => onLoad({ ...item, updatedAt: new Date().toISOString() })}>이 상태 복원</button></article>)}</div></section>}
       <section className="panel notes-editor"><div><small>BUILD NOTES</small><h2>현재 빌드 메모</h2></div><textarea value={current.notes} readOnly placeholder="현재는 빌드 화면 초안에 메모가 포함되어 저장됩니다." /></section>
     </div>
   )
@@ -425,13 +563,24 @@ function ComparePanel({ left, leftSummary, right, rightSummary }: { left: BuildP
     { label: '패캐', left: leftSummary.fasterCastRate, right: rightSummary.fasterCastRate, suffix: '%' }, { label: '패힛', left: leftSummary.fasterHitRecovery, right: rightSummary.fasterHitRecovery, suffix: '%' },
     { label: '매찬', left: leftSummary.magicFind, right: rightSummary.magicFind, suffix: '%' }, { label: '화염 저항', left: leftSummary.resistances.fire, right: rightSummary.resistances.fire, suffix: '%' },
     { label: '냉기 저항', left: leftSummary.resistances.cold, right: rightSummary.resistances.cold, suffix: '%' }, { label: '번개 저항', left: leftSummary.resistances.lightning, right: rightSummary.resistances.lightning, suffix: '%' },
+    { label: '독 저항', left: leftSummary.resistances.poison, right: rightSummary.resistances.poison, suffix: '%' }, { label: '모든 기술', left: leftSummary.allSkills, right: rightSummary.allSkills },
   ]
-  return <section className="compare-panel panel"><div className="compare-names"><strong>{left.name}</strong><span>VS</span><strong>{right.name}</strong></div>{rows.map((row) => <div className="compare-row" key={row.label}><span className={row.left > row.right ? 'winner' : ''}>{row.left}{row.suffix}</span><small>{row.label}</small><span className={row.right > row.left ? 'winner' : ''}>{row.right}{row.suffix}</span></div>)}</section>
+  const gearSlots = (Object.keys(slotLabels) as EquipmentSlot[]).filter((slot) => !slot.startsWith('charm'))
+  const gearChanges = gearSlots.map((slot) => {
+    const leftItem = left.equipment[slot]; const rightItem = right.equipment[slot]
+    const leftName = leftItem?.name ?? ITEMS_BY_ID[leftItem?.definitionId ?? '']?.nameKo ?? '비어 있음'
+    const rightName = rightItem?.name ?? ITEMS_BY_ID[rightItem?.definitionId ?? '']?.nameKo ?? '비어 있음'
+    return { slot, leftName, rightName }
+  }).filter((item) => item.leftName !== item.rightName)
+  const definition = CLASS_DEFINITIONS[left.classId]
+  const skillChanges = left.classId === right.classId ? definition.skills.map((skill) => ({ name: skill.nameKo, left: left.skills[skill.id] ?? 0, right: right.skills[skill.id] ?? 0 })).filter((item) => item.left !== item.right).slice(0, 12) : []
+  return <section className="compare-panel panel"><div className="compare-names"><strong>{left.name}</strong><span>VS</span><strong>{right.name}</strong></div>{rows.map((row) => <div className="compare-row" key={row.label}><span className={row.left > row.right ? 'winner' : ''}>{row.left}{row.suffix}</span><small>{row.label}</small><span className={row.right > row.left ? 'winner' : ''}>{row.right}{row.suffix}</span></div>)}{gearChanges.length > 0 && <div className="difference-list"><h3>장비 차이</h3>{gearChanges.map((item) => <div key={item.slot}><span>{item.leftName}</span><small>{slotLabels[item.slot]}</small><span>{item.rightName}</span></div>)}</div>}{skillChanges.length > 0 && <div className="difference-list"><h3>기술 차이</h3>{skillChanges.map((item) => <div key={item.name}><span>{item.left}</span><small>{item.name}</small><span>{item.right}</span></div>)}</div>}</section>
 }
 
 function BreakpointPanel({ build, summary }: { build: BuildProfile; summary: BuildSummary }) {
   const values = [{ type: 'fcr' as const, label: '패캐', value: summary.fasterCastRate }, { type: 'fhr' as const, label: '패힛', value: summary.fasterHitRecovery }, { type: 'fbr' as const, label: '패블럭', value: summary.fasterBlockRate }]
-  return <section className="panel section-card breakpoint-card"><div className="section-heading"><div><small>BREAKPOINTS</small><h2>프레임 구간</h2></div><span>일반 시전 기준</span></div><div className="breakpoint-list">{values.map((entry) => { const progress = breakpointProgress(build.classId, entry.type, entry.value); return <div key={entry.type}><span>{entry.label}</span><strong>{entry.value}%</strong><div><i style={{ width: `${progress.next ? Math.min(100, entry.value / progress.next * 100) : 100}%` }} /></div><small>{progress.next ? `다음 ${progress.next}% · ${progress.needed}% 필요` : '최고 구간 도달'}</small></div> })}</div><p className="calc-caveat">번개·연쇄 번개, 곰 변신 등 별도 애니메이션은 추후 분리됩니다.</p></section>
+  const recommended = build.classId === 'sorceress' ? { fcr: 105, fhr: 60, fbr: 48 } : { fcr: 125, fhr: 56, fbr: 52 }
+  return <section className="panel section-card breakpoint-card"><div className="section-heading"><div><small>BREAKPOINTS</small><h2>프레임 목표</h2></div><span>{build.classId === 'sorceress' ? '소서 105 패캐 권장' : '네크 125 패캐 권장'}</span></div><div className="breakpoint-list">{values.map((entry) => { const progress = breakpointProgress(build.classId, entry.type, entry.value); const target = recommended[entry.type]; const targetNeed = Math.max(0, target - entry.value); return <div key={entry.type}><span>{entry.label}</span><strong>{entry.value}% · {progress.frame}프레임</strong><div><i style={{ width: `${Math.min(100, entry.value / target * 100)}%` }} /></div><small>{progress.next ? `다음 ${progress.next}% (${progress.nextFrame}프레임)까지 ${progress.needed}` : '최고 구간 도달'} · 권장 {targetNeed ? `${targetNeed} 부족` : '달성'}</small></div> })}</div><p className="calc-caveat">일반 시전·피격·방패 막기 애니메이션 기준입니다. 번개·연쇄 번개처럼 별도 시전 프레임을 쓰는 기술은 일반 패캐와 구분하세요.</p></section>
 }
 
 function SummaryRail({ build, summary }: { build: BuildProfile; summary: BuildSummary }) {
