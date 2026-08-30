@@ -329,6 +329,7 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
   const available = availableSkillPoints(build)
   const equipmentModifiers = getEquipmentModifiers(build)
   const treeRow = (skill: SkillDefinition) => skill.requiredLevel === 1 ? 1 : skill.requiredLevel / 6 + 1
+  const treeLevels = [1, 6, 12, 18, 24, 30]
   const treeRowHeight = 112
   const skillNodeHeight = 100
   const skillNodeTop = (treeRowHeight - skillNodeHeight) / 2
@@ -352,27 +353,46 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
         {definition.branches.map((branch) => {
           const branchSkills = definition.skills.filter((item) => item.branch === branch)
           const branchIds = new Set(branchSkills.map((item) => item.id))
+          const occupied = (col: number, row: number) => branchSkills.some((skill) => skill.col === col && treeRow(skill) === row)
+          const connectorPath = (prerequisite: SkillDefinition, item: SkillDefinition) => {
+            const sourceX = (prerequisite.col - .5) * 100
+            const targetX = (item.col - .5) * 100
+            const sourceRow = treeRow(prerequisite)
+            const targetRow = treeRow(item)
+            const sourceY = (sourceRow - 1) * treeRowHeight + skillNodeTop + skillNodeHeight
+            const targetY = (targetRow - 1) * treeRowHeight + skillNodeTop
+            if (prerequisite.col === item.col) return `M ${sourceX} ${sourceY} V ${targetY}`
+            if (sourceRow === targetRow) {
+              // 같은 행에서 열이 다른 경우: 최하단 행이 아니면 아래쪽 여백으로,
+              // 최하단 행이면 위쪽 여백으로 우회해 다른 노드와 겹치지 않게 한다.
+              const isLastRow = targetRow === treeLevels.length
+              const routeY = isLastRow ? (targetRow - 1) * treeRowHeight : targetRow * treeRowHeight
+              const anchorY = isLastRow ? targetY : sourceY
+              return `M ${sourceX} ${anchorY} V ${routeY} H ${targetX} V ${anchorY}`
+            }
+            // 행이 여러 개 떨어져 있고 열도 바뀌는 경우: 가로 이동 지점을
+            // 중간 행 노드와 겹치지 않는 여백 쪽으로 선택한다.
+            let bestGap = 0
+            let bestCollisions = Infinity
+            for (let gap = 0; gap <= targetRow - sourceRow - 1; gap += 1) {
+              let collisions = 0
+              for (let row = sourceRow + 1; row <= sourceRow + gap; row += 1) if (occupied(prerequisite.col, row)) collisions += 1
+              for (let row = sourceRow + gap + 1; row <= targetRow - 1; row += 1) if (occupied(item.col, row)) collisions += 1
+              if (collisions < bestCollisions) { bestCollisions = collisions; bestGap = gap }
+            }
+            const jogY = (sourceRow + bestGap) * treeRowHeight
+            return `M ${sourceX} ${sourceY} V ${jogY} H ${targetX} V ${targetY}`
+          }
           return <section className="skill-tree panel" key={branch}>
             <div className="tree-title"><small>SKILL TREE</small><h2>{branch}</h2><span>{definition.skills.filter((item) => item.branch === branch).reduce((sum, item) => sum + (build.skills[item.id] ?? 0), 0)} 포인트</span></div>
             <div className="skill-tree-canvas">
-              <div className="tree-level-guide">{[1, 6, 12, 18, 24, 30].map((level) => <span key={level}>LV {level}</span>)}</div>
+              <div className="tree-level-guide">{treeLevels.map((level) => <span key={level}>LV {level}</span>)}</div>
               <svg className="skill-connectors" viewBox="0 0 300 672" preserveAspectRatio="none" aria-hidden="true">
                 {branchSkills.flatMap((item) => (item.prerequisites ?? []).filter((id) => branchIds.has(id)).map((prerequisiteId) => {
                   const prerequisite = branchSkills.find((candidate) => candidate.id === prerequisiteId)!
-                  const sourceX = (prerequisite.col - .5) * 100
-                  const targetX = (item.col - .5) * 100
-                  const sourceY = (treeRow(prerequisite) - 1) * treeRowHeight + skillNodeTop + skillNodeHeight
-                  const targetY = (treeRow(item) - 1) * treeRowHeight + skillNodeTop
-                  const middleY = (sourceY + targetY) / 2
-                  const sameRow = treeRow(prerequisite) === treeRow(item)
-                  const sameRowAnchorY = (treeRow(item) - 1) * treeRowHeight + skillNodeTop
-                  const sameRowRouteY = (treeRow(item) - 1) * treeRowHeight
                   const active = (build.skills[prerequisite.id] ?? 0) > 0
                   const invested = (build.skills[item.id] ?? 0) > 0
-                  const path = sameRow
-                    ? `M ${sourceX} ${sameRowAnchorY} V ${sameRowRouteY} H ${targetX} V ${sameRowAnchorY}`
-                    : `M ${sourceX} ${sourceY} V ${middleY} H ${targetX} V ${targetY}`
-                  return <path key={`${prerequisiteId}-${item.id}`} className={`${active ? 'ready' : ''} ${invested ? 'active' : ''}`} d={path} />
+                  return <path key={`${prerequisiteId}-${item.id}`} className={`${active ? 'ready' : ''} ${invested ? 'active' : ''}`} d={connectorPath(prerequisite, item)} />
                 }))}
               </svg>
               {branchSkills.sort((a, b) => a.requiredLevel - b.requiredLevel || a.col - b.col).map((item) => {
