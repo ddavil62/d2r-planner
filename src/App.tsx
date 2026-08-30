@@ -495,6 +495,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
   const [maxRequiredLevel, setMaxRequiredLevel] = useState(99)
   const [wishlistOnly, setWishlistOnly] = useState(false)
   const [candidateIds, setCandidateIds] = useState<[string, string]>(['', ''])
+  const [selectedSlot, setSelectedSlot] = useState<EquipmentSlot>('weapon')
   const filteredCatalog = useMemo(() => catalog.filter((item) => {
     const needle = query.trim().toLowerCase()
     return (!needle || `${item.name} ${item.baseName} ${item.properties.join(' ')}`.toLowerCase().includes(needle))
@@ -519,15 +520,59 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
     const known = ITEMS.find((candidate) => candidate.nameEn.toLowerCase() === item.name.toLowerCase())
     const slot = (item.slot === 'ring' ? 'ring1' : item.slot) as EquipmentSlot
     if (!slots.includes(slot)) return
+    setSelectedSlot(slot)
     setBuild((current) => ({
       ...current,
       equipment: { ...current.equipment, [slot]: known ? { definitionId: known.id, modifiers: {} } : { definitionId: 'custom', name: item.name, modifiers: { ...item.modifiers } } },
       updatedAt: new Date().toISOString(),
     }))
   }
+  const visibleSlots = slots.filter((slot) => !slot.startsWith('swap') && !slot.startsWith('charm')).map((slot) => {
+    if (slot === 'weapon' && build.activeWeaponSet === 2) return 'swapWeapon' as EquipmentSlot
+    if (slot === 'offhand' && build.activeWeaponSet === 2) return 'swapOffhand' as EquipmentSlot
+    return slot
+  })
+  const selectedEquipped = build.equipment[selectedSlot]
+  const selectedDefinition = selectedEquipped ? ITEMS_BY_ID[selectedEquipped.definitionId] : undefined
+  const selectedModifiers = selectedEquipped ? getEquippedItemModifiers(selectedEquipped) : {}
+  const selectedChoices = ITEMS.filter((item) => item.slots.includes(selectedSlot))
+  const slotGlyphs: Partial<Record<EquipmentSlot, string>> = { head: '♜', amulet: '◉', weapon: '†', swapWeapon: '†', offhand: '⬙', swapOffhand: '⬙', armor: '♟', gloves: '⌁', ring1: '○', ring2: '○', belt: '═', boots: '♞' }
+  const positionClass = (slot: EquipmentSlot) => slot === 'swapWeapon' ? 'weapon' : slot === 'swapOffhand' ? 'offhand' : slot
   return (
     <div className="page-stack">
-      <section className="page-title"><div><small>EQUIPMENT LAB</small><h1>장비 구성</h1><p>대표 아이템은 최대 변동치 기준입니다. 실제 수치는 추가 보정에서 차이를 입력할 수 있습니다.</p></div><div className="weapon-set-toggle"><span>활성 무기</span><button className={build.activeWeaponSet === 1 ? 'active' : ''} onClick={() => setBuild((current) => ({ ...current, activeWeaponSet: 1 }))}>I</button><button className={build.activeWeaponSet === 2 ? 'active' : ''} onClick={() => setBuild((current) => ({ ...current, activeWeaponSet: 2 }))}>II</button></div></section>
+      <section className="page-title equipment-page-title"><div><small>EQUIPMENT LAB</small><h1>장비 구성</h1><p>게임 인벤토리와 같은 위치에서 착용 장비를 확인하고, 선택한 슬롯을 큰 편집기에서 수정합니다.</p></div><div className="weapon-set-toggle"><span>활성 무기</span><button className={build.activeWeaponSet === 1 ? 'active' : ''} onClick={() => { setBuild((current) => ({ ...current, activeWeaponSet: 1 })); setSelectedSlot('weapon') }}>I</button><button className={build.activeWeaponSet === 2 ? 'active' : ''} onClick={() => { setBuild((current) => ({ ...current, activeWeaponSet: 2 })); setSelectedSlot('swapWeapon') }}>II</button></div></section>
+      <div className="equipment-focus-layout">
+        <section className="equipment-doll-panel panel">
+          <div className="equipment-panel-heading"><div><small>CLASSIC EQUIPMENT</small><h2>착용 장비</h2></div><span>슬롯을 선택해 옵션을 편집하세요</span></div>
+          <div className="equipment-doll">
+            <div className="equipment-character-mark"><span>☠</span><small>{CLASS_DEFINITIONS[build.classId].nameEn.toUpperCase()}</small></div>
+            <div className="equipment-position-grid">
+              {visibleSlots.map((slot) => {
+                const equipped = build.equipment[slot]
+                const definition = equipped ? ITEMS_BY_ID[equipped.definitionId] : undefined
+                const modifiers = equipped ? getEquippedItemModifiers(equipped) : {}
+                const itemName = definition?.nameKo ?? equipped?.name ?? '비어 있음'
+                const primaryModifier = Object.entries(modifiers).find(([, value]) => value)
+                return <button type="button" data-testid={`doll-slot-${slot}`} className={`doll-equipment-slot position-${positionClass(slot)} ${selectedSlot === slot ? 'selected' : ''} ${equipped ? 'equipped' : ''}`} key={slot} onClick={() => setSelectedSlot(slot)}>
+                  <small>{slotLabels[slot]}</small><i>{slotGlyphs[slot] ?? '◇'}</i><strong>{itemName}</strong>
+                  <em>{primaryModifier ? `${modifierFields.find((field) => field.key === primaryModifier[0])?.label ?? primaryModifier[0]} ${Number(primaryModifier[1]) > 0 ? '+' : ''}${primaryModifier[1]}` : '아이템 선택'}</em>
+                </button>
+              })}
+            </div>
+          </div>
+        </section>
+        <aside className="equipment-detail-panel panel" data-testid="equipment-detail">
+          <div className="equipment-detail-heading"><small>SELECTED SLOT</small><span>{slotLabels[selectedSlot]}</span></div>
+          <div className="equipment-detail-title"><i>{slotGlyphs[selectedSlot] ?? '◇'}</i><div><h2>{selectedDefinition?.nameKo ?? selectedEquipped?.name ?? '비어 있음'}</h2><p>{selectedDefinition?.nameEn ?? '장착할 아이템을 선택하세요'}</p></div></div>
+          <label className="equipment-item-select"><span>장착 아이템</span><select data-testid={`focus-item-select-${selectedSlot}`} value={selectedEquipped?.definitionId ?? ''} onChange={(event) => selectItem(selectedSlot, event.target.value)}><option value="">비어 있음</option>{selectedChoices.map((item) => <option key={item.id} value={item.id}>{item.nameKo} · {item.nameEn}</option>)}</select></label>
+          {selectedEquipped && selectedDefinition && <>
+            {selectedDefinition.id === 'custom' && <input className="custom-name" value={selectedEquipped.name ?? ''} placeholder="아이템 이름" onChange={(event) => updateItem(selectedSlot, { name: event.target.value })} />}
+            <div className="equipment-detail-mods">{Object.entries(selectedModifiers).filter(([, value]) => value).map(([key, value]) => <span key={key}>{modifierFields.find((field) => field.key === key)?.label ?? key}<strong>{Number(value) > 0 ? '+' : ''}{value}</strong></span>)}</div>
+            {selectedDefinition.note && <p className="item-note">{selectedDefinition.note}</p>}
+            <details className="equipment-detail-custom"><summary>{selectedDefinition.id === 'custom' ? '옵션 입력' : '추가 보정 입력'}</summary><div className="individual-skill-editor"><span>개별 기술 보너스</span><select value="" onChange={(event) => { const skillId = event.target.value; if (skillId) updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [`skill:${skillId}`]: 1 } }) }}><option value="">기술 추가…</option>{classSkills.map((skill) => <option value={skill.id} key={skill.id}>{skill.nameKo}</option>)}</select>{Object.entries(selectedEquipped.modifiers ?? {}).filter(([key]) => key.startsWith('skill:')).map(([key, value]) => { const skillId = key.slice(6); const skill = classSkills.find((item) => item.id === skillId); return <label key={key}><span>{skill?.nameKo ?? skillId}</span><input type="number" value={value ?? 0} onChange={(event) => updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [key]: Number(event.target.value) || 0 } })} /></label> })}</div><div className="modifier-editor">{modifierFields.map((field) => <label key={field.key as string}><span>{field.label}</span><input type="number" value={(selectedEquipped.modifiers?.[field.key] as number | undefined) ?? ''} placeholder="0" onChange={(event) => updateItem(selectedSlot, { modifiers: { ...selectedEquipped.modifiers, [field.key]: Number(event.target.value) || 0 } })} /></label>)}</div></details>
+          </>}
+        </aside>
+      </div>
       <section className="panel catalog-panel">
         <div className="section-heading"><div><small>3.3 ITEM CATALOG</small><h2>전체 아이템 검색</h2></div><span>고유 403 · 세트 135 · 룬워드 99</span></div>
         <div className="catalog-filters">
@@ -555,7 +600,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         {filteredCatalog.length === 0 && <EmptyState text="조건에 맞는 아이템이 없습니다." action="검색어나 필터를 바꿔보세요." />}
       </section>
       {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>후보 장비 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{item.name}</h3><p>{item.baseName} · 요구 레벨 {item.requiredLevel || '없음'}</p><ul>{item.properties.map((property) => <li key={property}>{property}</li>)}</ul></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>)}</div></section>}
-      <div className="equipment-grid">
+      <div className="equipment-grid legacy-equipment-grid" aria-hidden="true">
         {slots.map((slot) => {
           const equipped = build.equipment[slot]
           const definition = equipped ? ITEMS_BY_ID[equipped.definitionId] : undefined

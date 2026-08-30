@@ -21,10 +21,10 @@ test('allocates skills with 3.3 prerequisites', async ({ page }) => {
 
 test('combines representative caster equipment and saves the build', async ({ page }) => {
   await page.getByTestId('nav-equipment').click()
-  await page.getByTestId('item-select-weapon').selectOption('heart-of-the-oak')
-  await page.getByTestId('item-select-offhand').selectOption('spirit-shield')
-  await page.getByTestId('item-select-armor').selectOption('vipermagi')
-  await page.getByTestId('item-select-belt').selectOption('arachnid-mesh')
+  for (const [slot, item] of [['weapon', 'heart-of-the-oak'], ['offhand', 'spirit-shield'], ['armor', 'vipermagi'], ['belt', 'arachnid-mesh']] as const) {
+    await page.getByTestId(`doll-slot-${slot}`).click()
+    await page.getByTestId(`focus-item-select-${slot}`).selectOption(item)
+  }
 
   await page.getByTestId('nav-overview').click()
   await expect(page.locator('.breakpoint-card')).toContainText('125%')
@@ -122,9 +122,28 @@ test('renders desktop skill trees with prerequisite connectors', async ({ page }
 test('renders desktop item catalog', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'desktop capture only')
   await page.getByTestId('nav-equipment').click()
+  const head = await page.getByTestId('doll-slot-head').boundingBox()
+  const armor = await page.getByTestId('doll-slot-armor').boundingBox()
+  const weapon = await page.getByTestId('doll-slot-weapon').boundingBox()
+  const offhand = await page.getByTestId('doll-slot-offhand').boundingBox()
+  expect(head!.y).toBeLessThan(armor!.y)
+  expect(weapon!.x).toBeLessThan(armor!.x)
+  expect(offhand!.x).toBeGreaterThan(armor!.x)
+  const itemNameSize = await page.getByTestId('doll-slot-weapon').locator('strong').evaluate((element) => parseFloat(getComputedStyle(element).fontSize))
+  expect(itemNameSize).toBeGreaterThanOrEqual(14)
   await page.getByLabel('아이템 검색').fill('Tal Rasha')
   await expect(page.locator('.catalog-item')).not.toHaveCount(0)
   await page.screenshot({ path: 'tests/screenshots/catalog-desktop.png', fullPage: true })
+})
+
+test('renders mobile equipment paper doll', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chromium', 'mobile capture only')
+  await page.getByTestId('nav-equipment').click()
+  await expect(page.getByTestId('doll-slot-head')).toBeVisible()
+  await expect(page.getByTestId('equipment-detail')).toBeVisible()
+  const slotNameSize = await page.getByTestId('doll-slot-weapon').locator('strong').evaluate((element) => parseFloat(getComputedStyle(element).fontSize))
+  expect(slotNameSize).toBeGreaterThanOrEqual(10)
+  await page.screenshot({ path: 'tests/screenshots/equipment-mobile.png', fullPage: true })
 })
 
 test('renders mobile charm inventory', async ({ page }, testInfo) => {
