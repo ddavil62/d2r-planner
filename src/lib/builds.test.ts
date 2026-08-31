@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildExportFilename, createBuild, exportBuildFile, importBuildFile } from './builds'
+import { buildExportFilename, createBuild, exportBuildFile, importBuildFile, normalizeBuild } from './builds'
 
 describe('build file export', () => {
   it('round-trips the complete build through a versioned file', () => {
@@ -27,5 +27,15 @@ describe('build file export', () => {
 
   it('rejects unknown file formats', () => {
     expect(() => importBuildFile('{"format":"unknown","version":1}')).toThrow('지원하지 않는 빌드 파일입니다.')
+  })
+
+  it('adds a safe default target to older builds and keeps custom targets', () => {
+    const legacy = createBuild('amazon') as unknown as Record<string, unknown>
+    delete legacy.enemy
+    expect(normalizeBuild(legacy).enemy).toMatchObject({ presetId: 'boss', playerCount: 1 })
+
+    const build = createBuild('amazon')
+    build.enemy = { ...build.enemy, presetId: 'custom', name: '테스트 대상', life: 12345, fireResist: -20, playerCount: 8 }
+    expect(normalizeBuild(build).enemy).toMatchObject({ presetId: 'custom', name: '테스트 대상', life: 12345, fireResist: -20, playerCount: 8 })
   })
 })

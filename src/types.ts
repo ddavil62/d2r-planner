@@ -216,7 +216,33 @@ export interface CombatSummary {
   deadlyStrike: number
   openWounds: number
   enemyResistReduction: Record<'fire' | 'cold' | 'lightning' | 'poison' | 'magic', number>
+  effectiveEnemyResist: Record<'physical' | 'fire' | 'cold' | 'lightning' | 'poison' | 'magic', number>
+  finalAverageHit: number
+  crushingBlowDamage: number
+  attackRating: number
+  hitChance: number
+  attackFrames: number
+  attacksPerSecond: number
+  dps: number
+  targetLife: number
   missingBase: boolean
+}
+
+export type EnemyPresetId = 'normal' | 'elite' | 'boss' | 'custom'
+
+export interface EnemySettings {
+  presetId: EnemyPresetId
+  name: string
+  level: number
+  life: number
+  defense: number
+  physicalResist: number
+  fireResist: number
+  coldResist: number
+  lightningResist: number
+  poisonResist: number
+  magicResist: number
+  playerCount: number
 }
 
 export interface BuildProfile {
@@ -233,10 +259,11 @@ export interface BuildProfile {
   equipment: Partial<Record<EquipmentSlot, EquippedItem>>
   inventory: InventoryItem[]
   activeWeaponSet: 1 | 2
+  enemy: EnemySettings
   notes: string
   createdAt: string
   updatedAt: string
-  schemaVersion: 2
+  schemaVersion: 3
   gameVersion: '3.3'
   era: 'reign-of-the-warlock'
   ladder: false

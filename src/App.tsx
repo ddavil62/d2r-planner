@@ -3,6 +3,7 @@ import { CLASS_DEFINITIONS } from './data/classes'
 import { ITEMS, ITEMS_BY_ID } from './data/items'
 import { ITEM_CATALOG } from './data/catalog.generated'
 import { BUILD_TEMPLATES } from './data/templates'
+import { ENEMY_PRESETS } from './data/enemies'
 import { WEAPON_BASES } from './data/weapon-bases.generated'
 import {
   availableSkillPoints,
@@ -44,6 +45,7 @@ import type {
   ClassId,
   EquippedItem,
   EquipmentSlot,
+  EnemySettings,
   Modifiers,
   SkillDefinition,
   WeaponBase,
@@ -654,6 +656,13 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
     return allowed && !excluded && base.maxSockets >= (activeCatalogItem.requiredSockets ?? 0)
   }).sort((left, right) => left.requiredLevel - right.requiredLevel || left.name.localeCompare(right.name)) : []
   const combatSummary = calculateCombatSummary(build)
+  const updateEnemy = (patch: Partial<EnemySettings>) => setBuild((current) => ({ ...current, enemy: { ...current.enemy, ...patch }, updatedAt: new Date().toISOString() }))
+  const compareCandidate = (item: CatalogItem) => {
+    const slot = (item.slot === 'ring' ? 'ring1' : item.slot === 'weapon' ? activeWeaponSlot : item.slot) as EquipmentSlot
+    const baseWeaponCode = item.baseCode ?? (item.slot === 'weapon' ? activeWeapon?.baseWeaponCode : undefined)
+    const candidateItem: EquippedItem = { definitionId: 'custom', catalogId: item.id, name: item.name, modifiers: { ...item.modifiers }, baseWeaponCode }
+    return calculateCombatSummary({ ...build, equipment: { ...build.equipment, [slot]: candidateItem } })
+  }
   const slotGlyphs: Partial<Record<EquipmentSlot, string>> = { head: '♜', amulet: '◉', weapon: '†', swapWeapon: '†', offhand: '⬙', swapOffhand: '⬙', armor: '♟', gloves: '⌁', ring1: '○', ring2: '○', belt: '═', boots: '♞' }
   const positionClass = (slot: EquipmentSlot) => slot === 'swapWeapon' ? 'weapon' : slot === 'swapOffhand' ? 'offhand' : slot
   return (
@@ -695,6 +704,17 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
       </div>
       <section className="panel combat-panel" data-testid="combat-calculator">
         <div className="section-heading combat-heading"><div><small>COMBAT DAMAGE</small><h2>전투 피해 계산</h2></div><span>일반 공격 1회 기준</span></div>
+        <div className="enemy-settings" data-testid="enemy-settings">
+          <div className="enemy-settings-head"><div><small>TARGET PROFILE</small><h3>적 설정</h3></div><label><span>프리셋</span><select aria-label="적 프리셋" value={build.enemy.presetId} onChange={(event) => { const presetId = event.target.value as EnemySettings['presetId']; if (presetId !== 'custom') updateEnemy({ ...ENEMY_PRESETS[presetId] }); else updateEnemy({ presetId: 'custom', name: '사용자 지정 적' }) }}><option value="normal">지옥 일반 적</option><option value="elite">지옥 정예 적</option><option value="boss">지옥 보스</option><option value="custom">사용자 지정</option></select></label></div>
+          <div className="enemy-input-grid">
+            <label><span>적 레벨</span><input aria-label="적 레벨" type="number" min={1} max={99} value={build.enemy.level} onChange={(event) => updateEnemy({ presetId: 'custom', level: Math.max(1, Math.min(99, Number(event.target.value) || 1)) })} /></label>
+            <label><span>기본 생명력</span><input aria-label="적 생명력" type="number" min={1} value={build.enemy.life} onChange={(event) => updateEnemy({ presetId: 'custom', life: Math.max(1, Number(event.target.value) || 1) })} /></label>
+            <label><span>방어력</span><input aria-label="적 방어력" type="number" min={0} value={build.enemy.defense} onChange={(event) => updateEnemy({ presetId: 'custom', defense: Math.max(0, Number(event.target.value) || 0) })} /></label>
+            <label><span>인원</span><select aria-label="플레이어 수" value={build.enemy.playerCount} onChange={(event) => updateEnemy({ playerCount: Number(event.target.value) })}>{[1,2,3,4,5,6,7,8].map((count) => <option key={count} value={count}>P{count}</option>)}</select></label>
+            {([['physicalResist','물리'],['fireResist','화염'],['coldResist','냉기'],['lightningResist','번개'],['poisonResist','독'],['magicResist','마법']] as const).map(([key, label]) => <label key={key}><span>{label} 저항</span><input aria-label={`적 ${label} 저항`} type="number" min={-100} max={99} value={build.enemy[key]} onChange={(event) => updateEnemy({ presetId: 'custom', [key]: Math.max(-100, Math.min(99, Number(event.target.value) || 0)) })} /></label>)}
+          </div>
+          <p>프리셋은 비교용 훈련 대상입니다. 실제 몬스터 수치는 사용자 지정에서 직접 입력할 수 있습니다.</p>
+        </div>
         {activeCatalogItem?.category === 'runeword' && activeWeapon && <div className="combat-weapon-config">
           <label><span>룬워드 베이스</span><select data-testid="weapon-base-select" value={activeWeapon.baseWeaponCode ?? ''} onChange={(event) => updateItem(activeWeaponSlot, { baseWeaponCode: event.target.value || undefined })}>
             <option value="">베이스 무기 선택…</option>
@@ -707,16 +727,17 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         {activeWeapon && !combatSummary.ready && !combatSummary.missingBase && <EmptyState text="이 무기는 아직 베이스 피해 정보가 없습니다." action="3.3 아이템 카탈로그의 무기를 장착하면 자동 계산됩니다." />}
         {combatSummary.ready && <>
           <div className="combat-damage-grid">
-            <article className="combat-primary"><small>기대 평균 피해</small><strong data-testid="combat-average-hit">{combatSummary.averageHit.toLocaleString()}</strong><span>{combatSummary.weaponName} · {combatSummary.baseWeaponName}{activeWeapon?.ethereal ? ' · 무형' : ''}</span></article>
+            <article className="combat-primary"><small>명중률 반영 기본 DPS</small><strong data-testid="combat-dps">{combatSummary.dps.toLocaleString()}</strong><span>{combatSummary.attackFrames}프레임 · 초당 {combatSummary.attacksPerSecond}회 · 명중 {combatSummary.hitChance}%</span></article>
+            <article><small>첫 적중 기대 피해</small><strong data-testid="combat-final-hit">{combatSummary.finalAverageHit.toLocaleString()}</strong><span>저항·첫 강타 기대값 반영</span></article>
+            <article><small>저항 전 평균 피해</small><strong data-testid="combat-average-hit">{combatSummary.averageHit.toLocaleString()}</strong><span>{combatSummary.weaponName} · {combatSummary.baseWeaponName}{activeWeapon?.ethereal ? ' · 무형' : ''}</span></article>
             <article><small>물리 피해</small><strong data-testid="combat-physical-damage">{combatSummary.physicalMin.toLocaleString()}–{combatSummary.physicalMax.toLocaleString()}</strong><span>무기 피해와 능력치 보정</span></article>
-            <article><small>원소·마법 피해</small><strong>{combatSummary.elementalMin.toLocaleString()}–{combatSummary.elementalMax.toLocaleString()}</strong><span>장비의 직접 추가 피해</span></article>
           </div>
           <div className="combat-detail-grid">
-            <div className="combat-breakdown"><h3>피해 구성</h3><dl><div><dt>무기 피해 증가</dt><dd>+{combatSummary.weaponEnhancedDamage}%</dd></div><div><dt>힘·민첩 보정</dt><dd>+{combatSummary.attributeDamageBonus}%</dd></div><div><dt>장비 공격 속도</dt><dd>+{combatSummary.increasedAttackSpeed}%</dd></div></dl></div>
-            <div className="combat-effects"><h3>공격 효과</h3><div><span>강타 <strong>{combatSummary.crushingBlow}%</strong></span><span>치명적 공격 <strong>{combatSummary.deadlyStrike}%</strong></span><span>상처 악화 <strong>{combatSummary.openWounds}%</strong></span></div></div>
-            <div className="combat-resists"><h3>적 저항 감소</h3><div>{Object.entries(combatSummary.enemyResistReduction).filter(([, value]) => value > 0).map(([type, value]) => <span key={type}>{({ fire: '화염', cold: '냉기', lightning: '번개', poison: '독', magic: '마법' } as Record<string, string>)[type]} <strong>-{value}%</strong></span>)}</div>{!Object.values(combatSummary.enemyResistReduction).some((value) => value > 0) && <p>적용 옵션 없음</p>}</div>
+            <div className="combat-breakdown"><h3>피해 구성</h3><dl><div><dt>무기 피해 증가</dt><dd>+{combatSummary.weaponEnhancedDamage}%</dd></div><div><dt>힘·민첩 보정</dt><dd>+{combatSummary.attributeDamageBonus}%</dd></div><div><dt>장비 공격 속도</dt><dd>+{combatSummary.increasedAttackSpeed}%</dd></div><div><dt>공격 명중률</dt><dd>{combatSummary.hitChance}%</dd></div></dl></div>
+            <div className="combat-effects"><h3>공격 효과</h3><div><span>강타 <strong>{combatSummary.crushingBlow}%</strong></span><span>치명적 공격 <strong>{combatSummary.deadlyStrike}%</strong></span><span>상처 악화 <strong>{combatSummary.openWounds}%</strong></span><span>첫 강타 기대 <strong>+{combatSummary.crushingBlowDamage.toLocaleString()}</strong></span></div></div>
+            <div className="combat-resists"><h3>적 유효 저항</h3><div>{Object.entries(combatSummary.effectiveEnemyResist).map(([type, value]) => { const reduction = type === 'physical' ? 0 : combatSummary.enemyResistReduction[type as keyof typeof combatSummary.enemyResistReduction]; return <span key={type}>{({ physical: '물리', fire: '화염', cold: '냉기', lightning: '번개', poison: '독', magic: '마법' } as Record<string, string>)[type]} <strong>{value}%</strong>{reduction > 0 && <small> (-{reduction})</small>}</span> })}</div></div>
           </div>
-          <p className="combat-note">치명적 공격 확률은 기대 평균에 반영했습니다. 강타·상처 악화·발동 기술과 공격 속도 프레임은 표시만 하며 1회 피해에는 합산하지 않습니다.</p>
+          <p className="combat-note">일반 공격 추정치입니다. 기본 DPS에는 치명적 공격·적 저항·명중률을 반영하며, 생명력에 따라 감소하는 강타는 첫 적중 피해에만 표시합니다. 직업·무기 기본 동작에 EIAS를 적용했고 기술 고유 애니메이션, 상처 악화와 발동 기술은 제외합니다.</p>
         </>}
       </section>
       <section className="panel catalog-panel">
@@ -744,7 +765,12 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         })}</div>
         {filteredCatalog.length === 0 && <EmptyState text="조건에 맞는 아이템이 없습니다." action="검색어나 필터를 바꿔보세요." />}
       </section>
-      {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>후보 장비 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{catalogName(item)}</h3><p>{catalogSecondaryName(item)} · {catalogBaseName(item)} · 요구 레벨 {item.requiredLevel || '없음'}</p><ul>{item.properties.map((property) => <li key={property}>{formatCatalogProperty(property)}</li>)}</ul></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>)}</div></section>}
+      {(candidates[0] || candidates[1]) && <section className="panel candidate-compare"><div className="section-heading"><div><small>CANDIDATE COMPARE</small><h2>현재 장비 대비 전투 비교</h2></div><button onClick={() => setCandidateIds(['', ''])}>비우기</button></div><div>{candidates.map((item, index) => {
+        const candidateCombat = item ? compareCandidate(item) : undefined
+        const dpsDelta = candidateCombat?.ready && combatSummary.ready ? candidateCombat.dps - combatSummary.dps : undefined
+        const hitDelta = candidateCombat?.ready && combatSummary.ready ? candidateCombat.finalAverageHit - combatSummary.finalAverageHit : undefined
+        return <article key={index}>{item ? <><small>후보 {index + 1}</small><h3>{catalogName(item)}</h3><p>{catalogSecondaryName(item)} · {catalogBaseName(item)} · 요구 레벨 {item.requiredLevel || '없음'}</p>{candidateCombat?.ready ? <div className="candidate-combat-stats"><span><small>예상 DPS</small><strong>{candidateCombat.dps.toLocaleString()}</strong><em className={(dpsDelta ?? 0) >= 0 ? 'positive' : 'negative'}>{dpsDelta !== undefined ? `${dpsDelta >= 0 ? '+' : ''}${dpsDelta.toLocaleString()}` : '—'}</em></span><span><small>적중 피해</small><strong>{candidateCombat.finalAverageHit.toLocaleString()}</strong><em className={(hitDelta ?? 0) >= 0 ? 'positive' : 'negative'}>{hitDelta !== undefined ? `${hitDelta >= 0 ? '+' : ''}${hitDelta.toLocaleString()}` : '—'}</em></span><span><small>공격 속도</small><strong>{candidateCombat.attackFrames}F</strong><em>{candidateCombat.attacksPerSecond}/초</em></span></div> : <div className="candidate-combat-empty">무기 베이스를 정하면 전투 수치를 비교할 수 있습니다.</div>}<details><summary>전체 옵션</summary><ul>{item.properties.map((property) => <li key={property}>{formatCatalogProperty(property)}</li>)}</ul></details></> : <EmptyState text={`후보 ${index + 1}이 비어 있습니다.`} action="검색 결과에서 비교를 누르세요." />}</article>
+      })}</div></section>}
       <div className="equipment-grid legacy-equipment-grid" aria-hidden="true">
         {slots.map((slot) => {
           const equipped = build.equipment[slot]

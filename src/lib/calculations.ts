@@ -164,6 +164,9 @@ export function calculateCombatSummary(build: BuildProfile): CombatSummary {
     weaponEnhancedDamage: 0, attributeDamageBonus: 0, increasedAttackSpeed: 0,
     crushingBlow: 0, deadlyStrike: 0, openWounds: 0,
     enemyResistReduction: { fire: 0, cold: 0, lightning: 0, poison: 0, magic: 0 },
+    effectiveEnemyResist: { physical: 0, fire: 0, cold: 0, lightning: 0, poison: 0, magic: 0 },
+    finalAverageHit: 0, crushingBlowDamage: 0, attackRating: 0, hitChance: 0,
+    attackFrames: 0, attacksPerSecond: 0, dps: 0, targetLife: 0,
     missingBase: Boolean(equipped && catalogItem?.category === 'runeword' && !base),
   }
   if (!equipped || !base) return empty
@@ -189,6 +192,41 @@ export function calculateCombatSummary(build: BuildProfile): CombatSummary {
   const deadlyStrike = Math.min(100, (allModifiers.deadlyStrike ?? 0) + Math.floor((allModifiers.deadlyStrikePerLevel ?? 0) * build.level))
   const physicalAverage = (physicalMin + physicalMax) / 2
   const elementalAverage = (elementalMin + elementalMax) / 2
+  const resistanceReduction = {
+    fire: allModifiers.enemyFireResistance ?? 0,
+    cold: allModifiers.enemyColdResistance ?? 0,
+    lightning: allModifiers.enemyLightningResistance ?? 0,
+    poison: allModifiers.enemyPoisonResistance ?? 0,
+    magic: allModifiers.enemyMagicResistance ?? 0,
+  }
+  const clampResist = (value: number) => Math.max(-100, Math.min(99, value))
+  const effectiveEnemyResist = {
+    physical: clampResist(build.enemy.physicalResist),
+    fire: clampResist(build.enemy.fireResist - resistanceReduction.fire),
+    cold: clampResist(build.enemy.coldResist - resistanceReduction.cold),
+    lightning: clampResist(build.enemy.lightningResist - resistanceReduction.lightning),
+    poison: clampResist(build.enemy.poisonResist - resistanceReduction.poison),
+    magic: clampResist(build.enemy.magicResist - resistanceReduction.magic),
+  }
+  const afterResist = (damage: number, resist: number) => damage * (1 - resist / 100)
+  const resistedPhysical = afterResist(physicalAverage * (1 + deadlyStrike / 100), effectiveEnemyResist.physical)
+  const resistedElemental = afterResist(((allModifiers.fireMinDamage ?? 0) + (allModifiers.fireMaxDamage ?? 0)) / 2, effectiveEnemyResist.fire)
+    + afterResist(((allModifiers.coldMinDamage ?? 0) + (allModifiers.coldMaxDamage ?? 0)) / 2, effectiveEnemyResist.cold)
+    + afterResist(((allModifiers.lightningMinDamage ?? 0) + (allModifiers.lightningMaxDamage ?? 0)) / 2, effectiveEnemyResist.lightning)
+    + afterResist(((allModifiers.magicMinDamage ?? 0) + (allModifiers.magicMaxDamage ?? 0)) / 2, effectiveEnemyResist.magic)
+  const targetLife = Math.round(build.enemy.life * (1 + (build.enemy.playerCount - 1) * .5))
+  const ranged = base.types.some((type) => ['bow', 'xbow', 'jave', 'thro'].includes(type))
+  const crushingBlowDivisor = (build.enemy.presetId === 'boss' ? 8 : 4) * (ranged ? 2 : 1)
+  const crushingBlowDamage = Math.round(afterResist(targetLife / crushingBlowDivisor, effectiveEnemyResist.physical) * (Math.min(100, allModifiers.crushingBlow ?? 0) / 100))
+  const attackRating = Math.max(0, Math.floor((attributes.dexterity * 5 - 35 + (allModifiers.attackRating ?? 0)) * (1 + (allModifiers.attackRatingPercent ?? 0) / 100)))
+  const rawHitChance = 100 * attackRating / Math.max(1, attackRating + build.enemy.defense) * (2 * build.level / (build.level + build.enemy.level))
+  const hitChance = Math.round(Math.max(5, Math.min(95, rawHitChance)))
+  const classBaseFrames: Record<ClassId, number> = { amazon: 13, sorceress: 17, necromancer: 15, paladin: 14, barbarian: 16, druid: 19, assassin: 15, warlock: 15 }
+  const eias = Math.floor(120 * (allModifiers.increasedAttackSpeed ?? 0) / (120 + (allModifiers.increasedAttackSpeed ?? 0))) - base.speed
+  const attackFrames = Math.max(5, Math.ceil(classBaseFrames[build.classId] * 100 / Math.max(15, 100 + eias)))
+  const attacksPerSecond = 25 / attackFrames
+  const finalAverageHit = Math.round(resistedPhysical + resistedElemental + crushingBlowDamage)
+  const dps = Math.round((resistedPhysical + resistedElemental) * attacksPerSecond * hitChance / 100)
 
   return {
     ready: true,
@@ -205,13 +243,16 @@ export function calculateCombatSummary(build: BuildProfile): CombatSummary {
     crushingBlow: Math.min(100, allModifiers.crushingBlow ?? 0),
     deadlyStrike,
     openWounds: Math.min(100, allModifiers.openWounds ?? 0),
-    enemyResistReduction: {
-      fire: allModifiers.enemyFireResistance ?? 0,
-      cold: allModifiers.enemyColdResistance ?? 0,
-      lightning: allModifiers.enemyLightningResistance ?? 0,
-      poison: allModifiers.enemyPoisonResistance ?? 0,
-      magic: allModifiers.enemyMagicResistance ?? 0,
-    },
+    enemyResistReduction: resistanceReduction,
+    effectiveEnemyResist,
+    finalAverageHit,
+    crushingBlowDamage,
+    attackRating,
+    hitChance,
+    attackFrames,
+    attacksPerSecond: Number(attacksPerSecond.toFixed(2)),
+    dps,
+    targetLife,
     missingBase: false,
   }
 }

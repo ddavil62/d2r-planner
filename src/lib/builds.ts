@@ -1,4 +1,5 @@
 import { CLASS_DEFINITIONS } from '../data/classes'
+import { DEFAULT_ENEMY } from '../data/enemies'
 import type { AttributeId, BuildProfile, ClassId } from '../types'
 
 export const STORAGE_KEY = 'sanctuary-blueprint-builds-v1'
@@ -23,10 +24,11 @@ export function createBuild(classId: ClassId = 'necromancer'): BuildProfile {
     equipment: {},
     inventory: [],
     activeWeaponSet: 1,
+    enemy: { ...DEFAULT_ENEMY },
     notes: '',
     createdAt: now,
     updatedAt: now,
-    schemaVersion: 2,
+    schemaVersion: 3,
     gameVersion: '3.3',
     era: 'reign-of-the-warlock',
     ladder: false,
@@ -47,6 +49,19 @@ export function normalizeBuild(value: unknown): BuildProfile {
     .filter(([id]) => knownSkills.has(id))
     .map(([id, points]) => [id, Math.max(0, Math.min(20, Math.floor(Number(points) || 0)))]))
   const equipment = raw.equipment && typeof raw.equipment === 'object' ? { ...raw.equipment } : {}
+  const enemy = raw.enemy && typeof raw.enemy === 'object' ? {
+    ...DEFAULT_ENEMY,
+    ...raw.enemy,
+    name: typeof raw.enemy.name === 'string' ? raw.enemy.name.slice(0, 50) : DEFAULT_ENEMY.name,
+    level: Math.max(1, Math.min(99, Math.floor(Number(raw.enemy.level) || DEFAULT_ENEMY.level))),
+    life: Math.max(1, Math.floor(Number(raw.enemy.life) || DEFAULT_ENEMY.life)),
+    defense: Math.max(0, Math.floor(Number(raw.enemy.defense) || 0)),
+    playerCount: Math.max(1, Math.min(8, Math.floor(Number(raw.enemy.playerCount) || 1))),
+  } : { ...DEFAULT_ENEMY }
+  enemy.presetId = ['normal', 'elite', 'boss', 'custom'].includes(enemy.presetId) ? enemy.presetId : 'custom'
+  for (const key of ['physicalResist', 'fireResist', 'coldResist', 'lightningResist', 'poisonResist', 'magicResist'] as const) {
+    enemy[key] = Math.max(-100, Math.min(99, Math.floor(Number(enemy[key]) || 0)))
+  }
   const inventory = Array.isArray(raw.inventory) ? raw.inventory.filter((item) => item && typeof item === 'object').map((item, index) => ({
     id: typeof item.id === 'string' ? item.id : `imported-${index}`,
     definitionId: typeof item.definitionId === 'string' ? item.definitionId : '',
@@ -72,8 +87,9 @@ export function normalizeBuild(value: unknown): BuildProfile {
     equipment,
     inventory,
     activeWeaponSet: raw.activeWeaponSet === 2 ? 2 : 1,
+    enemy,
     notes: typeof raw.notes === 'string' ? raw.notes.slice(0, 4000) : '',
-    schemaVersion: 2,
+    schemaVersion: 3,
     gameVersion: '3.3',
     era: 'reign-of-the-warlock',
     ladder: false,

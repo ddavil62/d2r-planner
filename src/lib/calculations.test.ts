@@ -115,8 +115,25 @@ describe('build calculations', () => {
       attributeDamageBonus: 15,
       crushingBlow: 40,
       enemyResistReduction: { fire: 25 },
+      effectiveEnemyResist: { physical: 50, fire: 25 },
+      finalAverageHit: 12809,
+      crushingBlowDamage: 12500,
+      attackRating: 90,
+      hitChance: 5,
+      attackFrames: 14,
+      attacksPerSecond: 1.79,
+      dps: 28,
+      targetLife: 500000,
       missingBase: false,
     })
+  })
+
+  it('scales target life and first-hit crushing blow with player count', () => {
+    const obedience = ITEM_CATALOG.find((item) => item.name === 'Obedience')!
+    const build = createBuild('necromancer')
+    build.enemy.playerCount = 8
+    build.equipment.weapon = { definitionId: 'custom', catalogId: obedience.id, name: obedience.name, modifiers: { ...obedience.modifiers }, baseWeaponCode: '7s8', ethereal: true }
+    expect(calculateCombatSummary(build)).toMatchObject({ targetLife: 2250000, crushingBlowDamage: 56250, finalAverageHit: 56559 })
   })
 
   it('requires a weapon base before calculating a runeword', () => {
