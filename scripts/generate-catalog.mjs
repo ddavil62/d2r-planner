@@ -17,6 +17,16 @@ for (const file of ['armor.txt', 'weapons.txt', 'misc.txt']) {
 }
 
 const skillsById = new Map(readTsv('skills.txt').map((row) => [row.Id, row.skill]))
+const itemTypeParents = new Map(readTsv('itemtypes.txt').map((row) => [row.Code, [row.Equiv1, row.Equiv2].filter(Boolean)]))
+
+function typeLineage(type) {
+  const result = new Set([type])
+  const visit = (code) => {
+    for (const parent of itemTypeParents.get(code) ?? []) if (!result.has(parent)) { result.add(parent); visit(parent) }
+  }
+  visit(type)
+  return [...result]
+}
 
 function skillId(value = '') {
   const name = skillsById.get(String(value)) || value
@@ -30,6 +40,10 @@ const simpleModifierMap = {
   fireskill: 'fireSkills', 'res-fire': 'fireResist', 'res-cold': 'coldResist', 'res-ltng': 'lightningResist',
   'res-pois': 'poisonResist', 'res-all': 'allResist', 'gold%': 'goldFind', 'mag%': 'magicFind',
   'red-dmg%': 'damageReduction', 'red-mag': 'magicDamageReduction', block: 'blockChance', nofreeze: 'cannotBeFrozen',
+  'dmg%': 'enhancedDamage', crush: 'crushingBlow', deadly: 'deadlyStrike', openwounds: 'openWounds',
+  lifesteal: 'lifeSteal', manasteal: 'manaSteal', att: 'attackRating', 'att%': 'attackRatingPercent',
+  'pierce-fire': 'enemyFireResistance', 'pierce-cold': 'enemyColdResistance', 'pierce-ltng': 'enemyLightningResistance',
+  'pierce-pois': 'enemyPoisonResistance', 'pierce-mag': 'enemyMagicResistance',
 }
 
 function numericValue(row, index, prefix = '') {
@@ -56,6 +70,21 @@ function modifiers(row, limit, runeword = false) {
     else if (code === 'hp/lvl') add('lifePerLevel', (Number(param) || 0) / 8)
     else if (code === 'mana/lvl') add('manaPerLevel', (Number(param) || 0) / 8)
     else if (code === 'mag%/lvl') add('magicFindPerLevel', (Number(param) || 0) / 8)
+    else if (code === 'deadly/lvl') add('deadlyStrikePerLevel', (Number(param) || 0) / 8)
+    else if (code === 'dmg' || code === 'dmg-norm') {
+      const min = Number(row[runeword ? `T1Min${index}` : `min${index}`]) || 0
+      const max = Number(row[runeword ? `T1Max${index}` : `max${index}`]) || min
+      add('flatMinDamage', min)
+      add('flatMaxDamage', max)
+    } else if (code === 'dmg-min') add('flatMinDamage', value)
+    else if (code === 'dmg-max') add('flatMaxDamage', value)
+    else if (['dmg-fire', 'dmg-cold', 'dmg-ltng', 'dmg-mag'].includes(code)) {
+      const element = { 'dmg-fire': 'fire', 'dmg-cold': 'cold', 'dmg-ltng': 'lightning', 'dmg-mag': 'magic' }[code]
+      const min = Number(row[runeword ? `T1Min${index}` : `min${index}`]) || 0
+      const max = Number(row[runeword ? `T1Max${index}` : `max${index}`]) || min
+      add(`${element}MinDamage`, min)
+      add(`${element}MaxDamage`, max)
+    }
     else if (code === 'skilltab') {
       const tabs = {
         0: 'bowCrossbowSkills', 1: 'passiveMagicSkills', 2: 'javelinSpearSkills',
@@ -102,17 +131,38 @@ function properties(row, limit) {
 const catalog = []
 for (const row of readTsv('uniqueitems.txt').filter((item) => item.spawnable === '1')) {
   const base = bases.get(row.code) ?? {}
-  catalog.push({ id: `unique-${row['*ID']}`, name: row.index, baseName: row['*ItemName'] || base.name || row.code, category: 'unique', requiredLevel: Number(row['lvl req']) || 0, slot: slotFor(base.type), width: base.width || 1, height: base.height || 1, properties: properties(row, 12), modifiers: modifiers(row, 12) })
+  catalog.push({ id: `unique-${row['*ID']}`, name: row.index, baseName: row['*ItemName'] || base.name || row.code, category: 'unique', requiredLevel: Number(row['lvl req']) || 0, slot: slotFor(base.type), width: base.width || 1, height: base.height || 1, properties: properties(row, 12), modifiers: modifiers(row, 12), baseCode: row.code })
 }
 for (const row of readTsv('setitems.txt').filter((item) => item.spawnable === '1')) {
   const base = bases.get(row.item) ?? {}
-  catalog.push({ id: `set-${row['*ID']}`, name: row.index, baseName: row['*ItemName'] || base.name || row.item, category: 'set', requiredLevel: Number(row['lvl req']) || 0, slot: slotFor(base.type), width: base.width || 1, height: base.height || 1, properties: properties(row, 9), modifiers: modifiers(row, 9) })
+  catalog.push({ id: `set-${row['*ID']}`, name: row.index, baseName: row['*ItemName'] || base.name || row.item, category: 'set', requiredLevel: Number(row['lvl req']) || 0, slot: slotFor(base.type), width: base.width || 1, height: base.height || 1, properties: properties(row, 9), modifiers: modifiers(row, 9), baseCode: row.item })
 }
 for (const [index, row] of readTsv('runes.txt').filter((item) => item.complete === '1').entries()) {
-  catalog.push({ id: `runeword-${index}-${row.Name}`, name: row['*Rune Name'], baseName: row['*RunesUsed'] || 'Runeword', category: 'runeword', requiredLevel: 0, slot: slotFor(row.itype1), width: 2, height: 3, properties: properties(row, 7), modifiers: modifiers(row, 7, true) })
+  const allowedBaseTypes = Array.from({ length: 6 }, (_, offset) => row[`itype${offset + 1}`]).filter(Boolean)
+  const excludedBaseTypes = Array.from({ length: 3 }, (_, offset) => row[`etype${offset + 1}`]).filter(Boolean)
+  const requiredSockets = Array.from({ length: 7 }, (_, offset) => row[`Rune${offset + 1}`]).filter(Boolean).length
+  catalog.push({ id: `runeword-${index}-${row.Name}`, name: row['*Rune Name'], baseName: row['*RunesUsed'] || 'Runeword', category: 'runeword', requiredLevel: 0, slot: slotFor(row.itype1), width: 2, height: 3, properties: properties(row, 7), modifiers: modifiers(row, 7, true), allowedBaseTypes, excludedBaseTypes, requiredSockets })
 }
 
 catalog.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
 for (const item of catalog) Object.assign(item, localization[item.id] ?? { nameKo: item.name, baseNameKo: item.baseName, aliases: [] })
 writeFileSync(resolve(root, 'src/data/catalog.generated.ts'), `// Generated from installed Reign of the Warlock 3.3 data.\nexport const ITEM_CATALOG = ${JSON.stringify(catalog)} as const\n`)
+const weaponBases = readTsv('weapons.txt').filter((row) => row.spawnable === '1').map((row) => {
+  const twoHanded = row['2handed'] === '1'
+  return {
+    code: row.code,
+    name: row.name,
+    types: typeLineage(row.type),
+    minDamage: Number(twoHanded ? row['2handmindam'] : row.mindam) || 0,
+    maxDamage: Number(twoHanded ? row['2handmaxdam'] : row.maxdam) || 0,
+    twoHanded,
+    strengthBonus: Number(row.StrBonus) || 0,
+    dexterityBonus: Number(row.DexBonus) || 0,
+    speed: Number(row.speed) || 0,
+    requiredLevel: Number(row.levelreq) || 0,
+    maxSockets: Number(row.gemsockets) || 0,
+  }
+}).filter((item) => item.maxDamage > 0)
+writeFileSync(resolve(root, 'src/data/weapon-bases.generated.ts'), `// Generated from installed Reign of the Warlock 3.3 data.\nexport const WEAPON_BASES = ${JSON.stringify(weaponBases)} as const\n`)
 console.log(`Generated ${catalog.length} catalog entries.`)
+console.log(`Generated ${weaponBases.length} weapon bases.`)

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ITEM_CATALOG } from './catalog.generated'
+import { WEAPON_BASES } from './weapon-bases.generated'
 
 describe('generated 3.3 item catalog', () => {
   it('contains every active unique, set and runeword row', () => {
@@ -27,5 +28,16 @@ describe('generated 3.3 item catalog', () => {
     expect(ITEM_CATALOG.find((item) => item.name === 'Peace')?.modifiers).toMatchObject({ amazonSkills: 2 })
     expect(ITEM_CATALOG.find((item) => item.name === 'Authority')?.modifiers).toMatchObject({ warlockSkills: 2 })
     expect(ITEM_CATALOG.find((item) => item.name === "Ars Al'Diablolos")?.modifiers).toMatchObject({ artsOfChaosSkills: 2 })
+  })
+
+  it('keeps combat modifiers and compatible bases for runewords', () => {
+    const obedience = ITEM_CATALOG.find((item) => item.name === 'Obedience')
+    expect(obedience).toMatchObject({
+      modifiers: { enhancedDamage: 370, crushingBlow: 40, enemyFireResistance: 25 },
+      allowedBaseTypes: ['pole', 'spea'],
+      requiredSockets: 5,
+    })
+    expect(WEAPON_BASES).toHaveLength(297)
+    expect(WEAPON_BASES.find((item) => item.code === '7s8')).toMatchObject({ name: 'Thresher', minDamage: 12, maxDamage: 141, maxSockets: 5 })
   })
 })

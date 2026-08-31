@@ -102,6 +102,30 @@ export interface Modifiers {
   fasterHitRecovery?: number
   fasterBlockRate?: number
   increasedAttackSpeed?: number
+  enhancedDamage?: number
+  flatMinDamage?: number
+  flatMaxDamage?: number
+  fireMinDamage?: number
+  fireMaxDamage?: number
+  coldMinDamage?: number
+  coldMaxDamage?: number
+  lightningMinDamage?: number
+  lightningMaxDamage?: number
+  magicMinDamage?: number
+  magicMaxDamage?: number
+  crushingBlow?: number
+  deadlyStrike?: number
+  deadlyStrikePerLevel?: number
+  openWounds?: number
+  lifeSteal?: number
+  manaSteal?: number
+  attackRating?: number
+  attackRatingPercent?: number
+  enemyFireResistance?: number
+  enemyColdResistance?: number
+  enemyLightningResistance?: number
+  enemyPoisonResistance?: number
+  enemyMagicResistance?: number
   fasterRunWalk?: number
   magicFind?: number
   magicFindPerLevel?: number
@@ -131,6 +155,22 @@ export interface EquippedItem {
   catalogId?: string
   name?: string
   modifiers?: Modifiers
+  baseWeaponCode?: string
+  ethereal?: boolean
+}
+
+export interface WeaponBase {
+  code: string
+  name: string
+  types: readonly string[]
+  minDamage: number
+  maxDamage: number
+  twoHanded: boolean
+  strengthBonus: number
+  dexterityBonus: number
+  speed: number
+  requiredLevel: number
+  maxSockets: number
 }
 
 export interface InventoryItem {
@@ -154,6 +194,29 @@ export interface CatalogItem {
   height: number
   properties: readonly string[]
   modifiers: Modifiers
+  baseCode?: string
+  allowedBaseTypes?: readonly string[]
+  excludedBaseTypes?: readonly string[]
+  requiredSockets?: number
+}
+
+export interface CombatSummary {
+  ready: boolean
+  weaponName?: string
+  baseWeaponName?: string
+  physicalMin: number
+  physicalMax: number
+  elementalMin: number
+  elementalMax: number
+  averageHit: number
+  weaponEnhancedDamage: number
+  attributeDamageBonus: number
+  increasedAttackSpeed: number
+  crushingBlow: number
+  deadlyStrike: number
+  openWounds: number
+  enemyResistReduction: Record<'fire' | 'cold' | 'lightning' | 'poison' | 'magic', number>
+  missingBase: boolean
 }
 
 export interface BuildProfile {

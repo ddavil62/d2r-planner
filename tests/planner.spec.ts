@@ -159,11 +159,21 @@ test('equips Obedience with its catalog identity, full options and calculated st
   await expect(page.getByTestId('equipment-detail')).toContainText('패힛+40')
   await expect(page.getByTestId('equipment-detail')).toContainText('모든 저항+30')
   await expect(page.locator('.summary-rail')).toContainText('40%')
+  await expect(page.getByTestId('combat-calculator')).toContainText('베이스 무기가 필요합니다')
+  await page.getByTestId('weapon-base-select').selectOption('7s8')
+  await page.getByTestId('weapon-ethereal').check()
+  await expect(page.getByTestId('combat-physical-damage')).toHaveText('96–1,139')
+  await expect(page.getByTestId('combat-average-hit')).toHaveText('618')
+  await expect(page.getByTestId('combat-calculator')).toContainText('강타 40%')
+  await expect(page.getByTestId('combat-calculator')).toContainText('화염 -25%')
   if (testInfo.project.name === 'desktop-chromium') await page.screenshot({ path: 'tests/screenshots/obedience-equipped-desktop.png', fullPage: true })
 
   await page.reload()
   await page.getByTestId('nav-equipment').click()
   await expect(page.getByTestId('equipment-detail').getByRole('heading', { name: '순종' })).toBeVisible()
+  await expect(page.getByTestId('weapon-base-select')).toHaveValue('7s8')
+  await expect(page.getByTestId('weapon-ethereal')).toBeChecked()
+  await expect(page.getByTestId('combat-average-hit')).toHaveText('618')
 })
 
 test('places a charm in the inventory grid', async ({ page }) => {

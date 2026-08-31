@@ -3,10 +3,12 @@ import { CLASS_DEFINITIONS } from './data/classes'
 import { ITEMS, ITEMS_BY_ID } from './data/items'
 import { ITEM_CATALOG } from './data/catalog.generated'
 import { BUILD_TEMPLATES } from './data/templates'
+import { WEAPON_BASES } from './data/weapon-bases.generated'
 import {
   availableSkillPoints,
   availableStatPoints,
   breakpointProgress,
+  calculateCombatSummary,
   calculateSummary,
   getEquipmentModifiers,
   getEquippedItemModifiers,
@@ -40,9 +42,11 @@ import type {
   BuildSummary,
   CatalogItem,
   ClassId,
+  EquippedItem,
   EquipmentSlot,
   Modifiers,
   SkillDefinition,
+  WeaponBase,
 } from './types'
 
 type Page = 'overview' | 'skills' | 'attributes' | 'equipment' | 'inventory' | 'library'
@@ -101,6 +105,12 @@ const modifierFields: { key: keyof Modifiers; label: string }[] = [
   { key: 'increasedAttackSpeed', label: '공속' }, { key: 'fasterRunWalk', label: '달리기' },
   { key: 'magicFind', label: '매찬' }, { key: 'goldFind', label: '골찬' },
   { key: 'damageReduction', label: '피해 감소 %' },
+  { key: 'enhancedDamage', label: '피해 증가 %' }, { key: 'flatMinDamage', label: '최소 피해' },
+  { key: 'flatMaxDamage', label: '최대 피해' }, { key: 'crushingBlow', label: '강타 확률' },
+  { key: 'deadlyStrike', label: '치명적 공격' }, { key: 'openWounds', label: '상처 악화' },
+  { key: 'lifeSteal', label: '생명력 훔침' }, { key: 'manaSteal', label: '마나 훔침' },
+  { key: 'enemyFireResistance', label: '적 화염 저항 감소' }, { key: 'enemyColdResistance', label: '적 냉기 저항 감소' },
+  { key: 'enemyLightningResistance', label: '적 번개 저항 감소' }, { key: 'enemyPoisonResistance', label: '적 독 저항 감소' },
 ]
 
 const catalogPropertyLabels: Record<string, string> = {
@@ -307,7 +317,7 @@ function App() {
           <span className="status-dot" />
           <strong>계산 기준</strong>
           <p>3.3.93847 · 한국어 클라이언트</p>
-          <p>합산 지원 · 상세 DPS 준비 중</p>
+          <p>기본 공격 피해 · 기술 DPS 준비 중</p>
         </div>
       </aside>
 
@@ -609,19 +619,18 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
     else equipment[slot] = { definitionId, name: definitionId === 'custom' ? `사용자 ${slotLabels[slot]}` : undefined, modifiers: {} }
     return { ...current, equipment, updatedAt: new Date().toISOString() }
   })
-  const updateItem = (slot: EquipmentSlot, patch: { name?: string; modifiers?: Modifiers }) => setBuild((current) => ({
+  const updateItem = (slot: EquipmentSlot, patch: Partial<EquippedItem>) => setBuild((current) => ({
     ...current,
     equipment: { ...current.equipment, [slot]: { ...current.equipment[slot]!, ...patch } },
     updatedAt: new Date().toISOString(),
   }))
   const equipCatalogItem = (item: CatalogItem) => {
-    const known = ITEMS.find((candidate) => candidate.nameEn.toLowerCase() === item.name.toLowerCase())
     const slot = (item.slot === 'ring' ? 'ring1' : item.slot) as EquipmentSlot
     if (!slots.includes(slot)) return
     setSelectedSlot(slot)
     setBuild((current) => ({
       ...current,
-      equipment: { ...current.equipment, [slot]: known ? { definitionId: known.id, modifiers: {} } : { definitionId: 'custom', catalogId: item.id, name: item.name, modifiers: { ...item.modifiers } } },
+      equipment: { ...current.equipment, [slot]: { definitionId: 'custom', catalogId: item.id, name: item.name, modifiers: { ...item.modifiers }, baseWeaponCode: item.baseCode } },
       updatedAt: new Date().toISOString(),
     }))
   }
@@ -635,6 +644,16 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
   const selectedCatalogItem = selectedEquipped?.catalogId ? catalog.find((item) => item.id === selectedEquipped.catalogId) : undefined
   const selectedModifiers = selectedEquipped ? getEquippedItemModifiers(selectedEquipped) : {}
   const selectedChoices = ITEMS.filter((item) => item.slots.includes(selectedSlot))
+  const activeWeaponSlot: EquipmentSlot = build.activeWeaponSet === 1 ? 'weapon' : 'swapWeapon'
+  const activeWeapon = build.equipment[activeWeaponSlot]
+  const activeCatalogItem = activeWeapon?.catalogId ? catalog.find((item) => item.id === activeWeapon.catalogId) : undefined
+  const weaponBases = WEAPON_BASES as readonly unknown[] as readonly WeaponBase[]
+  const compatibleWeaponBases = activeCatalogItem?.category === 'runeword' ? weaponBases.filter((base) => {
+    const allowed = activeCatalogItem.allowedBaseTypes?.some((type) => base.types.includes(type)) ?? false
+    const excluded = activeCatalogItem.excludedBaseTypes?.some((type) => base.types.includes(type)) ?? false
+    return allowed && !excluded && base.maxSockets >= (activeCatalogItem.requiredSockets ?? 0)
+  }).sort((left, right) => left.requiredLevel - right.requiredLevel || left.name.localeCompare(right.name)) : []
+  const combatSummary = calculateCombatSummary(build)
   const slotGlyphs: Partial<Record<EquipmentSlot, string>> = { head: '♜', amulet: '◉', weapon: '†', swapWeapon: '†', offhand: '⬙', swapOffhand: '⬙', armor: '♟', gloves: '⌁', ring1: '○', ring2: '○', belt: '═', boots: '♞' }
   const positionClass = (slot: EquipmentSlot) => slot === 'swapWeapon' ? 'weapon' : slot === 'swapOffhand' ? 'offhand' : slot
   return (
@@ -674,6 +693,32 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
           </>}
         </aside>
       </div>
+      <section className="panel combat-panel" data-testid="combat-calculator">
+        <div className="section-heading combat-heading"><div><small>COMBAT DAMAGE</small><h2>전투 피해 계산</h2></div><span>일반 공격 1회 기준</span></div>
+        {activeCatalogItem?.category === 'runeword' && activeWeapon && <div className="combat-weapon-config">
+          <label><span>룬워드 베이스</span><select data-testid="weapon-base-select" value={activeWeapon.baseWeaponCode ?? ''} onChange={(event) => updateItem(activeWeaponSlot, { baseWeaponCode: event.target.value || undefined })}>
+            <option value="">베이스 무기 선택…</option>
+            {compatibleWeaponBases.map((base) => <option value={base.code} key={base.code}>{base.name} · 피해 {base.minDamage}–{base.maxDamage} · {base.maxSockets}홈</option>)}
+          </select></label>
+          <label className="ethereal-toggle"><input data-testid="weapon-ethereal" type="checkbox" checked={activeWeapon.ethereal ?? false} onChange={(event) => updateItem(activeWeaponSlot, { ethereal: event.target.checked })} /><span>무형(에테리얼) 베이스</span></label>
+        </div>}
+        {!activeWeapon && <EmptyState text="활성 무기 슬롯이 비어 있습니다." action="아래 카탈로그에서 무기를 장착하세요." />}
+        {activeWeapon && combatSummary.missingBase && <div className="combat-callout"><strong>베이스 무기가 필요합니다.</strong><span>룬워드는 같은 조합이라도 베이스 피해가 달라집니다. 위 목록에서 실제 제작할 무기를 선택하세요.</span></div>}
+        {activeWeapon && !combatSummary.ready && !combatSummary.missingBase && <EmptyState text="이 무기는 아직 베이스 피해 정보가 없습니다." action="3.3 아이템 카탈로그의 무기를 장착하면 자동 계산됩니다." />}
+        {combatSummary.ready && <>
+          <div className="combat-damage-grid">
+            <article className="combat-primary"><small>기대 평균 피해</small><strong data-testid="combat-average-hit">{combatSummary.averageHit.toLocaleString()}</strong><span>{combatSummary.weaponName} · {combatSummary.baseWeaponName}{activeWeapon?.ethereal ? ' · 무형' : ''}</span></article>
+            <article><small>물리 피해</small><strong data-testid="combat-physical-damage">{combatSummary.physicalMin.toLocaleString()}–{combatSummary.physicalMax.toLocaleString()}</strong><span>무기 피해와 능력치 보정</span></article>
+            <article><small>원소·마법 피해</small><strong>{combatSummary.elementalMin.toLocaleString()}–{combatSummary.elementalMax.toLocaleString()}</strong><span>장비의 직접 추가 피해</span></article>
+          </div>
+          <div className="combat-detail-grid">
+            <div className="combat-breakdown"><h3>피해 구성</h3><dl><div><dt>무기 피해 증가</dt><dd>+{combatSummary.weaponEnhancedDamage}%</dd></div><div><dt>힘·민첩 보정</dt><dd>+{combatSummary.attributeDamageBonus}%</dd></div><div><dt>장비 공격 속도</dt><dd>+{combatSummary.increasedAttackSpeed}%</dd></div></dl></div>
+            <div className="combat-effects"><h3>공격 효과</h3><div><span>강타 <strong>{combatSummary.crushingBlow}%</strong></span><span>치명적 공격 <strong>{combatSummary.deadlyStrike}%</strong></span><span>상처 악화 <strong>{combatSummary.openWounds}%</strong></span></div></div>
+            <div className="combat-resists"><h3>적 저항 감소</h3><div>{Object.entries(combatSummary.enemyResistReduction).filter(([, value]) => value > 0).map(([type, value]) => <span key={type}>{({ fire: '화염', cold: '냉기', lightning: '번개', poison: '독', magic: '마법' } as Record<string, string>)[type]} <strong>-{value}%</strong></span>)}</div>{!Object.values(combatSummary.enemyResistReduction).some((value) => value > 0) && <p>적용 옵션 없음</p>}</div>
+          </div>
+          <p className="combat-note">치명적 공격 확률은 기대 평균에 반영했습니다. 강타·상처 악화·발동 기술과 공격 속도 프레임은 표시만 하며 1회 피해에는 합산하지 않습니다.</p>
+        </>}
+      </section>
       <section className="panel catalog-panel">
         <div className="section-heading catalog-heading"><div><small>3.3 ITEM CATALOG</small><h2>전체 아이템 검색</h2></div><div className="catalog-heading-actions"><span>고유 403 · 세트 135 · 룬워드 99</span><div className="item-language-toggle" role="group" aria-label="아이템 표시 언어"><button type="button" data-testid="item-language-ko" className={itemLanguage === 'ko' ? 'active' : ''} aria-pressed={itemLanguage === 'ko'} onClick={() => setItemLanguage('ko')}>한국어</button><button type="button" data-testid="item-language-en" className={itemLanguage === 'en' ? 'active' : ''} aria-pressed={itemLanguage === 'en'} onClick={() => setItemLanguage('en')}>English</button></div></div></div>
         <div className="catalog-filters">
@@ -685,10 +730,9 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         </div>
         <div className="catalog-results">{filteredCatalog.map((item) => {
           const selected = candidateIds.includes(item.id)
-          const known = ITEMS.find((candidate) => candidate.nameEn.toLowerCase() === item.name.toLowerCase())
           const previewSlot = (item.slot === 'ring' ? 'ring1' : item.slot) as EquipmentSlot
           const currentSummary = calculateSummary(build)
-          const previewItem = known ? { definitionId: known.id } : { definitionId: 'custom', name: item.name, modifiers: { ...item.modifiers } }
+          const previewItem: EquippedItem = { definitionId: 'custom', catalogId: item.id, name: item.name, modifiers: { ...item.modifiers }, baseWeaponCode: item.baseCode }
           const previewSummary = slots.includes(previewSlot) && Object.keys(item.modifiers).length ? calculateSummary({ ...build, equipment: { ...build.equipment, [previewSlot]: previewItem } }) : undefined
           const fcrDelta = previewSummary ? previewSummary.fasterCastRate - currentSummary.fasterCastRate : 0
           return <article className={`catalog-item ${selected ? 'selected' : ''}`} key={item.id}>

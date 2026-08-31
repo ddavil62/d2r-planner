@@ -1,7 +1,8 @@
 import { CLASS_DEFINITIONS } from '../data/classes'
 import { ITEMS_BY_ID } from '../data/items'
 import { ITEM_CATALOG } from '../data/catalog.generated'
-import type { AttributeId, BuildProfile, BuildSummary, ClassId, EquippedItem, Modifiers, SkillDefinition } from '../types'
+import { WEAPON_BASES } from '../data/weapon-bases.generated'
+import type { AttributeId, BuildProfile, BuildSummary, CatalogItem, ClassId, CombatSummary, EquippedItem, Modifiers, SkillDefinition } from '../types'
 
 const numericKeys: (keyof Modifiers)[] = [
   'strength', 'strengthPerLevel', 'dexterity', 'vitality', 'energy', 'life', 'mana', 'lifePerLevel',
@@ -17,6 +18,10 @@ const numericKeys: (keyof Modifiers)[] = [
   'fasterBlockRate', 'increasedAttackSpeed', 'fasterRunWalk', 'magicFind', 'goldFind',
   'damageReduction', 'magicDamageReduction', 'blockChance', 'cannotBeFrozen', 'magicFindPerLevel',
   'coldSunder', 'poisonSunder',
+  'enhancedDamage', 'flatMinDamage', 'flatMaxDamage', 'fireMinDamage', 'fireMaxDamage', 'coldMinDamage', 'coldMaxDamage',
+  'lightningMinDamage', 'lightningMaxDamage', 'magicMinDamage', 'magicMaxDamage', 'crushingBlow', 'deadlyStrike',
+  'deadlyStrikePerLevel', 'openWounds', 'lifeSteal', 'manaSteal', 'attackRating', 'attackRatingPercent',
+  'enemyFireResistance', 'enemyColdResistance', 'enemyLightningResistance', 'enemyPoisonResistance', 'enemyMagicResistance',
 ]
 
 export function mergeModifiers(...modifierSets: (Modifiers | undefined)[]): Modifiers {
@@ -142,6 +147,72 @@ export function calculateSummary(build: BuildProfile): BuildSummary {
     availableSkillPoints: availableSkillPoints(build),
     spentStatPoints: spentStatPoints(build),
     availableStatPoints: availableStatPoints(build),
+  }
+}
+
+export function calculateCombatSummary(build: BuildProfile): CombatSummary {
+  const weaponSlot = build.activeWeaponSet === 1 ? 'weapon' : 'swapWeapon'
+  const equipped = build.equipment[weaponSlot]
+  const catalog = ITEM_CATALOG as readonly unknown[] as readonly CatalogItem[]
+  const catalogItem = equipped?.catalogId ? catalog.find((item) => item.id === equipped.catalogId) : undefined
+  const baseCode = equipped?.baseWeaponCode || catalogItem?.baseCode
+  const base = baseCode ? WEAPON_BASES.find((item) => item.code === baseCode) : undefined
+  const empty: CombatSummary = {
+    ready: false,
+    weaponName: catalogItem?.nameKo ?? equipped?.name,
+    physicalMin: 0, physicalMax: 0, elementalMin: 0, elementalMax: 0, averageHit: 0,
+    weaponEnhancedDamage: 0, attributeDamageBonus: 0, increasedAttackSpeed: 0,
+    crushingBlow: 0, deadlyStrike: 0, openWounds: 0,
+    enemyResistReduction: { fire: 0, cold: 0, lightning: 0, poison: 0, magic: 0 },
+    missingBase: Boolean(equipped && catalogItem?.category === 'runeword' && !base),
+  }
+  if (!equipped || !base) return empty
+
+  const weaponModifiers = getEquippedItemModifiers(equipped)
+  const allModifiers = getEquipmentModifiers(build)
+  const attributes = calculateSummary(build).attributes
+  const etherealMultiplier = equipped.ethereal ? 1.5 : 1
+  const baseMin = Math.floor(base.minDamage * etherealMultiplier)
+  const baseMax = Math.floor(base.maxDamage * etherealMultiplier)
+  const weaponEnhancedDamage = weaponModifiers.enhancedDamage ?? 0
+  const weaponMin = Math.floor(baseMin * (1 + weaponEnhancedDamage / 100)) + (weaponModifiers.flatMinDamage ?? 0)
+  const weaponMax = Math.floor(baseMax * (1 + weaponEnhancedDamage / 100)) + (weaponModifiers.flatMaxDamage ?? 0)
+  const offWeaponMinDamage = (allModifiers.flatMinDamage ?? 0) - (weaponModifiers.flatMinDamage ?? 0)
+  const offWeaponMaxDamage = (allModifiers.flatMaxDamage ?? 0) - (weaponModifiers.flatMaxDamage ?? 0)
+  const attributeDamageBonus = attributes.strength * base.strengthBonus / 100 + attributes.dexterity * base.dexterityBonus / 100
+  const offWeaponEnhancedDamage = (allModifiers.enhancedDamage ?? 0) - weaponEnhancedDamage
+  const damageMultiplier = 1 + (attributeDamageBonus + offWeaponEnhancedDamage) / 100
+  const physicalMin = Math.max(0, Math.floor((weaponMin + offWeaponMinDamage) * damageMultiplier))
+  const physicalMax = Math.max(0, Math.floor((weaponMax + offWeaponMaxDamage) * damageMultiplier))
+  const elementalMin = (allModifiers.fireMinDamage ?? 0) + (allModifiers.coldMinDamage ?? 0) + (allModifiers.lightningMinDamage ?? 0) + (allModifiers.magicMinDamage ?? 0)
+  const elementalMax = (allModifiers.fireMaxDamage ?? 0) + (allModifiers.coldMaxDamage ?? 0) + (allModifiers.lightningMaxDamage ?? 0) + (allModifiers.magicMaxDamage ?? 0)
+  const deadlyStrike = Math.min(100, (allModifiers.deadlyStrike ?? 0) + Math.floor((allModifiers.deadlyStrikePerLevel ?? 0) * build.level))
+  const physicalAverage = (physicalMin + physicalMax) / 2
+  const elementalAverage = (elementalMin + elementalMax) / 2
+
+  return {
+    ready: true,
+    weaponName: catalogItem?.nameKo ?? equipped.name,
+    baseWeaponName: base.name,
+    physicalMin,
+    physicalMax,
+    elementalMin,
+    elementalMax,
+    averageHit: Math.round(physicalAverage * (1 + deadlyStrike / 100) + elementalAverage),
+    weaponEnhancedDamage,
+    attributeDamageBonus: Math.round(attributeDamageBonus),
+    increasedAttackSpeed: allModifiers.increasedAttackSpeed ?? 0,
+    crushingBlow: Math.min(100, allModifiers.crushingBlow ?? 0),
+    deadlyStrike,
+    openWounds: Math.min(100, allModifiers.openWounds ?? 0),
+    enemyResistReduction: {
+      fire: allModifiers.enemyFireResistance ?? 0,
+      cold: allModifiers.enemyColdResistance ?? 0,
+      lightning: allModifiers.enemyLightningResistance ?? 0,
+      poison: allModifiers.enemyPoisonResistance ?? 0,
+      magic: allModifiers.enemyMagicResistance ?? 0,
+    },
+    missingBase: false,
   }
 }
 

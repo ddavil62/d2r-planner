@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createBuild, decodeBuild, decodeBuildCompressed, encodeBuild, encodeBuildCompressed } from './builds'
-import { availableSkillPoints, availableStatPoints, breakpointProgress, calculateSummary, getEquippedItemModifiers, skillBonusFor, skillCanIncrement } from './calculations'
+import { availableSkillPoints, availableStatPoints, breakpointProgress, calculateCombatSummary, calculateSummary, getEquippedItemModifiers, skillBonusFor, skillCanIncrement } from './calculations'
 import { CLASS_DEFINITIONS } from '../data/classes'
 import { ITEM_CATALOG } from '../data/catalog.generated'
 
@@ -94,6 +94,49 @@ describe('build calculations', () => {
     const summary = calculateSummary(build)
     expect(summary.fasterHitRecovery).toBe(40)
     expect(summary.resistances.fire).toBe(-40)
+  })
+
+  it('calculates an ethereal Obedience Thresher basic attack', () => {
+    const obedience = ITEM_CATALOG.find((item) => item.name === 'Obedience')!
+    const build = createBuild('necromancer')
+    build.equipment.weapon = {
+      definitionId: 'custom', catalogId: obedience.id, name: obedience.name,
+      modifiers: { ...obedience.modifiers }, baseWeaponCode: '7s8', ethereal: true,
+    }
+
+    expect(calculateCombatSummary(build)).toMatchObject({
+      ready: true,
+      weaponName: '순종',
+      baseWeaponName: 'Thresher',
+      physicalMin: 96,
+      physicalMax: 1139,
+      averageHit: 618,
+      weaponEnhancedDamage: 370,
+      attributeDamageBonus: 15,
+      crushingBlow: 40,
+      enemyResistReduction: { fire: 25 },
+      missingBase: false,
+    })
+  })
+
+  it('requires a weapon base before calculating a runeword', () => {
+    const obedience = ITEM_CATALOG.find((item) => item.name === 'Obedience')!
+    const build = createBuild('barbarian')
+    build.equipment.weapon = { definitionId: 'custom', catalogId: obedience.id, name: obedience.name, modifiers: { ...obedience.modifiers } }
+    expect(calculateCombatSummary(build)).toMatchObject({ ready: false, missingBase: true })
+  })
+
+  it('applies physical damage added by non-weapon gear', () => {
+    const windforce = ITEM_CATALOG.find((item) => item.name === 'Windforce')!
+    const warTraveler = ITEM_CATALOG.find((item) => item.name === 'Wartraveler')!
+    const build = createBuild('amazon')
+    build.equipment.weapon = { definitionId: 'custom', catalogId: windforce.id, name: windforce.name, modifiers: { ...windforce.modifiers }, baseWeaponCode: '6lw' }
+    build.equipment.boots = { definitionId: 'custom', catalogId: warTraveler.id, name: warTraveler.name, modifiers: { ...warTraveler.modifiers } }
+    const withBoots = calculateCombatSummary(build)
+    delete build.equipment.boots
+    const withoutBoots = calculateCombatSummary(build)
+    expect(withBoots.physicalMin).toBeGreaterThan(withoutBoots.physicalMin)
+    expect(withBoots.physicalMax).toBeGreaterThan(withoutBoots.physicalMax)
   })
 
   it('round-trips Korean build data through a share code', () => {
