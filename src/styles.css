@@ -16,6 +16,10 @@
   --gold: #c7a665;
   --gold-bright: #e0bf79;
   --danger: #d06b5c;
+  --frame-iron: #5f503d;
+  --frame-bronze: #8b7044;
+  --frame-shadow: #080706;
+  --frame-cut: 12px;
 }
 
 * { box-sizing: border-box; }
@@ -314,6 +318,140 @@ progress { appearance: none; width: 100%; height: 3px; }progress::-webkit-progre
 .advanced-import { border-top: 1px solid var(--line); padding-top: 12px; }.advanced-import summary { color: var(--muted); font-size: 10px; cursor: pointer; }.advanced-import[open] summary { margin-bottom: 10px; color: var(--text); }
 .file-import { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }.file-import input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .toast { position: fixed; z-index: 110; left: 50%; bottom: 24px; transform: translateX(-50%); border: 1px solid var(--gold); background: #1d1710; color: #e4d1a7; padding: 10px 18px; box-shadow: 0 12px 35px #000; font-size: 11px; }
+
+/* Sanctuary frame system: carved stone panels, forged controls, and altar-like slots. */
+.panel,
+.catalog-item,
+.candidate-compare article,
+.combat-damage-grid article,
+.combat-detail-grid > div,
+.enemy-settings,
+.combat-weapon-config,
+.skill-facts div,
+.top-skills > div,
+.export-option,
+.modal {
+  clip-path: polygon(var(--frame-cut) 0, calc(100% - var(--frame-cut)) 0, 100% var(--frame-cut), 100% calc(100% - var(--frame-cut)), calc(100% - var(--frame-cut)) 100%, var(--frame-cut) 100%, 0 calc(100% - var(--frame-cut)), 0 var(--frame-cut));
+  border-color: var(--frame-iron);
+  background-image:
+    linear-gradient(135deg, transparent 0 9px, rgba(176, 137, 74, .72) 10px, transparent 11px),
+    linear-gradient(225deg, transparent 0 9px, rgba(176, 137, 74, .45) 10px, transparent 11px),
+    repeating-linear-gradient(105deg, rgba(255, 255, 255, .012) 0 1px, transparent 1px 6px),
+    linear-gradient(145deg, rgba(30, 25, 20, .97), rgba(15, 13, 11, .98));
+  box-shadow: inset 0 0 0 1px #0a0806, inset 0 0 24px rgba(0, 0, 0, .42), 0 14px 34px rgba(0, 0, 0, .3);
+}
+
+.section-card { position: relative; border-color: #5b4a35; }
+.section-card::after { content: '◆'; position: absolute; right: 9px; bottom: 7px; color: rgba(173, 132, 68, .42); font-size: 7px; text-shadow: 0 0 8px #000; pointer-events: none; }
+.section-heading { border-bottom-color: #59462f; }
+.section-heading::after { content: ''; width: 34px; height: 1px; margin-left: 10px; background: linear-gradient(90deg, var(--frame-bronze), transparent); }
+
+.button,
+.sidebar nav button,
+.class-switcher button,
+.skill-branch-tabs button,
+.budget-pill,
+.weapon-set-toggle button,
+.skill-counter button,
+.inspector-counter,
+.inspector-counter button,
+.vitality-fill,
+.catalog-item button,
+.export-option,
+.modal-actions button,
+.share-link-actions button {
+  border-radius: 0;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+.button,
+.weapon-set-toggle button,
+.skill-counter button,
+.inspector-counter button,
+.catalog-item button {
+  border-color: #66543c;
+  background: linear-gradient(#282119, #15110d 52%, #0c0a08);
+  box-shadow: inset 0 1px rgba(226, 193, 124, .11), inset 0 -2px rgba(0, 0, 0, .5);
+  text-shadow: 0 1px 3px #000;
+}
+.button.primary,
+.weapon-set-toggle button.active,
+.export-option.primary {
+  color: #1c1409;
+  border-color: #e0bd72;
+  background: linear-gradient(#e1c27d 0, #a98142 48%, #715329 100%);
+  box-shadow: inset 0 1px #f6dda2, inset 0 -2px #4d3519, 0 0 12px rgba(197, 151, 72, .14);
+  text-shadow: 0 1px rgba(255, 239, 190, .28);
+}
+.button:active,
+.weapon-set-toggle button:active,
+.skill-counter button:active,
+.catalog-item button:active { transform: translateY(1px); filter: brightness(.92); }
+.button:focus-visible,
+.class-switcher button:focus-visible,
+.skill-branch-tabs button:focus-visible,
+.doll-equipment-slot:focus-visible { outline: 0; box-shadow: inset 0 0 0 1px var(--gold), 0 0 0 2px rgba(224, 191, 121, .35); }
+
+input,
+select,
+textarea {
+  border-radius: 0;
+  border-color: #4c3d2d;
+  background: linear-gradient(180deg, #090807, #100d0a);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .75), 0 1px rgba(173, 132, 69, .08);
+}
+.build-name input,
+.compact-field input,
+.compact-field select,
+.equipment-item-select select,
+.catalog-filters input,
+.catalog-filters select {
+  clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+}
+
+.class-switcher button {
+  border-color: #52422f;
+  background: linear-gradient(155deg, #211b15, #0f0d0a 72%);
+  box-shadow: inset 0 0 0 1px #0a0806, inset 0 1px rgba(255, 227, 169, .05);
+}
+.class-switcher button.selected {
+  border-color: var(--class-accent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--class-accent) 19%, #1c1712), #0e0c0a 74%);
+  box-shadow: inset 3px 0 color-mix(in srgb, var(--class-accent) 72%, #fff), inset 0 0 18px color-mix(in srgb, var(--class-accent) 10%, transparent);
+}
+.class-sigil { border-width: 2px; box-shadow: inset 0 0 10px #000, 0 0 0 2px #0b0907; }
+
+.skill-branch-tabs button { border-color: #5c4933; background: linear-gradient(#251e17, #100d0a); box-shadow: inset 0 0 0 1px #0a0806; }
+.skill-branch-tabs button.active { border-color: var(--class-accent); box-shadow: inset 4px 0 var(--class-accent), inset 0 0 24px color-mix(in srgb, var(--class-accent) 12%, transparent); }
+.skill-node {
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+  border-color: #66513a;
+  background: radial-gradient(circle at 50% 20%, rgba(143, 105, 53, .1), transparent 48%), linear-gradient(145deg, #211a14, #0c0a08);
+  box-shadow: inset 0 0 0 1px #090706, inset 0 0 18px #0008, 0 9px 20px #0008;
+}
+.skill-node::after { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(116, 91, 58, .28); clip-path: inherit; pointer-events: none; }
+
+.equipment-doll { border: 2px solid #5e4b34; box-shadow: inset 0 0 0 3px #0b0907, inset 0 0 55px #000; }
+.doll-equipment-slot {
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+  border-color: #79603f;
+  background: radial-gradient(circle at 50% 38%, rgba(164, 120, 50, .13), transparent 45%), linear-gradient(145deg, rgba(37, 29, 21, .98), rgba(10, 9, 7, .98));
+  box-shadow: inset 0 0 0 2px #0a0806, inset 0 0 24px #000b, 0 5px 12px #0008;
+}
+.doll-equipment-slot:hover,
+.doll-equipment-slot.selected { border-color: #d0a75f; box-shadow: inset 0 0 0 2px #151008, inset 0 0 28px rgba(201, 151, 71, .18), 0 0 12px rgba(205, 157, 76, .18); }
+.equipment-detail-title > i,
+.slot-heading > span,
+.export-option > span { transform: rotate(45deg); border-color: #84683f; background: radial-gradient(circle, #2b2116, #0e0b08); box-shadow: inset 0 0 12px #000; }
+.equipment-detail-title > i { margin: 9px; }
+.equipment-detail-title > i::first-letter,
+.slot-heading > span::first-letter,
+.export-option > span::first-letter { transform: rotate(-45deg); }
+
+.catalog-item { --frame-cut: 9px; border-color: #56442f; }
+.catalog-item:hover { border-color: #8e7045; box-shadow: inset 0 0 0 1px #0a0806, inset 0 0 24px rgba(140, 104, 53, .09), 0 12px 28px #0008; }
+.inventory-board { clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px); border: 3px double #846741; box-shadow: inset 0 0 24px #000, 0 8px 24px #0008; }
+.inventory-charm { clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px); box-shadow: inset 0 0 10px #0008; }
+.modal { --frame-cut: 18px; border: 2px solid #755d3d; box-shadow: inset 0 0 0 2px #0b0907, inset 0 0 40px #0006, 0 35px 90px #000; }
 
 @media (max-width: 1180px) {
   .app-shell { grid-template-columns: 190px minmax(0, 1fr); grid-template-areas: 'top top' 'side main'; }
