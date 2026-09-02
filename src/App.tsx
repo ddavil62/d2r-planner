@@ -681,7 +681,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
                 const catalogItem = equipped?.catalogId ? catalog.find((item) => item.id === equipped.catalogId) : undefined
                 const itemName = definition ? (itemLanguage === 'ko' ? definition.nameKo : definition.nameEn) : catalogItem ? catalogName(catalogItem) : equipped?.name ?? '비어 있음'
                 const primaryModifier = Object.entries(modifiers).find(([, value]) => value)
-                return <button type="button" data-testid={`doll-slot-${slot}`} className={`doll-equipment-slot position-${positionClass(slot)} ${selectedSlot === slot ? 'selected' : ''} ${equipped ? 'equipped' : ''}`} key={slot} onClick={() => setSelectedSlot(slot)}>
+                return <button type="button" data-testid={`doll-slot-${slot}`} aria-label={`${slotLabels[slot]}: ${itemName}`} title={`${slotLabels[slot]} · ${itemName}`} className={`doll-equipment-slot position-${positionClass(slot)} ${selectedSlot === slot ? 'selected' : ''} ${equipped ? 'equipped' : ''}`} key={slot} onClick={() => setSelectedSlot(slot)}>
                   <small>{slotLabels[slot]}</small><i>{slotGlyphs[slot] ?? '◇'}</i><strong>{itemName}</strong>
                   <em>{primaryModifier ? `${modifierFields.find((field) => field.key === primaryModifier[0])?.label ?? primaryModifier[0]} ${Number(primaryModifier[1]) > 0 ? '+' : ''}${primaryModifier[1]}` : '아이템 선택'}</em>
                 </button>
