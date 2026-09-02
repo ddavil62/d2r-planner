@@ -672,7 +672,7 @@ function EquipmentPlanner({ build, setBuild, wishlist, toggleWishlist }: { build
         <section className="equipment-doll-panel panel">
           <div className="equipment-panel-heading"><div><small>CLASSIC EQUIPMENT</small><h2>착용 장비</h2></div><span>슬롯을 선택해 옵션을 편집하세요</span></div>
           <div className="equipment-doll">
-            <div className="equipment-character-mark"><span>☠</span><small>{CLASS_DEFINITIONS[build.classId].nameEn.toUpperCase()}</small></div>
+            <div className="equipment-character-mark"><img src="assets/equipment-wanderer.png" alt="" /><small>{CLASS_DEFINITIONS[build.classId].nameEn.toUpperCase()}</small></div>
             <div className="equipment-position-grid">
               {visibleSlots.map((slot) => {
                 const equipped = build.equipment[slot]
