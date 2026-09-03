@@ -109,6 +109,10 @@ test('applies a legal starter template', async ({ page }) => {
 
 test('searches the full item catalog and adds a farming target', async ({ page }) => {
   await page.getByTestId('nav-items').click()
+  await page.getByTestId('catalog-group-armor').click()
+  await expect(page.getByTestId('catalog-slot-head')).toBeVisible()
+  await expect(page.getByTestId('catalog-slot-ring')).toHaveCount(0)
+  await page.getByTestId('catalog-group-all').click()
   await page.getByLabel('아이템 검색').fill('Harlequin Crest')
   const result = page.locator('.catalog-item').filter({ hasText: 'Harlequin Crest' })
   await expect(result).toHaveCount(1)
