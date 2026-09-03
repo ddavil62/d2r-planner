@@ -98,6 +98,21 @@ test('switches across all eight classes and renders the Warlock trees', async ({
   await expect(page.locator('.skill-node')).toHaveCount(10)
 })
 
+test('switches classes safely while the skill planner is open', async ({ page }) => {
+  const classes = [
+    ['amazon', '아마존'], ['sorceress', '원소술사'], ['necromancer', '네크로맨서'], ['paladin', '성기사'],
+    ['barbarian', '야만용사'], ['druid', '드루이드'], ['assassin', '암살자'], ['warlock', '악마술사'],
+  ] as const
+
+  await page.getByTestId('nav-skills').click()
+  for (const [classId, name] of classes) {
+    await page.getByTestId(`class-${classId}`).click()
+    await expect(page.getByRole('heading', { name: `${name} 기술` })).toBeVisible()
+    await expect(page.locator('.skill-tree')).toHaveCount(1)
+    await expect(page.locator('.skill-inspector h2')).not.toBeEmpty()
+  }
+})
+
 test('applies a legal starter template', async ({ page }) => {
   await page.locator('.template-field select').selectOption('poison-necro')
   await expect(page.getByRole('heading', { name: '독조넥 골격' })).toBeVisible()

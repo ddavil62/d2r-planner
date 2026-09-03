@@ -335,7 +335,7 @@ function App() {
       <main className="workspace">
         <ProfileBar build={build} updateBuild={updateBuild} switchClass={switchClass} applyTemplate={applyTemplate} openReset={() => setResetOpen(true)} />
         {page === 'overview' && <Overview build={build} summary={summary} setPage={setPage} updateBuild={updateBuild} />}
-        {page === 'skills' && <SkillPlanner build={build} setBuild={setBuild} />}
+        {page === 'skills' && <SkillPlanner key={build.classId} build={build} setBuild={setBuild} />}
         {page === 'attributes' && <AttributePlanner build={build} setBuild={setBuild} summary={summary} />}
         {page === 'equipment' && <EquipmentPlanner build={build} setBuild={setBuild} />}
         {page === 'items' && <ItemCatalog build={build} setBuild={setBuild} wishlist={wishlist} toggleWishlist={toggleWishlist} setPage={setPage} />}
