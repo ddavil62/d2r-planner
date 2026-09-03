@@ -107,6 +107,27 @@ test('applies a legal starter template', async ({ page }) => {
   await expect(page.getByRole('button', { name: '맹독 확산 증가' })).toBeDisabled()
 })
 
+test('resets the complete current build after confirmation', async ({ page }, testInfo) => {
+  await page.locator('.template-field select').selectOption('poison-necro')
+  await page.locator('.build-name input').fill('초기화할 빌드')
+  await page.getByTestId('reset-build').click()
+  const dialog = page.getByRole('alertdialog')
+  await expect(dialog.getByRole('heading', { name: '현재 빌드를 완전히 초기화할까요?' })).toBeVisible()
+  await expect(dialog).toContainText('기술, 능력치, 장비, 인벤토리, 적 설정, 메모와 빌드 이름')
+  await page.screenshot({ path: `tests/screenshots/reset-modal-${testInfo.project.name === 'desktop-chromium' ? 'desktop' : 'mobile'}.png`, fullPage: true })
+  await dialog.getByRole('button', { name: '현재 빌드 유지' }).click()
+  await expect(page.locator('.build-name input')).toHaveValue('초기화할 빌드')
+
+  await page.getByTestId('reset-build').click()
+  await page.getByTestId('confirm-reset-build').click()
+  await expect(page.locator('.build-name input')).toHaveValue('새 네크로맨서 빌드')
+  await expect(page.getByText('빈 네크로맨서 빌드로 초기화했습니다.')).toBeVisible()
+  await page.getByTestId('nav-skills').click()
+  await expect(page.locator('.budget-pill')).toContainText('사용0')
+  await page.getByTestId('nav-equipment').click()
+  await expect(page.getByTestId('doll-slot-weapon')).toHaveAccessibleName('주 무기: 비어 있음')
+})
+
 test('searches the full item catalog and adds a farming target', async ({ page }) => {
   await page.getByTestId('nav-items').click()
   await page.getByTestId('catalog-group-armor').click()

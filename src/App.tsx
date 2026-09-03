@@ -152,6 +152,7 @@ function App() {
     try { return JSON.parse(localStorage.getItem(WISHLIST_KEY) ?? '[]') } catch { return [] }
   })
   const [shareOpen, setShareOpen] = useState(false)
+  const [resetOpen, setResetOpen] = useState(false)
   const [shareCode, setShareCode] = useState('')
   const [shareLink, setShareLink] = useState('')
   const [toast, setToast] = useState('')
@@ -290,6 +291,13 @@ function App() {
     localStorage.setItem(WISHLIST_KEY, JSON.stringify(next))
   }
 
+  const resetCurrentBuild = () => {
+    setBuild(createBuild(build.classId))
+    setPage('overview')
+    setResetOpen(false)
+    setToast(`빈 ${CLASS_DEFINITIONS[build.classId].nameKo} 빌드로 초기화했습니다.`)
+  }
+
   return (
     <div className="app-shell" style={{ '--class-accent': classDefinition.accent } as React.CSSProperties}>
       <header className="topbar">
@@ -325,7 +333,7 @@ function App() {
       </aside>
 
       <main className="workspace">
-        <ProfileBar build={build} updateBuild={updateBuild} switchClass={switchClass} applyTemplate={applyTemplate} />
+        <ProfileBar build={build} updateBuild={updateBuild} switchClass={switchClass} applyTemplate={applyTemplate} openReset={() => setResetOpen(true)} />
         {page === 'overview' && <Overview build={build} summary={summary} setPage={setPage} updateBuild={updateBuild} />}
         {page === 'skills' && <SkillPlanner build={build} setBuild={setBuild} />}
         {page === 'attributes' && <AttributePlanner build={build} setBuild={setBuild} summary={summary} />}
@@ -363,16 +371,27 @@ function App() {
           </section>
         </div>
       )}
+      {resetOpen && (
+        <div className="modal-backdrop" onMouseDown={() => setResetOpen(false)}>
+          <section className="modal reset-build-modal" role="alertdialog" aria-modal="true" aria-labelledby="reset-build-title" onMouseDown={(event) => event.stopPropagation()}>
+            <div className="modal-header"><div><small>RESET CURRENT BUILD</small><h2 id="reset-build-title">현재 빌드를 완전히 초기화할까요?</h2></div><button aria-label="초기화 창 닫기" onClick={() => setResetOpen(false)}>×</button></div>
+            <p>기술, 능력치, 장비, 인벤토리, 적 설정, 메모와 빌드 이름이 모두 초기 상태로 돌아갑니다.</p>
+            <div className="reset-safety-note"><strong>보관함과 파밍 목록은 유지됩니다.</strong><span>초기화한 현재 편집 내용은 되돌릴 수 없습니다.</span></div>
+            <div className="modal-actions"><button className="button ghost" onClick={() => setResetOpen(false)}>현재 빌드 유지</button><button className="button danger" data-testid="confirm-reset-build" onClick={resetCurrentBuild}>전체 초기화</button></div>
+          </section>
+        </div>
+      )}
       {toast && <div className="toast">{toast}</div>}
     </div>
   )
 }
 
-function ProfileBar({ build, updateBuild, switchClass, applyTemplate }: {
+function ProfileBar({ build, updateBuild, switchClass, applyTemplate, openReset }: {
   build: BuildProfile
   updateBuild: (patch: Partial<BuildProfile>) => void
   switchClass: (classId: ClassId) => void
   applyTemplate: (templateId: string) => void
+  openReset: () => void
 }) {
   return (
     <section className="profile-bar panel">
@@ -388,6 +407,7 @@ function ProfileBar({ build, updateBuild, switchClass, applyTemplate }: {
       <label className="compact-field template-field"><span>추천 골격</span><select value="" onChange={(event) => applyTemplate(event.target.value)}><option value="">선택…</option>{BUILD_TEMPLATES.filter((item) => item.classId === build.classId).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
       <label className="compact-field"><span>레벨</span><input type="number" min={1} max={99} value={build.level} onChange={(event) => updateBuild({ level: Math.max(1, Math.min(99, Number(event.target.value))) })} /></label>
       <label className="compact-field"><span>난이도</span><select value={build.difficulty} onChange={(event) => updateBuild({ difficulty: event.target.value as BuildProfile['difficulty'] })}><option value="normal">보통</option><option value="nightmare">악몽</option><option value="hell">지옥</option></select></label>
+      <button type="button" className="reset-build-button" data-testid="reset-build" onClick={openReset}><span>현재 설정</span><strong>빌드 전체 초기화</strong></button>
     </section>
   )
 }
