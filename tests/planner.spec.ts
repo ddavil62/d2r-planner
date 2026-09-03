@@ -108,7 +108,7 @@ test('applies a legal starter template', async ({ page }) => {
 })
 
 test('searches the full item catalog and adds a farming target', async ({ page }) => {
-  await page.getByTestId('nav-equipment').click()
+  await page.getByTestId('nav-items').click()
   await page.getByLabel('아이템 검색').fill('Harlequin Crest')
   const result = page.locator('.catalog-item').filter({ hasText: 'Harlequin Crest' })
   await expect(result).toHaveCount(1)
@@ -117,7 +117,7 @@ test('searches the full item catalog and adds a farming target', async ({ page }
 })
 
 test('searches Korean names and aliases and persists the item language', async ({ page }) => {
-  await page.getByTestId('nav-equipment').click()
+  await page.getByTestId('nav-items').click()
   await page.getByLabel('아이템 검색').fill('샤코')
   const result = page.locator('.catalog-item').filter({ hasText: '할리퀸 관모' })
   await expect(result).toHaveCount(1)
@@ -126,27 +126,29 @@ test('searches Korean names and aliases and persists the item language', async (
   await expect(page.getByTestId('item-language-en')).toHaveAttribute('aria-pressed', 'true')
   await expect(result.locator('strong')).toHaveText('Harlequin Crest')
   await page.reload()
-  await page.getByTestId('nav-equipment').click()
+  await page.getByTestId('nav-items').click()
   await expect(page.getByTestId('item-language-en')).toHaveAttribute('aria-pressed', 'true')
 })
 
 test('applies stats from a non-preset database item', async ({ page }) => {
-  await page.getByTestId('nav-equipment').click()
+  await page.getByTestId('nav-items').click()
   await page.getByLabel('아이템 검색').fill('Suicide Branch')
   const result = page.locator('.catalog-item').filter({ hasText: 'Suicide Branch' })
   await expect(result).toHaveCount(1)
   await expect(result.locator('.impact-chip')).toContainText('패캐 +50')
   await result.getByRole('button', { name: '착용' }).click()
-  await expect(page.getByTestId('slot-weapon')).toContainText('패캐 +50')
   await expect(page.locator('.summary-rail')).toContainText('50%')
+  await page.getByTestId('nav-equipment').click()
+  await expect(page.getByTestId('doll-slot-weapon')).toContainText('자해의 가지')
 })
 
 test('equips Obedience with its catalog identity, full options and calculated stats', async ({ page }, testInfo) => {
-  await page.getByTestId('nav-equipment').click()
+  await page.getByTestId('nav-items').click()
   await page.getByLabel('아이템 검색').fill('순종')
   const result = page.locator('.catalog-item').filter({ hasText: 'Obedience' })
   await expect(result).toHaveCount(1)
   await result.getByRole('button', { name: '착용' }).click()
+  await page.getByTestId('nav-equipment').click()
 
   await expect(page.getByTestId('equipment-detail').getByRole('heading', { name: '순종' })).toBeVisible()
   await expect(page.getByTestId('focus-item-select-weapon').locator('option:checked')).toHaveText('순종 · Obedience')
@@ -174,6 +176,7 @@ test('equips Obedience with its catalog identity, full options and calculated st
   await expect(page.getByTestId('combat-final-hit')).toHaveText('1,818')
   await page.getByLabel('플레이어 수').selectOption('8')
   await expect(page.getByTestId('combat-final-hit')).toHaveText('6,018')
+  await page.getByTestId('nav-items').click()
   await page.getByLabel('아이템 검색').fill('무덤 강탈자')
   const combatCandidate = page.locator('.catalog-item').filter({ hasText: 'Tomb Reaver' })
   await expect(combatCandidate).toHaveCount(1)
@@ -266,6 +269,7 @@ test('renders desktop item catalog', async ({ page }, testInfo) => {
   expect(offhand!.x).toBeGreaterThan(armor!.x)
   const itemNameSize = await page.getByTestId('doll-slot-weapon').locator('strong').evaluate((element) => parseFloat(getComputedStyle(element).fontSize))
   expect(itemNameSize).toBeGreaterThanOrEqual(14)
+  await page.getByTestId('nav-items').click()
   await page.getByLabel('아이템 검색').fill('Tal Rasha')
   await expect(page.locator('.catalog-item')).not.toHaveCount(0)
   await page.screenshot({ path: 'tests/screenshots/catalog-desktop.png', fullPage: true })
