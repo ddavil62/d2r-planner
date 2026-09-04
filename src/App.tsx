@@ -18,6 +18,7 @@ import {
   spentSkillPoints,
   spentStatPoints,
 } from './lib/calculations'
+import { skillEffectRows } from './lib/skill-effects'
 import {
   createBuild,
   buildExportFilename,
@@ -478,9 +479,23 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
     if (firstSkill) setSelectedSkillId(firstSkill.id)
   }, [definition, selectedBranch, selectedSkill?.branch])
 
-  const changeSkill = (skill: SkillDefinition, delta: number) => {
+  const changeSkill = (skill: SkillDefinition, delta: number, maximize = false) => {
     setBuild((current) => {
       const currentPoints = current.skills[skill.id] ?? 0
+      if (maximize && delta > 0) {
+        let points = currentPoints
+        let candidate = current
+        while (skillCanIncrement(candidate, skill)) {
+          points += 1
+          candidate = { ...candidate, skills: { ...candidate.skills, [skill.id]: points } }
+        }
+        return points === currentPoints ? current : { ...candidate, updatedAt: new Date().toISOString() }
+      }
+      if (maximize && delta < 0) {
+        const hasDependent = definition.skills.some((candidate) => (candidate.prerequisites ?? []).includes(skill.id) && (current.skills[candidate.id] ?? 0) > 0)
+        const minimum = hasDependent ? 1 : 0
+        return currentPoints <= minimum ? current : { ...current, skills: { ...current.skills, [skill.id]: minimum }, updatedAt: new Date().toISOString() }
+      }
       if (delta > 0 && !skillCanIncrement(current, skill)) return current
       if (delta < 0) {
         if (currentPoints <= 0) return current
@@ -519,6 +534,8 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
 
   const selectedHard = build.skills[selectedSkill.id] ?? 0
   const selectedBonus = skillBonusFor(build, selectedSkill, equipmentModifiers)
+  const selectedLevel = selectedHard + selectedBonus
+  const selectedEffects = skillEffectRows(selectedSkill, selectedLevel, selectedHard < 20)
   const selectedPrerequisites = (selectedSkill.prerequisites ?? []).map((id) => definition.skills.find((item) => item.id === id)).filter(Boolean) as SkillDefinition[]
 
   return (
@@ -551,7 +568,7 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
                 return <article data-testid={`skill-${item.id}`} style={{ gridColumn: item.col, gridRow: treeRow(item) }} key={item.id} onClick={() => setSelectedSkillId(item.id)} className={`skill-node ${selectedSkill.id === item.id ? 'selected' : ''} ${hard ? 'invested' : ''} ${canAdd ? 'available' : ''} ${locked ? 'locked' : ''}`}>
                   <div className="skill-node-heading"><strong className="skill-name">{item.nameKo}</strong><small className="skill-level">요구 레벨 {item.requiredLevel}</small></div>
                   <div className="skill-rank-summary"><span>투자 {hard}/20</span>{bonus > 0 && <span>장비 +{bonus}</span>}</div>
-                  <div className="skill-counter"><button aria-label={`${item.nameKo} 감소`} onClick={() => changeSkill(item, -1)} disabled={hard <= 0}>−</button><strong><small>최종</small>{hard + bonus}</strong><button aria-label={`${item.nameKo} 증가`} onClick={() => changeSkill(item, 1)} disabled={!canAdd}>+</button></div>
+                  <div className="skill-counter"><button aria-label={`${item.nameKo} 감소`} title="Shift+클릭: 가능한 만큼 감소" onClick={(event) => changeSkill(item, -1, event.shiftKey)} disabled={hard <= 0}>−</button><strong><small>최종</small>{hard + bonus}</strong><button aria-label={`${item.nameKo} 증가`} title="Shift+클릭: 가능한 만큼 투자" onClick={(event) => changeSkill(item, 1, event.shiftKey)} disabled={!canAdd}>+</button></div>
                   <div className="skill-tooltip"><strong>{item.nameKo}</strong><p>{item.description}</p>{item.prerequisites?.length ? <em>선행: {item.prerequisites.map((id) => definition.skills.find((candidate) => candidate.id === id)?.nameKo).join(', ')}</em> : <em>선행 기술 없음</em>}</div>
                 </article>
               })}
@@ -563,16 +580,22 @@ function SkillPlanner({ build, setBuild }: { build: BuildProfile; setBuild: Reac
           <p className="skill-name-en">{selectedSkill.nameEn}</p>
           <p className="skill-description">{selectedSkill.description}</p>
           <div className="inspector-counter">
-            <button aria-label={`${selectedSkill.nameKo} 상세에서 감소`} onClick={() => changeSkill(selectedSkill, -1)} disabled={selectedHard <= 0}>−</button>
-            <strong>{selectedHard + selectedBonus}<small>최종 레벨</small></strong>
-            <button aria-label={`${selectedSkill.nameKo} 상세에서 증가`} onClick={() => changeSkill(selectedSkill, 1)} disabled={!skillCanIncrement(build, selectedSkill)}>+</button>
+            <button aria-label={`${selectedSkill.nameKo} 상세에서 감소`} title="Shift+클릭: 가능한 만큼 감소" onClick={(event) => changeSkill(selectedSkill, -1, event.shiftKey)} disabled={selectedHard <= 0}>−</button>
+            <strong>{selectedLevel}<small>최종 레벨</small></strong>
+            <button aria-label={`${selectedSkill.nameKo} 상세에서 증가`} title="Shift+클릭: 가능한 만큼 투자" onClick={(event) => changeSkill(selectedSkill, 1, event.shiftKey)} disabled={!skillCanIncrement(build, selectedSkill)}>+</button>
           </div>
+          <p className="skill-shift-hint"><kbd>Shift</kbd>를 누른 채 ± 클릭하면 가능한 한도까지 조정합니다.</p>
           <dl className="skill-facts">
             <div><dt>요구 레벨</dt><dd>{selectedSkill.requiredLevel}</dd></div>
             <div><dt>직접 투자</dt><dd>{selectedHard} / 20</dd></div>
             <div><dt>장비 보너스</dt><dd className={selectedBonus > 0 ? 'bonus' : ''}>+{selectedBonus}</dd></div>
             <div><dt>남은 포인트</dt><dd>{Math.max(0, available - spent)}</dd></div>
           </dl>
+          <section className="skill-effect-panel" data-testid="skill-effects">
+            <div className="skill-effect-heading"><small>LEVEL EFFECTS · 3.3</small><span>현재 Lv {selectedLevel}{selectedHard < 20 && <> → 다음 Lv {selectedLevel + 1}</>}</span></div>
+            {selectedEffects.length ? <div className="skill-effect-list">{selectedEffects.map((effect, index) => <div key={`${effect.label}-${index}`}><span>{effect.label}</span><strong>{effect.current}</strong>{effect.next && <em>→ {effect.next}</em>}</div>)}</div> : <p>원본 데이터에 수치형 효과가 없는 기술입니다.</p>}
+            <small className="skill-effect-note">3.3 원본 레벨식의 기본 수치입니다. 시너지·무기·대상 조건은 별도로 적용될 수 있습니다.</small>
+          </section>
           <section className="prerequisite-list"><small>PREREQUISITES · 선행 기술</small>{selectedPrerequisites.length ? selectedPrerequisites.map((skill) => <button key={skill.id} onClick={() => { setSelectedBranch(skill.branch); setSelectedSkillId(skill.id) }}><span>{skill.nameKo}</span><em>{(build.skills[skill.id] ?? 0) > 0 ? '충족' : '미충족'}</em></button>) : <p>선행 기술이 없습니다.</p>}</section>
         </aside>
       </div>

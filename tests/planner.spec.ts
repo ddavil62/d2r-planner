@@ -19,6 +19,22 @@ test('allocates skills with 3.3 prerequisites', async ({ page }) => {
   await expect(page.locator('.budget-pill')).toContainText('2')
 })
 
+test('shows level effects and supports shift-click skill allocation', async ({ page }) => {
+  await page.getByTestId('nav-skills').click()
+  const effects = page.getByTestId('skill-effects')
+  await expect(effects).toContainText('현재 Lv 0 → 다음 Lv 1')
+  await expect(effects).toContainText('마나 소모')
+
+  await page.getByRole('button', { name: '해골 되살리기 증가' }).click({ modifiers: ['Shift'] })
+  await expect(page.getByTestId('skill-raise-skeleton').locator('.skill-counter strong')).toContainText('20')
+  await expect(page.locator('.budget-pill')).toContainText('사용20')
+  await expect(effects).toContainText('현재 Lv 20')
+
+  await page.getByRole('button', { name: '해골 숙련 증가' }).click()
+  await page.getByRole('button', { name: '해골 되살리기 감소' }).click({ modifiers: ['Shift'] })
+  await expect(page.getByTestId('skill-raise-skeleton').locator('.skill-counter strong')).toContainText('1')
+})
+
 test('combines representative caster equipment and saves the build', async ({ page }) => {
   await page.getByTestId('nav-equipment').click()
   for (const [slot, item] of [['weapon', 'heart-of-the-oak'], ['offhand', 'spirit-shield'], ['armor', 'vipermagi'], ['belt', 'arachnid-mesh']] as const) {
